@@ -207,6 +207,16 @@ OK: UE walkthrough progress smoke tests passed
 ```
 
 ```bash
+python3 scripts/validate_events/ue_event_actor_status_smoke_test.py
+```
+
+結果:
+
+```text
+OK: UE event actor status smoke tests passed
+```
+
+```bash
 python3 scripts/validate_events/combat_resolution_smoke_test.py
 ```
 

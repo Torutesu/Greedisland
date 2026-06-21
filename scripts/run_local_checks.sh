@@ -8,6 +8,7 @@ python3 scripts/validate_events/ue_bootstrap_defaults_smoke_test.py
 python3 scripts/validate_events/ue_hud_bootstrap_surface_smoke_test.py
 python3 scripts/validate_events/ue_route_graph_smoke_test.py
 python3 scripts/validate_events/ue_walkthrough_progress_smoke_test.py
+python3 scripts/validate_events/ue_event_actor_status_smoke_test.py
 python3 scripts/validate_cards/rule_smoke_test.py
 python3 scripts/validate_cards/combat_smoke_test.py
 python3 scripts/validate_cards/playability_reason_smoke_test.py
