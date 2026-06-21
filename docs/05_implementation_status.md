@@ -36,6 +36,7 @@
 - Blueprint向け card/event view data 取得API
 - Blueprint被せ前提のデバッグHUD UUserWidget 足場
 - HUD向け focused event 表示 / 近接インタラクト補助
+- HUD向け AI GM request 生成補助
 - ViewportへデバッグHUDを自動表示するAHUD足場
 - Debug PlayerController / Debug GameMode とUE接続手順
 - Debug Character と最小入力マッピング

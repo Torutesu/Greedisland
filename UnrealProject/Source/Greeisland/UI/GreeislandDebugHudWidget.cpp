@@ -152,6 +152,30 @@ FSessionActionResult UGreeislandDebugHudWidget::InteractWithFocusedEvent()
     return HandleActionResult(EventActor->TriggerEvent());
 }
 
+bool UGreeislandDebugHudWidget::BuildAiRequestForActiveEvent(
+    const FString& PlayerChoice,
+    FAiGmRequest& OutRequest)
+{
+    bHasLastBuiltAiRequest = false;
+    LastBuiltAiRequest = FAiGmRequest();
+    OutRequest = FAiGmRequest();
+
+    UGreeislandGameSubsystem* Subsystem = GetGreeislandSubsystem();
+    if (!Subsystem)
+    {
+        return false;
+    }
+
+    if (!Subsystem->BuildAiRequest(CurrentSnapshot.ActiveEventId, PlayerChoice, OutRequest))
+    {
+        return false;
+    }
+
+    bHasLastBuiltAiRequest = true;
+    LastBuiltAiRequest = OutRequest;
+    return true;
+}
+
 FSessionActionResult UGreeislandDebugHudWidget::ApplyAiRewardResponse(
     const FString& SpeakerName,
     const FString& Dialogue,

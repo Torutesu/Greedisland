@@ -49,6 +49,9 @@ public:
     FSessionActionResult InteractWithFocusedEvent();
 
     UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
+    bool BuildAiRequestForActiveEvent(const FString& PlayerChoice, FAiGmRequest& OutRequest);
+
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
     FSessionActionResult ApplyAiRewardResponse(
         const FString& SpeakerName,
         const FString& Dialogue,
@@ -110,6 +113,18 @@ public:
         return bHasFocusedEvent;
     }
 
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const FAiGmRequest& GetLastBuiltAiRequest() const
+    {
+        return LastBuiltAiRequest;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    bool HasLastBuiltAiRequest() const
+    {
+        return bHasLastBuiltAiRequest;
+    }
+
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config")
     bool bUseProjectSettingsDefaults = true;
@@ -167,6 +182,12 @@ protected:
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     FText FocusedEventDisplayName;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bHasLastBuiltAiRequest = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FAiGmRequest LastBuiltAiRequest;
 
 private:
     void ApplyProjectSettingsDefaults();

@@ -13,6 +13,7 @@
 - `UGreeislandDebugHudWidget`
   - Blueprintで見た目を被せる前提の `UUserWidget`
   - 近接中の `FocusedEventId` / `FocusedEventDisplayName` と `InteractWithFocusedEvent` を取得可能
+  - `BuildAiRequestForActiveEvent` で Claude API 等へ送る前段の入力を取得可能
 - `AGreeislandDebugHud`
   - `DebugHudWidgetClass` を生成してViewportへ追加する `AHUD`
 - `AGreeislandDebugGameMode`
@@ -89,6 +90,7 @@
 - `LastActionResult`
 - `FocusedEventId`
 - `FocusedEventDisplayName`
+- `LastBuiltAiRequest`
 
 更新通知:
 
@@ -103,6 +105,7 @@
 4. `OwnedCardViewData` に starter cards が出る
 5. `EventViewData` に次イベントが解放される
 6. イベント地点へ近づくと `FocusedEventDisplayName` に対象名が出る
+7. `BuildAiRequestForActiveEvent` で `AllowedRewardCardIds` や `PlayerChoice` を含むAI GM入力を確認できる
 
 レベル配置ベースで進める場合:
 
