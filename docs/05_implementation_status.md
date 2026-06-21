@@ -31,6 +31,7 @@
 - 敗北復帰とAI反映のスモークテスト
 - クエスト状態同期とゾーンクリア判定
 - クエスト/クリア/保存復元の更新テスト
+- 1ゾーンMVP一周の統合スモークテスト
 - GameInstanceSubsystem ベースのランタイム接続層
 - UMG向け UI snapshot / playable card 取得API
 - Blueprint向け card/event view data 取得API
@@ -142,6 +143,16 @@ python3 scripts/validate_events/session_flow_smoke_test.py
 
 ```text
 OK: session flow smoke tests passed
+```
+
+```bash
+python3 scripts/validate_events/mvp_full_run_smoke_test.py
+```
+
+結果:
+
+```text
+OK: MVP full run smoke tests passed
 ```
 
 ```bash

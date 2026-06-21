@@ -11,6 +11,7 @@ python3 scripts/validate_cards/ai_gm_smoke_test.py
 python3 scripts/validate_events/ai_fallback_smoke_test.py
 python3 scripts/validate_events/zone_flow_smoke_test.py
 python3 scripts/validate_events/session_flow_smoke_test.py
+python3 scripts/validate_events/mvp_full_run_smoke_test.py
 python3 scripts/validate_events/combat_resolution_smoke_test.py
 python3 scripts/validate_events/defeat_resolution_smoke_test.py
 python3 scripts/validate_events/ai_session_apply_smoke_test.py
