@@ -20,6 +20,13 @@ class UnrealTooling:
     uht_binary: Path | None
 
 
+@dataclass(frozen=True)
+class ReadinessItem:
+    label: str
+    ok: bool
+    detail: str
+
+
 def repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
@@ -132,6 +139,68 @@ def build_commands(tooling: UnrealTooling) -> dict[str, list[str] | None]:
     return commands
 
 
+def collect_readiness(tooling: UnrealTooling) -> list[ReadinessItem]:
+    items: list[ReadinessItem] = []
+    project = uproject_path()
+    items.append(
+        ReadinessItem(
+            label="uproject exists",
+            ok=project.exists(),
+            detail=str(project),
+        )
+    )
+
+    required_paths = [
+        repo_root() / "UnrealProject" / "Source" / "Greeisland" / "Greeisland.Build.cs",
+        repo_root() / "UnrealProject" / "Source" / "Greeisland.Target.cs",
+        repo_root() / "UnrealProject" / "Source" / "GreeislandEditor.Target.cs",
+        repo_root() / "UnrealProject" / "Config" / "DefaultGame.ini",
+        repo_root() / "UnrealProject" / "Config" / "DefaultInput.ini",
+        repo_root() / "data" / "cards" / "cards.mvp.json",
+        repo_root() / "data" / "events" / "events.mvp.json",
+    ]
+    for required_path in required_paths:
+        items.append(
+            ReadinessItem(
+                label=f"path exists: {required_path.name}",
+                ok=required_path.exists(),
+                detail=str(required_path),
+            )
+        )
+
+    items.extend(
+        [
+            ReadinessItem(
+                label="engine root detected",
+                ok=tooling.engine_root is not None,
+                detail=str(tooling.engine_root) if tooling.engine_root else "Set UE5_ROOT or install UE5.8",
+            ),
+            ReadinessItem(
+                label="UnrealEditor detected",
+                ok=tooling.editor_binary is not None,
+                detail=str(tooling.editor_binary) if tooling.editor_binary else "UnrealEditor binary not found",
+            ),
+            ReadinessItem(
+                label="GenerateProjectFiles available",
+                ok=tooling.projectfiles_script is not None,
+                detail=str(tooling.projectfiles_script) if tooling.projectfiles_script else "GenerateProjectFiles.sh not found",
+            ),
+            ReadinessItem(
+                label="Build.sh available",
+                ok=tooling.build_script is not None,
+                detail=str(tooling.build_script) if tooling.build_script else "Build.sh not found",
+            ),
+            ReadinessItem(
+                label="UnrealHeaderTool available",
+                ok=tooling.uht_binary is not None,
+                detail=str(tooling.uht_binary) if tooling.uht_binary else "UnrealHeaderTool not found",
+            ),
+        ]
+    )
+
+    return items
+
+
 def print_plan(tooling: UnrealTooling) -> int:
     commands = build_commands(tooling)
     print(f"Repo: {repo_root()}")
@@ -153,6 +222,30 @@ def print_plan(tooling: UnrealTooling) -> int:
     return 0
 
 
+def print_doctor(tooling: UnrealTooling) -> int:
+    print_plan(tooling)
+    print("")
+    print("Readiness:")
+    for item in collect_readiness(tooling):
+        status = "OK" if item.ok else "MISSING"
+        print(f"- [{status}] {item.label}: {item.detail}")
+
+    print("")
+    print("Suggested next steps:")
+    commands = build_commands(tooling)
+    if tooling.engine_root is None:
+        print("- Install UE5.8 or set UE5_ROOT / UNREAL_ENGINE_ROOT, then rerun this doctor.")
+    else:
+        if commands["projectfiles"]:
+            print(f"- Generate project files: {' '.join(commands['projectfiles'])}")
+        if commands["build_editor"]:
+            print(f"- Build editor target: {' '.join(commands['build_editor'])}")
+        if commands["open_editor"]:
+            print(f"- Open editor: {' '.join(commands['open_editor'])}")
+
+    return 0
+
+
 def run_named_command(tooling: UnrealTooling, action: str) -> int:
     commands = build_commands(tooling)
     command = commands.get(action)
@@ -169,7 +262,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--action",
-        choices=("print-plan", "projectfiles", "build-editor", "build-game", "open-editor"),
+        choices=("doctor", "print-plan", "projectfiles", "build-editor", "build-game", "open-editor"),
         default="print-plan",
         help="Action to run. Defaults to printing the resolved Unreal commands.",
     )
@@ -180,6 +273,8 @@ def main() -> int:
     args = parse_args()
     tooling = detect_tooling()
 
+    if args.action == "doctor":
+        return print_doctor(tooling)
     if args.action == "print-plan":
         return print_plan(tooling)
     if args.action == "projectfiles":

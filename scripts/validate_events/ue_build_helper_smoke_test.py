@@ -51,6 +51,7 @@ def main() -> int:
             uht_binary=uht_binary,
         )
         commands = helper.build_commands(tooling)
+        readiness = helper.collect_readiness(tooling)
 
         assert_true(commands["projectfiles"] is not None, "projectfiles command exists")
         assert_true(commands["build_editor"] is not None, "editor build command exists")
@@ -60,6 +61,8 @@ def main() -> int:
         assert_equal(commands["build_game"][1], "Greeisland", "game target name")
         assert_true(any("Greeisland.uproject" in token for token in commands["projectfiles"]), "projectfiles includes uproject")
         assert_equal(commands["open_editor"][0], str(editor_bin), "open editor uses binary")
+        assert_true(any(item.label == "Build.sh available" and item.ok for item in readiness), "readiness sees Build.sh")
+        assert_true(any(item.label == "UnrealEditor detected" and item.ok for item in readiness), "readiness sees editor")
 
     print("OK: UE build helper smoke tests passed")
     return 0

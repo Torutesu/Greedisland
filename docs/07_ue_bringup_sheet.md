@@ -28,6 +28,12 @@ UE が入っているマシンでは、次のコマンドで `projectfiles / bui
 python3 scripts/ue_build_helper.py --action print-plan
 ```
 
+不足ツールも含めて一気に見たいときは:
+
+```bash
+python3 scripts/ue_build_helper.py --action doctor
+```
+
 ## 1. 作る Blueprint アセット
 
 `UGreeislandDebugHudWidget.GetRecommendedBlueprintAssets()` の返り値と同じ内容。

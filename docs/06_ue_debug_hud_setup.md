@@ -12,6 +12,8 @@
 
 UE が入っている環境に持っていったら、`python3 scripts/ue_build_helper.py --action print-plan` で `GenerateProjectFiles.sh` / `Build.sh` / `UnrealEditor` の解決結果を先に確認できる。
 
+`python3 scripts/ue_build_helper.py --action doctor` を使うと、見つかっていないツールと次に叩くべきコマンドをまとめて出せる。
+
 ## すでに用意されているC++クラス
 
 - `UGreeislandGameSubsystem`
