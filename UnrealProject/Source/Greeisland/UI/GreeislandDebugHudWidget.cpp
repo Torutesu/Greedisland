@@ -40,6 +40,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
         EventViewData.Reset();
         RefreshBootstrapDiagnostics();
         RefreshFocusedEventPresentation();
+        BuildWalkthroughProgress();
         OnPresentationUpdated();
         return;
     }
@@ -51,6 +52,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
     Subsystem->BuildEventViewData(EventViewData);
     RefreshBootstrapDiagnostics();
     RefreshFocusedEventPresentation();
+    BuildWalkthroughProgress();
     OnPresentationUpdated();
 }
 
@@ -320,6 +322,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudChecklist()
     AddChecklistItem(TEXT("Lists"), TEXT("Recent Log Lines"), TEXT("CurrentSnapshot.RecentLogLines"));
     AddChecklistItem(TEXT("Lists"), TEXT("Expected Event Placements"), TEXT("LastBootstrapDiagnostics.ExpectedEventPlacements"));
     AddChecklistItem(TEXT("Lists"), TEXT("Expected Event Route"), TEXT("LastBootstrapDiagnostics.ExpectedEventRoute"));
+    AddChecklistItem(TEXT("Lists"), TEXT("Walkthrough Progress"), TEXT("WalkthroughProgress"));
     AddChecklistItem(TEXT("Actions"), TEXT("Bootstrap Session"), TEXT("BootstrapSessionFromActor"));
     AddChecklistItem(TEXT("Actions"), TEXT("Initialize New Session"), TEXT("InitializeNewSession"));
     AddChecklistItem(TEXT("Actions"), TEXT("Restore Session"), TEXT("RestoreSession"));
@@ -410,7 +413,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedBlueprintAssets()
     AddBlueprintAsset(
         TEXT("BP_GreeislandDebugHudWidget"),
         TEXT("UGreeislandDebugHudWidget"),
-        TEXT("RecommendedHudChecklist / RecommendedWalkthrough / LastBootstrapDiagnostics を表示する"));
+        TEXT("RecommendedHudChecklist / RecommendedWalkthrough / WalkthroughProgress / LastBootstrapDiagnostics を表示する"));
     AddBlueprintAsset(
         TEXT("BP_GreeislandDebugHud"),
         TEXT("AGreeislandDebugHud"),
@@ -431,6 +434,144 @@ void UGreeislandDebugHudWidget::BuildRecommendedBlueprintAssets()
         TEXT("BP_GreeislandDebugCharacter"),
         TEXT("AGreeislandDebugCharacter"),
         TEXT("必要なら見た目メッシュを差し込み、WASD / Mouse / E 動作を確認する"));
+}
+
+void UGreeislandDebugHudWidget::BuildWalkthroughProgress()
+{
+    WalkthroughProgress.Reset();
+
+    bool bAssignedCurrentFocus = false;
+
+    auto AddProgress =
+        [this, &bAssignedCurrentFocus](
+            int32 Order,
+            const FString& Label,
+            FName EventId,
+            bool bCompleted,
+            bool bEventAvailable,
+            const FString& Detail)
+    {
+        FGreeislandWalkthroughStepState StepState;
+        StepState.Order = Order;
+        StepState.Label = Label;
+        StepState.EventId = EventId;
+        StepState.bCompleted = bCompleted;
+        StepState.bEventAvailable = bEventAvailable;
+        StepState.bCurrentFocus = !bCompleted && !bAssignedCurrentFocus;
+        StepState.StatusLabel = bCompleted
+            ? TEXT("Completed")
+            : (StepState.bCurrentFocus ? TEXT("Next Up") : (bEventAvailable ? TEXT("Available") : TEXT("Locked")));
+        StepState.Detail = Detail;
+        WalkthroughProgress.Add(StepState);
+
+        if (StepState.bCurrentFocus)
+        {
+            bAssignedCurrentFocus = true;
+        }
+    };
+
+    const bool bBootstrapOk =
+        CurrentSnapshot.bHasInitializedSession &&
+        LastBootstrapDiagnostics.Issues.Num() == 0;
+    AddProgress(
+        1,
+        TEXT("Bootstrap Session"),
+        NAME_None,
+        bBootstrapOk,
+        CurrentSnapshot.bHasInitializedSession,
+        bBootstrapOk
+            ? TEXT("Session initialized and bootstrap diagnostics are clean.")
+            : (CurrentSnapshot.bHasInitializedSession
+                ? TEXT("Session exists, but bootstrap diagnostics still report issues.")
+                : TEXT("Run BootstrapSessionFromActor or InitializeNewSession first.")));
+
+    const bool bWakeCacheDone =
+        HasCompletedEvent(TEXT("event_wake_cache_001")) ||
+        (HasOwnedCard(TEXT("act_strike_001")) &&
+         HasOwnedCard(TEXT("act_guard_001")) &&
+         HasOwnedCard(TEXT("act_patch_heal_001")) &&
+         HasOwnedCard(TEXT("act_draw_001")));
+    AddProgress(
+        2,
+        TEXT("Wake Cache"),
+        TEXT("event_wake_cache_001"),
+        bWakeCacheDone,
+        CurrentSnapshot.AvailableEventIds.Contains(TEXT("event_wake_cache_001")),
+        bWakeCacheDone
+            ? TEXT("Starter combat cards are in the collection.")
+            : TEXT("Resolve the opening treasure event to seed the first hand tools."));
+
+    const bool bContractBrokerDone =
+        HasCompletedEvent(TEXT("event_contract_broker_001")) ||
+        (HasOwnedCard(TEXT("item_contract_001")) && HasOwnedCard(TEXT("rule_party_proxy_001")));
+    AddProgress(
+        3,
+        TEXT("Contract Broker"),
+        TEXT("event_contract_broker_001"),
+        bContractBrokerDone,
+        CurrentSnapshot.AvailableEventIds.Contains(TEXT("event_contract_broker_001")),
+        bContractBrokerDone
+            ? TEXT("Broker rewards are in the collection and the route split should be open.")
+            : TEXT("Talk to Rio and confirm contract/proxy rule rewards land correctly."));
+
+    const bool bSilentShrineDone =
+        HasCompletedEvent(TEXT("event_silent_shrine_001")) ||
+        CurrentSnapshot.CompletedQuestIds.Contains(TEXT("event_silent_shrine_001")) ||
+        HasOwnedCard(TEXT("con_silent_oath_001"));
+    AddProgress(
+        4,
+        TEXT("Silent Shrine"),
+        TEXT("event_silent_shrine_001"),
+        bSilentShrineDone,
+        CurrentSnapshot.AvailableEventIds.Contains(TEXT("event_silent_shrine_001")),
+        bSilentShrineDone
+            ? TEXT("Quest reward card set is present and the shrine path is complete.")
+            : TEXT("Resolve the quest event and confirm the oath/reward-hack cards appear."));
+
+    const bool bRidgeScoutDone =
+        HasCompletedEvent(TEXT("event_ridge_scout_001")) ||
+        HasOwnedCard(TEXT("con_four_party_001"));
+    AddProgress(
+        5,
+        TEXT("Ridge Scout Battle"),
+        TEXT("event_ridge_scout_001"),
+        bRidgeScoutDone,
+        CurrentSnapshot.AvailableEventIds.Contains(TEXT("event_ridge_scout_001")),
+        bRidgeScoutDone
+            ? TEXT("Battle reward landed, so the proxy gate path should be satisfiable.")
+            : (CurrentSnapshot.bCombatActive && CurrentSnapshot.ActiveEventId == TEXT("event_ridge_scout_001")
+                ? TEXT("Combat is live. Finish the battle and confirm the four-party condition reward.")
+                : TEXT("Start the first battle and verify combat -> reward resolution.")));
+
+    const bool bProxyGateDone =
+        HasCompletedEvent(TEXT("event_proxy_gate_001")) ||
+        HasOwnedCard(TEXT("key_zone_core_001")) ||
+        CurrentSnapshot.bZoneCleared;
+    AddProgress(
+        6,
+        TEXT("Proxy Gate"),
+        TEXT("event_proxy_gate_001"),
+        bProxyGateDone,
+        CurrentSnapshot.AvailableEventIds.Contains(TEXT("event_proxy_gate_001")),
+        bProxyGateDone
+            ? TEXT("Final key reward is owned and the zone clear condition is satisfied.")
+            : TEXT("Use the contract + proxy + four-party combo to open the final gate."));
+
+    const bool bSaveRestoreDone =
+        bProxyGateDone &&
+        LastBootstrapDiagnostics.bSaveExists &&
+        CurrentSnapshot.bHasInitializedSession;
+    AddProgress(
+        7,
+        TEXT("Save And Restore"),
+        NAME_None,
+        bSaveRestoreDone,
+        LastBootstrapDiagnostics.bSaveExists,
+        bSaveRestoreDone
+            ? TEXT("A save slot exists after the zone-clear path, so restore verification is ready.")
+            : (LastBootstrapDiagnostics.bSaveExists
+                ? TEXT("A save exists. Run RestoreSession and confirm the clear state remains intact.")
+                : TEXT("Run SaveSession after a meaningful state change, then verify RestoreSession.")));
 }
 
 void UGreeislandDebugHudWidget::RefreshBootstrapDiagnostics()
@@ -490,6 +631,34 @@ AGreeislandBootstrapActor* UGreeislandDebugHudWidget::FindBootstrapActor() const
     }
 
     return nullptr;
+}
+
+const FGreeislandEventViewData* UGreeislandDebugHudWidget::FindEventViewDataById(FName EventId) const
+{
+    for (const FGreeislandEventViewData& Event : EventViewData)
+    {
+        if (Event.EventId == EventId)
+        {
+            return &Event;
+        }
+    }
+
+    return nullptr;
+}
+
+bool UGreeislandDebugHudWidget::HasOwnedCard(FName CardId) const
+{
+    return CurrentSnapshot.OwnedCardIds.Contains(CardId);
+}
+
+bool UGreeislandDebugHudWidget::HasCompletedEvent(FName EventId) const
+{
+    if (const FGreeislandEventViewData* Event = FindEventViewDataById(EventId))
+    {
+        return Event->bCompleted;
+    }
+
+    return false;
 }
 
 FSessionActionResult UGreeislandDebugHudWidget::FailResult(const FString& Message)

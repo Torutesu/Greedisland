@@ -86,6 +86,7 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 - `CurrentSnapshot.RecentLogLines`
 - `LastBootstrapDiagnostics.ExpectedEventPlacements`
 - `LastBootstrapDiagnostics.ExpectedEventRoute`
+- `WalkthroughProgress`
 
 ### Actions
 
@@ -137,6 +138,15 @@ MVP の最小配置イメージ:
 - Depth 1: `event_contract_broker_001`
 - Depth 2: `event_silent_shrine_001`, `event_ridge_scout_001`
 - Depth 3: `event_proxy_gate_001`
+
+`WalkthroughProgress` は、HUD 上の作業順ガイドとして使う。
+
+- `bCurrentFocus == true`
+  - いま次に触るべき手順
+- `StatusLabel`
+  - `Completed` / `Next Up` / `Available` / `Locked`
+- `Detail`
+  - なにを確認すれば前に進むかの短いメモ
 
 ## 6. MVP 一周の確認順
 

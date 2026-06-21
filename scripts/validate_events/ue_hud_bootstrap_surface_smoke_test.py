@@ -15,9 +15,11 @@ def assert_true(value: bool, label: str, detail: object = None) -> None:
 def main() -> int:
     repo_root = Path(__file__).resolve().parents[2]
     widget_header = repo_root / "UnrealProject" / "Source" / "Greeisland" / "UI" / "GreeislandDebugHudWidget.h"
+    widget_cpp = repo_root / "UnrealProject" / "Source" / "Greeisland" / "UI" / "GreeislandDebugHudWidget.cpp"
     bootstrap_header = repo_root / "UnrealProject" / "Source" / "Greeisland" / "Actors" / "GreeislandBootstrapActor.h"
     bringup_sheet = repo_root / "docs" / "07_ue_bringup_sheet.md"
     text = widget_header.read_text(encoding="utf-8")
+    widget_cpp_text = widget_cpp.read_text(encoding="utf-8")
     bootstrap_text = bootstrap_header.read_text(encoding="utf-8")
 
     assert_true("BootstrapSessionFromActor" in text, "widget exposes bootstrap action")
@@ -29,6 +31,13 @@ def main() -> int:
     assert_true("FGreeislandWalkthroughStep" in text, "widget exposes walkthrough step struct")
     assert_true("GetRecommendedWalkthrough" in text, "widget exposes walkthrough getter")
     assert_true("RecommendedWalkthrough" in text, "widget stores walkthrough steps")
+    assert_true("FGreeislandWalkthroughStepState" in text, "widget exposes walkthrough progress struct")
+    assert_true("GetWalkthroughProgress" in text, "widget exposes walkthrough progress getter")
+    assert_true("WalkthroughProgress" in text, "widget stores walkthrough progress")
+    assert_true("BuildWalkthroughProgress" in text, "widget declares walkthrough progress builder")
+    assert_true("BuildWalkthroughProgress()" in widget_cpp_text, "widget implements walkthrough progress builder")
+    assert_true("StatusLabel" in widget_cpp_text, "walkthrough progress sets status labels")
+    assert_true("bCurrentFocus" in widget_cpp_text, "walkthrough progress sets focus state")
     assert_true("FGreeislandBlueprintAssetChecklistItem" in text, "widget exposes blueprint asset checklist struct")
     assert_true("GetRecommendedBlueprintAssets" in text, "widget exposes blueprint asset checklist getter")
     assert_true("RecommendedBlueprintAssets" in text, "widget stores blueprint asset checklist")

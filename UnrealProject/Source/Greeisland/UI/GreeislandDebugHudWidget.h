@@ -65,6 +65,36 @@ struct FGreeislandBlueprintAssetChecklistItem
     bool bRequiredForMinimalLoop = true;
 };
 
+USTRUCT(BlueprintType)
+struct FGreeislandWalkthroughStepState
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    int32 Order = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Label;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FName EventId;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bCompleted = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bCurrentFocus = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bEventAvailable = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString StatusLabel;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Detail;
+};
+
 UCLASS(Abstract, Blueprintable)
 class GREEISLAND_API UGreeislandDebugHudWidget : public UUserWidget
 {
@@ -234,6 +264,12 @@ public:
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const TArray<FGreeislandWalkthroughStepState>& GetWalkthroughProgress() const
+    {
+        return WalkthroughProgress;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
     const TArray<FGreeislandBlueprintAssetChecklistItem>& GetRecommendedBlueprintAssets() const
     {
         return RecommendedBlueprintAssets;
@@ -322,6 +358,9 @@ protected:
     TArray<FGreeislandWalkthroughStep> RecommendedWalkthrough;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    TArray<FGreeislandWalkthroughStepState> WalkthroughProgress;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     TArray<FGreeislandBlueprintAssetChecklistItem> RecommendedBlueprintAssets;
 
 private:
@@ -329,9 +368,13 @@ private:
     void BuildRecommendedHudChecklist();
     void BuildRecommendedWalkthrough();
     void BuildRecommendedBlueprintAssets();
+    void BuildWalkthroughProgress();
     void RefreshBootstrapDiagnostics();
     void RefreshFocusedEventPresentation();
     AGreeislandBootstrapActor* FindBootstrapActor() const;
+    const FGreeislandEventViewData* FindEventViewDataById(FName EventId) const;
+    bool HasOwnedCard(FName CardId) const;
+    bool HasCompletedEvent(FName EventId) const;
     FSessionActionResult FailResult(const FString& Message);
     FSessionActionResult HandleActionResult(const FSessionActionResult& ActionResult);
 };

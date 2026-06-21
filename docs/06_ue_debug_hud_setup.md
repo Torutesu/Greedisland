@@ -21,6 +21,7 @@
   - `BootstrapSessionFromActor` と `LastBootstrapDiagnostics` でレベル上の BootstrapActor をHUDから直接確認できる
   - `GetRecommendedHudChecklist` で最小HUDに置くべき表示項目とボタン一覧を取得できる
   - `GetRecommendedWalkthrough` で MVP 一周の推奨確認手順を取得できる
+  - `GetWalkthroughProgress` で MVP 一周の進捗状態を取得できる
   - `GetRecommendedBlueprintAssets` で作成すべき BP アセットと親クラス、最低設定を取得できる
 - `AGreeislandDebugHud`
   - `DebugHudWidgetClass` を生成してViewportへ追加する `AHUD`
@@ -138,6 +139,17 @@
 - `RequiredSetup`
 - `bRequiredForMinimalLoop`
 
+`WalkthroughProgress` の各要素では以下を読める:
+
+- `Order`
+- `Label`
+- `EventId`
+- `bCompleted`
+- `bCurrentFocus`
+- `bEventAvailable`
+- `StatusLabel`
+- `Detail`
+
 `LastBootstrapDiagnostics.ExpectedEventPlacements` の各要素では以下を読める:
 
 - `EventId`
@@ -181,9 +193,10 @@
 11. `LastBootstrapDiagnostics.MissingEventActorIds` を見れば、まだ置いていない `BP_GreeislandEventActor` が分かる
 12. `ExpectedEventPlacements` を一覧表示すれば、JSON定義順のマップ配置チェックリストとして使える
 13. `ExpectedEventRoute` を一覧表示すれば、Depth ごとの導線メモとしてそのまま使える
-14. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
-15. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
-16. `RecommendedBlueprintAssets` をそのまま表示すれば、作るべき BP アセット一覧として使える
+14. `WalkthroughProgress` を一覧表示すれば、次に触るべきMVP手順を HUD 上で自動表示できる
+15. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
+16. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
+17. `RecommendedBlueprintAssets` をそのまま表示すれば、作るべき BP アセット一覧として使える
 
 レベル配置ベースで進める場合:
 
