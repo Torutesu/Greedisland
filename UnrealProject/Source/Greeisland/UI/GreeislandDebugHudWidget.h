@@ -49,6 +49,9 @@ public:
     FSessionActionResult InteractWithFocusedEvent();
 
     UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
+    FSessionActionResult GrantDeveloperCard(FName CardId, bool bAddToDeck = true);
+
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
     bool BuildAiRequestForActiveEvent(const FString& PlayerChoice, FAiGmRequest& OutRequest);
 
     UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")

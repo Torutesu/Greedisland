@@ -205,6 +205,19 @@ FSessionActionResult UGreeislandGameSubsystem::ApplyAiResponse(
     return Result;
 }
 
+FSessionActionResult UGreeislandGameSubsystem::GrantDeveloperCard(FName CardId, bool bAddToDeck)
+{
+    FSessionActionResult Guard = EnsureInitialized();
+    if (!Guard.bSuccess)
+    {
+        return Guard;
+    }
+
+    FSessionActionResult Result = UGameSessionLibrary::GrantCardToSession(Session, CardId, bAddToDeck);
+    AppendRuntimeLogs(Result);
+    return Result;
+}
+
 bool UGreeislandGameSubsystem::BuildAiRequest(
     FName EventId,
     const FString& PlayerChoice,

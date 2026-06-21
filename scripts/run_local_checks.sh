@@ -12,6 +12,7 @@ python3 scripts/validate_events/session_flow_smoke_test.py
 python3 scripts/validate_events/combat_resolution_smoke_test.py
 python3 scripts/validate_events/defeat_resolution_smoke_test.py
 python3 scripts/validate_events/ai_session_apply_smoke_test.py
+python3 scripts/validate_events/developer_grant_smoke_test.py
 python3 scripts/validate_events/quest_clear_smoke_test.py
 python3 scripts/validate_events/save_restore_smoke_test.py
 python3 -m json.tool data/cards/cards.mvp.json >/dev/null

@@ -14,6 +14,7 @@
   - Blueprintで見た目を被せる前提の `UUserWidget`
   - 近接中の `FocusedEventId` / `FocusedEventDisplayName` と `InteractWithFocusedEvent` を取得可能
   - `BuildAiRequestForActiveEvent` で Claude API 等へ送る前段の入力を取得可能
+  - `GrantDeveloperCard` で任意カードを開発用に所持/デッキへ注入できる
 - `AGreeislandDebugHud`
   - `DebugHudWidgetClass` を生成してViewportへ追加する `AHUD`
 - `AGreeislandDebugGameMode`
@@ -77,6 +78,7 @@
   - `ResolveActiveEvent`
   - `StartCombatForActiveEvent`
   - `RunEnemyTurn`
+  - `GrantDeveloperCard`
 
 ## Blueprintで使うデータ
 

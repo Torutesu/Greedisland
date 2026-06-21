@@ -55,6 +55,12 @@ public:
         const FString& PlayerChoice);
 
     UFUNCTION(BlueprintCallable, Category = "Greeisland|Session")
+    static FSessionActionResult GrantCardToSession(
+        UPARAM(ref) FGreeislandGameSession& Session,
+        FName CardId,
+        bool bAddToDeck = true);
+
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Session")
     static FSessionActionResult RefreshQuestAndClearState(
         UPARAM(ref) FGreeislandGameSession& Session);
 

@@ -397,6 +397,43 @@ FSessionActionResult UGameSessionLibrary::ApplyAiResponseToSession(
     return Result;
 }
 
+FSessionActionResult UGameSessionLibrary::GrantCardToSession(
+    FGreeislandGameSession& Session,
+    FName CardId,
+    bool bAddToDeck)
+{
+    FSessionActionResult Result;
+
+    if (CardId.IsNone())
+    {
+        Result.Reasons.Add(TEXT("CardId is empty."));
+        return Result;
+    }
+
+    FCardDefinition Card;
+    if (!FindKnownCardById(Session, CardId, Card))
+    {
+        Result.Reasons.Add(FString::Printf(TEXT("Unknown card %s."), *CardId.ToString()));
+        return Result;
+    }
+
+    Session.OwnedCardIds.AddUnique(CardId);
+    if (bAddToDeck)
+    {
+        Session.DeckCardIds.AddUnique(CardId);
+    }
+
+    Result.bSuccess = true;
+    Result.LogLines.Add(FString::Printf(
+        TEXT("Granted developer card %s%s."),
+        *CardId.ToString(),
+        bAddToDeck ? TEXT(" and added it to the deck") : TEXT("")));
+
+    FSessionActionResult Refresh = RefreshQuestAndClearState(Session);
+    Result.LogLines.Append(Refresh.LogLines);
+    return Result;
+}
+
 bool UGameSessionLibrary::BuildAiRequestForEvent(
     const FGreeislandGameSession& Session,
     FName EventId,

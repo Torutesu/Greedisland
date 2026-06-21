@@ -159,6 +159,9 @@ public:
         const FAiGmResponse& Response,
         const FString& PlayerChoice);
 
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Runtime")
+    FSessionActionResult GrantDeveloperCard(FName CardId, bool bAddToDeck = true);
+
     UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
     bool BuildAiRequest(
         FName EventId,

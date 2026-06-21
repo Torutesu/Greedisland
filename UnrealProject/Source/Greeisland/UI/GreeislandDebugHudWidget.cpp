@@ -152,6 +152,17 @@ FSessionActionResult UGreeislandDebugHudWidget::InteractWithFocusedEvent()
     return HandleActionResult(EventActor->TriggerEvent());
 }
 
+FSessionActionResult UGreeislandDebugHudWidget::GrantDeveloperCard(FName CardId, bool bAddToDeck)
+{
+    UGreeislandGameSubsystem* Subsystem = GetGreeislandSubsystem();
+    if (!Subsystem)
+    {
+        return HandleActionResult(FailResult(TEXT("Game subsystem is unavailable.")));
+    }
+
+    return HandleActionResult(Subsystem->GrantDeveloperCard(CardId, bAddToDeck));
+}
+
 bool UGreeislandDebugHudWidget::BuildAiRequestForActiveEvent(
     const FString& PlayerChoice,
     FAiGmRequest& OutRequest)
