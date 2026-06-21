@@ -5,6 +5,7 @@
 #include "Characters/GreeislandDebugCharacter.h"
 #include "EngineUtils.h"
 #include "Engine/GameInstance.h"
+#include "GameFramework/Pawn.h"
 #include "Runtime/GreeislandProjectSettings.h"
 
 void UGreeislandDebugHudWidget::NativeConstruct()
@@ -38,8 +39,10 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
         OwnedCardViewData.Reset();
         HandCardViewData.Reset();
         EventViewData.Reset();
+        EventActorStatusViewData.Reset();
         RefreshBootstrapDiagnostics();
         RefreshFocusedEventPresentation();
+        BuildEventActorStatusViewData();
         BuildWalkthroughProgress();
         OnPresentationUpdated();
         return;
@@ -52,6 +55,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
     Subsystem->BuildEventViewData(EventViewData);
     RefreshBootstrapDiagnostics();
     RefreshFocusedEventPresentation();
+    BuildEventActorStatusViewData();
     BuildWalkthroughProgress();
     OnPresentationUpdated();
 }
@@ -322,6 +326,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudChecklist()
     AddChecklistItem(TEXT("Lists"), TEXT("Recent Log Lines"), TEXT("CurrentSnapshot.RecentLogLines"));
     AddChecklistItem(TEXT("Lists"), TEXT("Expected Event Placements"), TEXT("LastBootstrapDiagnostics.ExpectedEventPlacements"));
     AddChecklistItem(TEXT("Lists"), TEXT("Expected Event Route"), TEXT("LastBootstrapDiagnostics.ExpectedEventRoute"));
+    AddChecklistItem(TEXT("Lists"), TEXT("Event Actor Status"), TEXT("EventActorStatusViewData"));
     AddChecklistItem(TEXT("Lists"), TEXT("Walkthrough Progress"), TEXT("WalkthroughProgress"));
     AddChecklistItem(TEXT("Actions"), TEXT("Bootstrap Session"), TEXT("BootstrapSessionFromActor"));
     AddChecklistItem(TEXT("Actions"), TEXT("Initialize New Session"), TEXT("InitializeNewSession"));
@@ -413,7 +418,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedBlueprintAssets()
     AddBlueprintAsset(
         TEXT("BP_GreeislandDebugHudWidget"),
         TEXT("UGreeislandDebugHudWidget"),
-        TEXT("RecommendedHudChecklist / RecommendedWalkthrough / WalkthroughProgress / LastBootstrapDiagnostics を表示する"));
+        TEXT("RecommendedHudChecklist / RecommendedWalkthrough / WalkthroughProgress / EventActorStatusViewData / LastBootstrapDiagnostics を表示する"));
     AddBlueprintAsset(
         TEXT("BP_GreeislandDebugHud"),
         TEXT("AGreeislandDebugHud"),
@@ -574,6 +579,89 @@ void UGreeislandDebugHudWidget::BuildWalkthroughProgress()
                 : TEXT("Run SaveSession after a meaningful state change, then verify RestoreSession.")));
 }
 
+void UGreeislandDebugHudWidget::BuildEventActorStatusViewData()
+{
+    EventActorStatusViewData.Reset();
+
+    UWorld* World = GetWorld();
+    if (!World)
+    {
+        return;
+    }
+
+    const APawn* OwningPawn = GetOwningPlayerPawn();
+    TMap<FName, int32> PlacementCounts;
+    TMap<FName, float> NearestDistanceByEventId;
+
+    for (TActorIterator<AGreeislandEventActor> It(World); It; ++It)
+    {
+        const AGreeislandEventActor* EventActor = *It;
+        if (!EventActor)
+        {
+            continue;
+        }
+
+        const FName EventId = EventActor->GetEventId();
+        if (EventId.IsNone())
+        {
+            continue;
+        }
+
+        PlacementCounts.FindOrAdd(EventId) += 1;
+
+        if (OwningPawn)
+        {
+            const float Distance = FVector::Distance(EventActor->GetActorLocation(), OwningPawn->GetActorLocation());
+            float& NearestDistance = NearestDistanceByEventId.FindOrAdd(EventId);
+            if (NearestDistance <= 0.0f || Distance < NearestDistance)
+            {
+                NearestDistance = Distance;
+            }
+        }
+    }
+
+    for (const FGreeislandEventViewData& EventView : EventViewData)
+    {
+        FGreeislandEventActorStatusViewData Status;
+        Status.EventId = EventView.EventId;
+        Status.DisplayName = EventView.DisplayName;
+        switch (EventView.Type)
+        {
+            case EExplorationEventType::Battle:
+                Status.EventType = TEXT("Battle");
+                break;
+            case EExplorationEventType::Treasure:
+                Status.EventType = TEXT("Treasure");
+                break;
+            case EExplorationEventType::Npc:
+                Status.EventType = TEXT("Npc");
+                break;
+            case EExplorationEventType::Quest:
+                Status.EventType = TEXT("Quest");
+                break;
+            case EExplorationEventType::KeyGate:
+                Status.EventType = TEXT("KeyGate");
+                break;
+            default:
+                Status.EventType = TEXT("Unknown");
+                break;
+        }
+
+        Status.PlacementCount = PlacementCounts.FindRef(EventView.EventId);
+        Status.bHasActorPlacement = Status.PlacementCount > 0;
+        Status.bAvailable = EventView.bAvailable;
+        Status.bCompleted = EventView.bCompleted;
+        Status.bIsActive = EventView.bIsActive;
+        Status.bIsFocused = bHasFocusedEvent && FocusedEventId == EventView.EventId;
+        Status.bIsInteractableNow = Status.bAvailable && Status.bIsFocused;
+        Status.NearestDistance = NearestDistanceByEventId.Contains(EventView.EventId)
+            ? NearestDistanceByEventId.FindRef(EventView.EventId)
+            : -1.0f;
+        Status.StatusSummary = BuildEventActorStatusSummary(Status);
+        EventActorStatusViewData.Add(Status);
+    }
+}
+
 void UGreeislandDebugHudWidget::RefreshBootstrapDiagnostics()
 {
     LastBootstrapDiagnostics = FGreeislandBootstrapDiagnostics();
@@ -659,6 +747,41 @@ bool UGreeislandDebugHudWidget::HasCompletedEvent(FName EventId) const
     }
 
     return false;
+}
+
+FString UGreeislandDebugHudWidget::BuildEventActorStatusSummary(
+    const FGreeislandEventActorStatusViewData& Status) const
+{
+    TArray<FString> Parts;
+
+    Parts.Add(Status.bHasActorPlacement
+        ? FString::Printf(TEXT("placed x%d"), Status.PlacementCount)
+        : TEXT("missing actor"));
+    Parts.Add(Status.bCompleted
+        ? TEXT("completed")
+        : (Status.bAvailable ? TEXT("available") : TEXT("locked")));
+
+    if (Status.bIsActive)
+    {
+        Parts.Add(TEXT("active"));
+    }
+
+    if (Status.bIsFocused)
+    {
+        Parts.Add(TEXT("focused"));
+    }
+
+    if (Status.bIsInteractableNow)
+    {
+        Parts.Add(TEXT("interactable"));
+    }
+
+    if (Status.NearestDistance >= 0.0f)
+    {
+        Parts.Add(FString::Printf(TEXT("dist %.0f"), Status.NearestDistance));
+    }
+
+    return FString::Join(Parts, TEXT(" | "));
 }
 
 FSessionActionResult UGreeislandDebugHudWidget::FailResult(const FString& Message)

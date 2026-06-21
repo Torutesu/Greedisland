@@ -86,6 +86,7 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 - `CurrentSnapshot.RecentLogLines`
 - `LastBootstrapDiagnostics.ExpectedEventPlacements`
 - `LastBootstrapDiagnostics.ExpectedEventRoute`
+- `EventActorStatusViewData`
 - `WalkthroughProgress`
 
 ### Actions
@@ -147,6 +148,17 @@ MVP の最小配置イメージ:
   - `Completed` / `Next Up` / `Available` / `Locked`
 - `Detail`
   - なにを確認すれば前に進むかの短いメモ
+
+`EventActorStatusViewData` は、レベル配置とセッション進行の照合に使う。
+
+- `bHasActorPlacement == false`
+  - JSON 上は存在するがレベルに置けていない
+- `bAvailable == true` かつ `bIsFocused == false`
+  - 進行上は触れるはずだが、いま近くにいない
+- `bIsInteractableNow == true`
+  - そのまま `E` で進められる候補
+- `StatusSummary`
+  - 一覧でざっと見る用の短い状態文字列
 
 ## 6. MVP 一周の確認順
 

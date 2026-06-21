@@ -95,6 +95,48 @@ struct FGreeislandWalkthroughStepState
     FString Detail;
 };
 
+USTRUCT(BlueprintType)
+struct FGreeislandEventActorStatusViewData
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FName EventId;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FText DisplayName;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString EventType;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    int32 PlacementCount = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bHasActorPlacement = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bAvailable = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bCompleted = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bIsActive = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bIsFocused = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bIsInteractableNow = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    float NearestDistance = -1.0f;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString StatusSummary;
+};
+
 UCLASS(Abstract, Blueprintable)
 class GREEISLAND_API UGreeislandDebugHudWidget : public UUserWidget
 {
@@ -189,6 +231,12 @@ public:
     const TArray<FGreeislandEventViewData>& GetEventViewData() const
     {
         return EventViewData;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const TArray<FGreeislandEventActorStatusViewData>& GetEventActorStatusViewData() const
+    {
+        return EventActorStatusViewData;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
@@ -322,6 +370,9 @@ protected:
     TArray<FGreeislandEventViewData> EventViewData;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    TArray<FGreeislandEventActorStatusViewData> EventActorStatusViewData;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     FSessionActionResult LastActionResult;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
@@ -369,12 +420,14 @@ private:
     void BuildRecommendedWalkthrough();
     void BuildRecommendedBlueprintAssets();
     void BuildWalkthroughProgress();
+    void BuildEventActorStatusViewData();
     void RefreshBootstrapDiagnostics();
     void RefreshFocusedEventPresentation();
     AGreeislandBootstrapActor* FindBootstrapActor() const;
     const FGreeislandEventViewData* FindEventViewDataById(FName EventId) const;
     bool HasOwnedCard(FName CardId) const;
     bool HasCompletedEvent(FName EventId) const;
+    FString BuildEventActorStatusSummary(const FGreeislandEventActorStatusViewData& Status) const;
     FSessionActionResult FailResult(const FString& Message);
     FSessionActionResult HandleActionResult(const FSessionActionResult& ActionResult);
 };
