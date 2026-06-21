@@ -37,9 +37,11 @@
 - Blueprint被せ前提のデバッグHUD UUserWidget 足場
 - ViewportへデバッグHUDを自動表示するAHUD足場
 - Debug PlayerController / Debug GameMode とUE接続手順
+- Debug Character と最小入力マッピング
 - UnrealProject/Config の初期GameMode設定
 - DeveloperSettings 経由のDebug HUD設定
 - レベル配置用 BootstrapActor / EventActor
+- EventActor の近接インタラクト / オーバーラップ発火補助
 - Unreal C++カード型定義
 - Unreal C++カードJSONローダー
 - Unreal C++ルール解決器 v0

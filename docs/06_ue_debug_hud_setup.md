@@ -15,9 +15,11 @@
 - `AGreeislandDebugHud`
   - `DebugHudWidgetClass` を生成してViewportへ追加する `AHUD`
 - `AGreeislandDebugGameMode`
-  - `PlayerControllerClass` と `HUDClass` をデバッグ向けに設定した `AGameModeBase`
+  - `DefaultPawnClass`、`PlayerControllerClass`、`HUDClass` をデバッグ向けに設定した `AGameModeBase`
 - `AGreeislandDebugPlayerController`
   - マウス表示とクリックを有効にした `APlayerController`
+- `AGreeislandDebugCharacter`
+  - `WASD` 移動、マウス視点、`E` インタラクトを持つ最小プレイアブルキャラクター
 
 ## UE側で作るもの
 
@@ -40,6 +42,10 @@
    - Parent Class: `AGreeislandEventActor`
    - Eventごとに複製して `EventId` を設定
 
+6. `BP_GreeislandDebugCharacter`
+   - Parent Class: `AGreeislandDebugCharacter`
+   - 必要ならメッシュやカメラ距離を調整
+
 ## World Settings / Project Settings
 
 最短では、対象マップの `World Settings` で `GameMode Override` を `BP_GreeislandDebugGameMode` にする。
@@ -49,6 +55,7 @@
 補足:
 
 - `UnrealProject/Config/DefaultGame.ini` では C++ の `AGreeislandDebugGameMode` が `GlobalDefaultGameMode` に設定済み
+- `UnrealProject/Config/DefaultInput.ini` では `WASD`、マウス視点、`E` インタラクトが設定済み
 - Blueprint版を使う場合は `Project Settings` または `World Settings` で `BP_GreeislandDebugGameMode` へ差し替える
 - `Project Settings > Game > Greeisland` では `CardJsonPath`、`EventJsonPath`、`SaveSlotName`、`DefaultOpeningDrawCount` などを変更できる
 
@@ -98,4 +105,5 @@
 1. `BP_GreeislandBootstrapActor` を1個置く
 2. `BP_GreeislandEventActor` をイベント地点ごとに置く
 3. それぞれの `EventId` を `data/events/events.mvp.json` に対応させる
-4. プレイヤー接触やボタン入力から `TriggerEvent` を呼ぶ
+4. `BP_GreeislandDebugCharacter` でマップを歩き、`E` でイベント地点を起動する
+5. 自動発火させたい地点は `BP_GreeislandEventActor` 側で `bAutoTriggerOnOverlap` を有効にする
