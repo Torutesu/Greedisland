@@ -10,6 +10,7 @@
 - [1ゾーンMVP 実装計画](docs/03_mvp_implementation_plan.md)
 - [Unreal Engine 5.8 / MCP 検証手順](docs/04_unreal_mcp_validation.md)
 - [実装ステータス](docs/05_implementation_status.md)
+- [UE5.8 Bring-up Sheet](docs/07_ue_bringup_sheet.md)
 
 ## Current Focus
 
@@ -34,6 +35,7 @@ Runtime entrypoint:
 - [AGreeislandEventActor](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Actors/GreeislandEventActor.h)
   `EventId` を持ち、探索イベントまたは戦闘開始をSubsystemへ委譲するレベル配置用Actor。オーバーラップ自動発火と近接インタラクトにも対応
 - [UE5.8 デバッグHUD接続手順](/Users/torutano/Documents/Greeisland/docs/06_ue_debug_hud_setup.md)
+- [UE5.8 Bring-up Sheet](/Users/torutano/Documents/Greeisland/docs/07_ue_bringup_sheet.md)
 
 Project config:
 

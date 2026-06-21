@@ -6,6 +6,8 @@
 
 このリポジトリのC++ロジックを、UE5.8上で最短で触れるようにする。
 
+最短で現物確認に入るときは、先に [UE5.8 Bring-up Sheet](/Users/torutano/Documents/Greeisland/docs/07_ue_bringup_sheet.md) を見ると流れを追いやすい。
+
 ## すでに用意されているC++クラス
 
 - `UGreeislandGameSubsystem`

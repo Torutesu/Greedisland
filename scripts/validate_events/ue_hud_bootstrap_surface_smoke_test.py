@@ -16,6 +16,7 @@ def main() -> int:
     repo_root = Path(__file__).resolve().parents[2]
     widget_header = repo_root / "UnrealProject" / "Source" / "Greeisland" / "UI" / "GreeislandDebugHudWidget.h"
     bootstrap_header = repo_root / "UnrealProject" / "Source" / "Greeisland" / "Actors" / "GreeislandBootstrapActor.h"
+    bringup_sheet = repo_root / "docs" / "07_ue_bringup_sheet.md"
     text = widget_header.read_text(encoding="utf-8")
     bootstrap_text = bootstrap_header.read_text(encoding="utf-8")
 
@@ -36,6 +37,7 @@ def main() -> int:
     assert_true("UnexpectedEventActorIds" in bootstrap_text, "bootstrap diagnostics expose unexpected events")
     assert_true("FGreeislandExpectedEventPlacement" in bootstrap_text, "bootstrap diagnostics expose placement checklist struct")
     assert_true("ExpectedEventPlacements" in bootstrap_text, "bootstrap diagnostics expose placement checklist array")
+    assert_true(bringup_sheet.exists(), "bring-up sheet exists", bringup_sheet)
 
     print("OK: UE HUD bootstrap surface smoke tests passed")
     return 0
