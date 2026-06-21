@@ -1,0 +1,326 @@
+{
+  "schemaVersion": 1,
+  "cardSetId": "mvp_001",
+  "cards": [
+    {
+      "cardId": "act_strike_001",
+      "displayName": "裂き打ち",
+      "kind": "Action",
+      "rarity": "Common",
+      "tags": ["attack", "battle_only"],
+      "playablePhases": ["Combat"],
+      "cost": {"energy": 1},
+      "constraints": [],
+      "effects": [
+        {
+          "type": "Damage",
+          "amount": 6,
+          "duration": {"type": "Instant", "value": 0},
+          "priority": 10
+        }
+      ],
+      "flavorText": "迷いを裂く、最初の一撃。"
+    },
+    {
+      "cardId": "act_guard_001",
+      "displayName": "身構え",
+      "kind": "Action",
+      "rarity": "Common",
+      "tags": ["defense", "battle_only"],
+      "playablePhases": ["Combat"],
+      "cost": {"energy": 1},
+      "constraints": [],
+      "effects": [
+        {
+          "type": "GainBlock",
+          "amount": 5,
+          "duration": {"type": "Instant", "value": 0},
+          "priority": 10
+        }
+      ],
+      "flavorText": "一呼吸ぶんだけ、世界の速度を落とす。"
+    },
+    {
+      "cardId": "act_patch_heal_001",
+      "displayName": "応急縫合",
+      "kind": "Action",
+      "rarity": "Common",
+      "tags": ["heal", "battle_only"],
+      "playablePhases": ["Combat"],
+      "cost": {"energy": 1},
+      "constraints": [],
+      "effects": [
+        {
+          "type": "Heal",
+          "amount": 4,
+          "duration": {"type": "Instant", "value": 0},
+          "priority": 10
+        }
+      ],
+      "flavorText": "完全ではない。だが次の一歩には足りる。"
+    },
+    {
+      "cardId": "act_draw_001",
+      "displayName": "思考の棚卸し",
+      "kind": "Action",
+      "rarity": "Common",
+      "tags": ["draw", "battle_only"],
+      "playablePhases": ["Combat"],
+      "cost": {"energy": 1},
+      "constraints": [],
+      "effects": [
+        {
+          "type": "DrawCards",
+          "amount": 2,
+          "duration": {"type": "Instant", "value": 0},
+          "priority": 10
+        }
+      ],
+      "flavorText": "使える手札は、いつも見えているものだけではない。"
+    },
+    {
+      "cardId": "act_battle_claim_001",
+      "displayName": "戦利品の先取り",
+      "kind": "Action",
+      "rarity": "Uncommon",
+      "tags": ["reward", "battle_only"],
+      "playablePhases": ["Combat"],
+      "cost": {"energy": 2},
+      "constraints": [],
+      "effects": [
+        {
+          "type": "ClaimReward",
+          "amount": 1,
+          "duration": {"type": "Instant", "value": 0},
+          "priority": 20
+        }
+      ],
+      "flavorText": "勝利の前に、勝利の取り分だけを確定させる。"
+    },
+    {
+      "cardId": "item_contract_001",
+      "displayName": "仮契約書",
+      "kind": "Item",
+      "rarity": "Uncommon",
+      "tags": ["contract", "npc", "party_proxy"],
+      "playablePhases": ["Exploration", "Dialogue"],
+      "cost": {"energy": 0},
+      "constraints": [],
+      "effects": [
+        {
+          "type": "AddStatus",
+          "statusId": "contracted_npc",
+          "duration": {"type": "Turns", "value": 3},
+          "priority": 10
+        }
+      ],
+      "flavorText": "署名欄の小ささに比べて、効力は妙に大きい。"
+    },
+    {
+      "cardId": "item_lucky_compass_001",
+      "displayName": "偏りの羅針盤",
+      "kind": "Item",
+      "rarity": "Uncommon",
+      "tags": ["item", "exploration", "reward"],
+      "playablePhases": ["Exploration"],
+      "cost": {"energy": 0},
+      "constraints": [],
+      "effects": [
+        {
+          "type": "ModifyRule",
+          "channel": "RewardMultiplier",
+          "operation": "AddValue",
+          "value": 1,
+          "duration": {"type": "Encounter", "value": 1},
+          "priority": 15
+        }
+      ],
+      "flavorText": "北ではなく、都合のいい方角を指す。"
+    },
+    {
+      "cardId": "item_null_charm_001",
+      "displayName": "空白のお守り",
+      "kind": "Item",
+      "rarity": "Rare",
+      "tags": ["item", "safety", "exploration"],
+      "playablePhases": ["Exploration", "Combat"],
+      "cost": {"energy": 0},
+      "constraints": [],
+      "effects": [
+        {
+          "type": "PreventFailure",
+          "amount": 1,
+          "duration": {"type": "Instant", "value": 0},
+          "priority": 30
+        }
+      ],
+      "flavorText": "失敗した事実だけを、そっと余白へ移す。"
+    },
+    {
+      "cardId": "rule_phase_bridge_001",
+      "displayName": "境界線の通行証",
+      "kind": "Rule",
+      "rarity": "Rare",
+      "tags": ["phase", "exploration", "exception"],
+      "playablePhases": ["Exploration"],
+      "cost": {"energy": 1},
+      "constraints": [
+        {
+          "type": "HasTagInCollection",
+          "tag": "contract",
+          "minCount": 1
+        }
+      ],
+      "effects": [
+        {
+          "type": "ModifyRule",
+          "channel": "CardPlayablePhase",
+          "operation": "AddPhase",
+          "targetTag": "battle_only",
+          "phase": "Exploration",
+          "duration": {"type": "Turns", "value": 1},
+          "priority": 50
+        }
+      ],
+      "flavorText": "町と戦場の境目を一歩だけ曖昧にする。"
+    },
+    {
+      "cardId": "rule_party_proxy_001",
+      "displayName": "代理参加",
+      "kind": "Rule",
+      "rarity": "Rare",
+      "tags": ["party", "contract", "exception"],
+      "playablePhases": ["Exploration", "Combat"],
+      "cost": {"energy": 1},
+      "constraints": [],
+      "effects": [
+        {
+          "type": "ModifyRule",
+          "channel": "PartyRequirement",
+          "operation": "AddMatchingTagCount",
+          "targetTag": "contract",
+          "value": 1,
+          "duration": {"type": "Encounter", "value": 1},
+          "priority": 60
+        }
+      ],
+      "flavorText": "その場にいない者も、契約の上では人数に数えられる。"
+    },
+    {
+      "cardId": "rule_reward_oath_001",
+      "displayName": "見返りの誓約",
+      "kind": "Rule",
+      "rarity": "Uncommon",
+      "tags": ["reward", "oath", "constraint_payoff"],
+      "playablePhases": ["Exploration", "Combat"],
+      "cost": {"energy": 1},
+      "constraints": [
+        {
+          "type": "HasStatus",
+          "statusId": "silent_oath"
+        }
+      ],
+      "effects": [
+        {
+          "type": "ModifyRule",
+          "channel": "RewardMultiplier",
+          "operation": "AddValue",
+          "value": 2,
+          "duration": {"type": "Encounter", "value": 1},
+          "priority": 45
+        }
+      ],
+      "flavorText": "不自由を選んだ者には、少しだけ多い取り分がある。"
+    },
+    {
+      "cardId": "rule_move_plus_001",
+      "displayName": "近道の定義",
+      "kind": "Rule",
+      "rarity": "Common",
+      "tags": ["move", "exploration"],
+      "playablePhases": ["Exploration"],
+      "cost": {"energy": 1},
+      "constraints": [],
+      "effects": [
+        {
+          "type": "ModifyRule",
+          "channel": "MoveCount",
+          "operation": "AddValue",
+          "value": 1,
+          "duration": {"type": "Turns", "value": 1},
+          "priority": 20
+        }
+      ],
+      "flavorText": "地図は変わらない。歩数の数え方だけが変わる。"
+    },
+    {
+      "cardId": "con_four_party_001",
+      "displayName": "四人の証明",
+      "kind": "Constraint",
+      "rarity": "Rare",
+      "tags": ["party", "gate", "constraint"],
+      "playablePhases": ["Exploration"],
+      "cost": {"energy": 0},
+      "constraints": [
+        {
+          "type": "EffectivePartySizeAtLeast",
+          "minCount": 4
+        }
+      ],
+      "effects": [
+        {
+          "type": "AddStatus",
+          "statusId": "four_party_proven",
+          "duration": {"type": "Encounter", "value": 1},
+          "priority": 40
+        }
+      ],
+      "flavorText": "人数とは、身体の数ではなく責任の数である。"
+    },
+    {
+      "cardId": "con_silent_oath_001",
+      "displayName": "沈黙の誓い",
+      "kind": "Constraint",
+      "rarity": "Uncommon",
+      "tags": ["oath", "silence", "constraint"],
+      "playablePhases": ["Exploration", "Combat"],
+      "cost": {"energy": 0},
+      "constraints": [
+        {
+          "type": "NotHasStatus",
+          "statusId": "silent_oath"
+        }
+      ],
+      "effects": [
+        {
+          "type": "AddStatus",
+          "statusId": "silent_oath",
+          "duration": {"type": "Turns", "value": 2},
+          "priority": 35
+        },
+        {
+          "type": "ModifyRule",
+          "channel": "RewardMultiplier",
+          "operation": "AddValue",
+          "value": 1,
+          "duration": {"type": "Turns", "value": 2},
+          "priority": 35
+        }
+      ],
+      "flavorText": "語らないことも、選択肢のひとつになる。"
+    },
+    {
+      "cardId": "key_zone_core_001",
+      "displayName": "島核の欠片",
+      "kind": "Key",
+      "rarity": "Key",
+      "tags": ["key", "zone_clear"],
+      "playablePhases": [],
+      "cost": {"energy": 0},
+      "constraints": [],
+      "effects": [],
+      "flavorText": "この小さな欠片が、島のルールを覚えている。"
+    }
+  ]
+}
+

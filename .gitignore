@@ -1,0 +1,42 @@
+# Unreal Engine generated files
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+
+# User/editor state
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+*.xcodeproj
+*.xcworkspace
+*.xcuserstate
+.vs/
+
+# Build artifacts
+*.dll
+*.dylib
+*.exe
+*.app
+*.ipa
+*.apk
+*.pak
+*.utoc
+*.ucas
+
+# Logs and local env
+*.log
+.env
+.env.*
+
+# OS/editor noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+

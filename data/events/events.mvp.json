@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "zoneId": "zone_mvp_island_001",
+  "displayName": "ひび割れた浮島",
+  "clearRequiredCardIds": ["key_zone_core_001"],
+  "events": [
+    {
+      "eventId": "event_wake_cache_001",
+      "type": "Treasure",
+      "displayName": "目覚めの隠し箱",
+      "description": "最初の足場に置かれた小さな箱。探索の基本カードを得る。",
+      "rewardCardIds": [
+        "act_strike_001",
+        "act_guard_001",
+        "act_patch_heal_001",
+        "act_draw_001"
+      ],
+      "requiredCardIds": [],
+      "nextEventIds": ["event_contract_broker_001"]
+    },
+    {
+      "eventId": "event_contract_broker_001",
+      "type": "Npc",
+      "displayName": "契約屋リオ",
+      "description": "門番を兼ねる契約屋。AI GM会話の最初の接続点。",
+      "npcId": "npc_rio_001",
+      "rewardCardIds": [
+        "item_contract_001",
+        "rule_phase_bridge_001",
+        "rule_party_proxy_001"
+      ],
+      "requiredCardIds": ["act_strike_001"],
+      "allowedAiRewardCardIds": ["item_contract_001"],
+      "nextEventIds": ["event_silent_shrine_001", "event_ridge_scout_001"]
+    },
+    {
+      "eventId": "event_silent_shrine_001",
+      "type": "Quest",
+      "displayName": "沈黙の小祠",
+      "description": "制約を報酬に変えるルールハックの導入地点。",
+      "rewardCardIds": [
+        "con_silent_oath_001",
+        "rule_reward_oath_001",
+        "item_lucky_compass_001"
+      ],
+      "requiredCardIds": ["item_contract_001"],
+      "nextEventIds": ["event_proxy_gate_001"]
+    },
+    {
+      "eventId": "event_ridge_scout_001",
+      "type": "Battle",
+      "displayName": "尾根の斥候",
+      "description": "最初の簡易戦闘。勝利すると強い条件カードを得る。",
+      "enemyId": "enemy_ridge_scout_001",
+      "enemyHp": 12,
+      "enemyAttack": 5,
+      "rewardCardIds": [
+        "act_battle_claim_001",
+        "con_four_party_001",
+        "rule_move_plus_001"
+      ],
+      "requiredCardIds": ["act_strike_001"],
+      "nextEventIds": ["event_proxy_gate_001"]
+    },
+    {
+      "eventId": "event_proxy_gate_001",
+      "type": "KeyGate",
+      "displayName": "代理人数の門",
+      "description": "四人条件と代理参加を使って開くMVPの最終門。",
+      "rewardCardIds": ["key_zone_core_001"],
+      "requiredCardIds": [
+        "con_four_party_001",
+        "item_contract_001",
+        "rule_party_proxy_001"
+      ],
+      "nextEventIds": []
+    }
+  ]
+}
+

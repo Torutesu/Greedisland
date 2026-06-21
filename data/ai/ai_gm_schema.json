@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://greeisland.local/schemas/ai_gm_response.schema.json",
+  "title": "AI GM Response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["speakerName", "dialogue", "intent", "allowedRewardCardIds", "difficultyHint"],
+  "properties": {
+    "speakerName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 48
+    },
+    "dialogue": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 420
+    },
+    "intent": {
+      "type": "string",
+      "enum": ["flavor", "quest_offer", "negotiation", "reward", "refusal"]
+    },
+    "proposedQuestId": {
+      "type": "string",
+      "pattern": "^quest_[a-z0-9_]+$"
+    },
+    "allowedRewardCardIds": {
+      "type": "array",
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]+_[a-z0-9_]+_[0-9]{3}$"
+      }
+    },
+    "difficultyHint": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    }
+  }
+}
+

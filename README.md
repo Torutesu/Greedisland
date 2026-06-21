@@ -1,0 +1,59 @@
+# Greeisland
+
+カードがゲームのルールを書き換える、AI GM付きカード探索RPGの企画・実装検証リポジトリ。
+
+## Documents
+
+- [プロジェクトブリーフ](docs/00_project_brief.md)
+- [要件定義](docs/01_requirements.md)
+- [カードシステム設計](docs/02_card_system_design.md)
+- [1ゾーンMVP 実装計画](docs/03_mvp_implementation_plan.md)
+- [Unreal Engine 5.8 / MCP 検証手順](docs/04_unreal_mcp_validation.md)
+- [実装ステータス](docs/05_implementation_status.md)
+
+## Current Focus
+
+最初のゴールは、UE5.8上で1ゾーン探索、簡易カードバトル、カードによるルール変更、AI GM会話をつないだMVPを作ること。
+
+MVPではオンライン経済、PvP、大規模ワールド、完成版品質の3Dアセットは対象外にする。
+
+Runtime entrypoint:
+
+- [UGreeislandGameSubsystem](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Runtime/GreeislandGameSubsystem.h)
+  `BuildUiSnapshot()`、`GetPlayableCombatCardIds()`、`BuildOwnedCardViewData()`、`BuildEventViewData()` でUMG向けの表示データを直接取得できる
+- [UGreeislandDebugHudWidget](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/UI/GreeislandDebugHudWidget.h)
+  Blueprintで見た目を被せるだけで、初期化、イベント解決、戦闘進行、保存復元を呼べるデバッグHUDのC++足場
+- [AGreeislandDebugHud](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/UI/GreeislandDebugHud.h)
+  `DebugHudWidgetClass` を指定すると BeginPlay でWidgetをViewportへ載せるHUDクラス
+- [AGreeislandDebugGameMode](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugGameMode.h)
+  `PlayerController` と `HUD` をデバッグ向けにまとめたGameMode足場
+- [UE5.8 デバッグHUD接続手順](/Users/torutano/Documents/Greeisland/docs/06_ue_debug_hud_setup.md)
+
+Project config:
+
+- [DefaultGame.ini](/Users/torutano/Documents/Greeisland/UnrealProject/Config/DefaultGame.ini)
+  C++の `AGreeislandDebugGameMode` をデフォルトGameModeに設定
+
+## Validation
+
+```bash
+./scripts/run_local_checks.sh
+```
+
+Individual checks:
+
+```bash
+python3 scripts/validate_cards/validate_cards.py data/cards/cards.mvp.json
+python3 scripts/validate_events/validate_events.py data/events/events.mvp.json
+python3 scripts/validate_cards/rule_smoke_test.py
+python3 scripts/validate_cards/combat_smoke_test.py
+python3 scripts/validate_cards/exploration_smoke_test.py
+python3 scripts/validate_cards/ai_gm_smoke_test.py
+python3 scripts/validate_events/zone_flow_smoke_test.py
+python3 scripts/validate_events/session_flow_smoke_test.py
+python3 scripts/validate_events/combat_resolution_smoke_test.py
+python3 scripts/validate_events/defeat_resolution_smoke_test.py
+python3 scripts/validate_events/ai_session_apply_smoke_test.py
+python3 scripts/validate_events/quest_clear_smoke_test.py
+python3 scripts/validate_events/save_restore_smoke_test.py
+```
