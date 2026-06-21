@@ -105,6 +105,21 @@ struct FGreeislandCardViewData
 
     UPROPERTY(BlueprintReadOnly)
     FString DetailSummary;
+
+    UPROPERTY(BlueprintReadOnly)
+    FString PrimaryActionId;
+
+    UPROPERTY(BlueprintReadOnly)
+    FString PrimaryActionLabel;
+
+    UPROPERTY(BlueprintReadOnly)
+    FName PrimaryActionNameArgument;
+
+    UPROPERTY(BlueprintReadOnly)
+    bool bHasPrimaryAction = false;
+
+    UPROPERTY(BlueprintReadOnly)
+    bool bPrimaryActionEnabled = false;
 };
 
 USTRUCT(BlueprintType)
@@ -138,6 +153,21 @@ struct FGreeislandEventViewData
 
     UPROPERTY(BlueprintReadOnly)
     FString DetailSummary;
+
+    UPROPERTY(BlueprintReadOnly)
+    FString PrimaryActionId;
+
+    UPROPERTY(BlueprintReadOnly)
+    FString PrimaryActionLabel;
+
+    UPROPERTY(BlueprintReadOnly)
+    FName PrimaryActionNameArgument;
+
+    UPROPERTY(BlueprintReadOnly)
+    bool bHasPrimaryAction = false;
+
+    UPROPERTY(BlueprintReadOnly)
+    bool bPrimaryActionEnabled = false;
 };
 
 UCLASS()

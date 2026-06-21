@@ -468,6 +468,15 @@ void UGreeislandGameSubsystem::BuildOwnedCardViewData(TArray<FGreeislandCardView
         }
         ViewData.DetailSummary = FString::Join(DetailParts, TEXT(" | "));
 
+        if (ViewData.bInHand)
+        {
+            ViewData.PrimaryActionId = TEXT("play_combat_card");
+            ViewData.PrimaryActionLabel = TEXT("Play Card");
+            ViewData.PrimaryActionNameArgument = ViewData.CardId;
+            ViewData.bHasPrimaryAction = true;
+            ViewData.bPrimaryActionEnabled = ViewData.bPlayableNow;
+        }
+
         OutCards.Add(ViewData);
     }
 }
@@ -518,6 +527,11 @@ void UGreeislandGameSubsystem::BuildHandCardViewData(TArray<FGreeislandCardViewD
             DetailParts.Add(ViewData.UnplayableReasons[0]);
         }
         ViewData.DetailSummary = FString::Join(DetailParts, TEXT(" | "));
+        ViewData.PrimaryActionId = TEXT("play_combat_card");
+        ViewData.PrimaryActionLabel = TEXT("Play Card");
+        ViewData.PrimaryActionNameArgument = ViewData.CardId;
+        ViewData.bHasPrimaryAction = true;
+        ViewData.bPrimaryActionEnabled = ViewData.bPlayableNow;
         OutCards.Add(ViewData);
     }
 }
@@ -574,6 +588,25 @@ void UGreeislandGameSubsystem::BuildEventViewData(TArray<FGreeislandEventViewDat
             DetailParts.Add(FString::Printf(TEXT("rewards %d"), Event.RewardCardIds.Num()));
         }
         ViewData.DetailSummary = FString::Join(DetailParts, TEXT(" | "));
+
+        if (ViewData.bAvailable && ViewData.bIsActive)
+        {
+            ViewData.bHasPrimaryAction = true;
+            if (Event.Type == EExplorationEventType::Battle)
+            {
+                ViewData.PrimaryActionId = TEXT("start_active_combat");
+                ViewData.PrimaryActionLabel = TEXT("Start Combat");
+                ViewData.bPrimaryActionEnabled = !Session.bCombatActive;
+            }
+            else
+            {
+                ViewData.PrimaryActionId = TEXT("resolve_active_event");
+                ViewData.PrimaryActionLabel = TEXT("Resolve Event");
+                ViewData.bPrimaryActionEnabled = true;
+            }
+            ViewData.PrimaryActionNameArgument = Event.EventId;
+        }
+
         OutEvents.Add(ViewData);
     }
 }

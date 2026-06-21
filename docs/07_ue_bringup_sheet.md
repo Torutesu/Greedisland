@@ -101,14 +101,17 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
   - タイトル: `DisplayName`
   - 補足1: `StateSummary`
   - 補足2: `DetailSummary`
+  - 行ボタン: `PrimaryActionLabel`
 - `OwnedCardViewData`
   - タイトル: `DisplayName`
   - 補足1: `StateSummary`
   - 補足2: `DetailSummary`
+  - 行ボタン: `PrimaryActionLabel` があるときだけ表示
 - `EventViewData`
   - タイトル: `DisplayName`
   - 補足1: `StatusSummary`
   - 補足2: `DetailSummary`
+  - 行ボタン: `PrimaryActionLabel` があるときだけ表示
 
 起動直後は `WalkthroughProgress` と `VerificationChecks` を先頭に置くと、どこで止まっているか見分けやすい。
 
@@ -161,6 +164,8 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
   - ボタンの識別子
 - `ExecuteHudActionById(ActionId, OptionalNameArgument, OptionalStringArgument, bOptionalFlag)`
   - Blueprint 側で action ごとの分岐を書かずに押下処理を流せる
+- `HandCardViewData[i].PrimaryActionId` / `EventViewData[i].PrimaryActionId`
+  - 行ごとのボタン押下をそのまま流せる
 - `grant_developer_card`
   - `OptionalNameArgument` を空にすると `DefaultDeveloperGrantCardId` を使う
 

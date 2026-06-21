@@ -50,6 +50,7 @@
 - HUD event actor status DTO
 - Blueprint asset checklist DTO
 - Runtime card/event summary strings for UI rows
+- Runtime card/event row action metadata for Blueprint buttons
 - GameInstanceSubsystem ベースのランタイム接続層
 - UMG向け UI snapshot / playable card 取得API
 - Blueprint向け card/event view data 取得API
