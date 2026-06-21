@@ -1,5 +1,6 @@
 #include "UI/GreeislandDebugHudWidget.h"
 
+#include "Algo/AnyOf.h"
 #include "Actors/GreeislandBootstrapActor.h"
 #include "Actors/GreeislandEventActor.h"
 #include "Characters/GreeislandDebugCharacter.h"
@@ -46,6 +47,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
         RefreshFocusedEventPresentation();
         BuildEventActorStatusViewData();
         BuildHudActionStates();
+        BuildVerificationChecks();
         BuildWalkthroughProgress();
         OnPresentationUpdated();
         return;
@@ -60,6 +62,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
     RefreshFocusedEventPresentation();
     BuildEventActorStatusViewData();
     BuildHudActionStates();
+    BuildVerificationChecks();
     BuildWalkthroughProgress();
     OnPresentationUpdated();
 }
@@ -979,6 +982,115 @@ void UGreeislandDebugHudWidget::BuildHudActionStates()
     }
 }
 
+void UGreeislandDebugHudWidget::BuildVerificationChecks()
+{
+    VerificationChecks.Reset();
+
+    auto AddCheck =
+        [this](
+            const FString& CheckId,
+            const FString& Category,
+            const FString& Label,
+            bool bPassed,
+            const FString& Detail,
+            bool bRequired = true)
+    {
+        FGreeislandVerificationCheckItem Item;
+        Item.CheckId = CheckId;
+        Item.Category = Category;
+        Item.Label = Label;
+        Item.bPassed = bPassed;
+        Item.StatusLabel = bPassed ? TEXT("Pass") : TEXT("Needs Work");
+        Item.Detail = Detail;
+        Item.bRequiredForMinimalLoop = bRequired;
+        VerificationChecks.Add(Item);
+    };
+
+    AddCheck(
+        TEXT("session_initialized"),
+        TEXT("Bootstrap"),
+        TEXT("Session initialized"),
+        CurrentSnapshot.bHasInitializedSession,
+        CurrentSnapshot.bHasInitializedSession
+            ? TEXT("Bootstrap または new session が成立している。")
+            : TEXT("まず BootstrapSessionFromActor か InitializeNewSession が必要。"));
+
+    AddCheck(
+        TEXT("bootstrap_issues_clear"),
+        TEXT("Bootstrap"),
+        TEXT("Bootstrap issues clear"),
+        LastBootstrapDiagnostics.Issues.Num() == 0,
+        LastBootstrapDiagnostics.Issues.Num() == 0
+            ? TEXT("JSON path / subsystem / save mode の診断エラーなし。")
+            : FString::Join(LastBootstrapDiagnostics.Issues, TEXT(" | ")));
+
+    AddCheck(
+        TEXT("event_placements_complete"),
+        TEXT("Level"),
+        TEXT("All expected EventActors are placed"),
+        CountMissingActorPlacements() == 0,
+        CountMissingActorPlacements() == 0
+            ? TEXT("必要 EventId はすべてレベルに存在する。")
+            : FString::Printf(TEXT("Missing placements: %d"), CountMissingActorPlacements()));
+
+    AddCheck(
+        TEXT("event_placements_unique"),
+        TEXT("Level"),
+        TEXT("EventActor ids are unique"),
+        CountDuplicateActorPlacements() == 0,
+        CountDuplicateActorPlacements() == 0
+            ? TEXT("重複 EventId はない。")
+            : FString::Printf(TEXT("Duplicate placements: %d"), CountDuplicateActorPlacements()));
+
+    AddCheck(
+        TEXT("walkthrough_has_focus"),
+        TEXT("Flow"),
+        TEXT("Walkthrough has a next actionable step"),
+        WalkthroughProgress.Num() == 0 || Algo::AnyOf(
+            WalkthroughProgress,
+            [](const FGreeislandWalkthroughStepState& Step) { return Step.bCurrentFocus || Step.bCompleted; }),
+        WalkthroughProgress.Num() == 0
+            ? TEXT("WalkthroughProgress は次の RefreshPresentation で埋まる。")
+            : TEXT("進行中または完了済みのステップが追跡できている。"));
+
+    AddCheck(
+        TEXT("interactable_event_visible"),
+        TEXT("World"),
+        TEXT("At least one interactable event can be surfaced"),
+        CountInteractableEventActors() > 0 || !CurrentSnapshot.bHasInitializedSession,
+        CountInteractableEventActors() > 0
+            ? FString::Printf(TEXT("Interactable events in status list: %d"), CountInteractableEventActors())
+            : TEXT("プレイヤーをイベント地点へ近づけると Interact Focused が有効になる。"));
+
+    AddCheck(
+        TEXT("save_path_ready"),
+        TEXT("Persistence"),
+        TEXT("Save/restore path is ready"),
+        CurrentSnapshot.bHasInitializedSession,
+        LastBootstrapDiagnostics.bSaveExists
+            ? TEXT("既存 save slot がある。Restore で検証できる。")
+            : TEXT("SaveSession 実行後に RestoreSession を確認する。"));
+
+    AddCheck(
+        TEXT("zone_clear_verified"),
+        TEXT("MVP"),
+        TEXT("Zone clear reached"),
+        CurrentSnapshot.bZoneCleared,
+        CurrentSnapshot.bZoneCleared
+            ? TEXT("key_zone_core_001 取得済みで zone clear が立っている。")
+            : TEXT("WalkthroughProgress を進めて final gate まで到達する。"));
+
+    AddCheck(
+        TEXT("ai_debug_ready"),
+        TEXT("AI"),
+        TEXT("AI debug actions are available"),
+        CurrentSnapshot.bHasInitializedSession && !CurrentSnapshot.ActiveEventId.IsNone(),
+        CurrentSnapshot.ActiveEventId.IsNone()
+            ? TEXT("アクティブイベントがないと AI request は組めない。")
+            : TEXT("Build AI Request / Fallback AI を試せる。"),
+        false);
+}
+
 void UGreeislandDebugHudWidget::RefreshBootstrapDiagnostics()
 {
     LastBootstrapDiagnostics = FGreeislandBootstrapDiagnostics();
@@ -1095,6 +1207,45 @@ FString UGreeislandDebugHudWidget::BuildHudActionDetail(const FGreeislandHudActi
     }
 
     return Action.EnableWhen;
+}
+
+int32 UGreeislandDebugHudWidget::CountMissingActorPlacements() const
+{
+    int32 Count = 0;
+    for (const FGreeislandEventActorStatusViewData& Status : EventActorStatusViewData)
+    {
+        if (!Status.bHasActorPlacement)
+        {
+            ++Count;
+        }
+    }
+    return Count;
+}
+
+int32 UGreeislandDebugHudWidget::CountDuplicateActorPlacements() const
+{
+    int32 Count = 0;
+    for (const FGreeislandEventActorStatusViewData& Status : EventActorStatusViewData)
+    {
+        if (Status.PlacementCount > 1)
+        {
+            ++Count;
+        }
+    }
+    return Count;
+}
+
+int32 UGreeislandDebugHudWidget::CountInteractableEventActors() const
+{
+    int32 Count = 0;
+    for (const FGreeislandEventActorStatusViewData& Status : EventActorStatusViewData)
+    {
+        if (Status.bIsInteractableNow)
+        {
+            ++Count;
+        }
+    }
+    return Count;
 }
 
 FString UGreeislandDebugHudWidget::BuildEventActorStatusSummary(

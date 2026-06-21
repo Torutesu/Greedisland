@@ -215,6 +215,33 @@ struct FGreeislandHudActionState
     FString Detail;
 };
 
+USTRUCT(BlueprintType)
+struct FGreeislandVerificationCheckItem
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString CheckId;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Category;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Label;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bPassed = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString StatusLabel;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Detail;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bRequiredForMinimalLoop = true;
+};
+
 UCLASS(Abstract, Blueprintable)
 class GREEISLAND_API UGreeislandDebugHudWidget : public UUserWidget
 {
@@ -402,6 +429,12 @@ public:
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const TArray<FGreeislandVerificationCheckItem>& GetVerificationChecks() const
+    {
+        return VerificationChecks;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
     const TArray<FGreeislandWalkthroughStep>& GetRecommendedWalkthrough() const
     {
         return RecommendedWalkthrough;
@@ -511,6 +544,9 @@ protected:
     TArray<FGreeislandHudActionState> HudActionStates;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    TArray<FGreeislandVerificationCheckItem> VerificationChecks;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     TArray<FGreeislandWalkthroughStep> RecommendedWalkthrough;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
@@ -529,6 +565,7 @@ private:
     void BuildWalkthroughProgress();
     void BuildEventActorStatusViewData();
     void BuildHudActionStates();
+    void BuildVerificationChecks();
     void RefreshBootstrapDiagnostics();
     void RefreshFocusedEventPresentation();
     AGreeislandBootstrapActor* FindBootstrapActor() const;
@@ -536,6 +573,9 @@ private:
     bool HasOwnedCard(FName CardId) const;
     bool HasCompletedEvent(FName EventId) const;
     FString BuildHudActionDetail(const FGreeislandHudActionDefinition& Action) const;
+    int32 CountMissingActorPlacements() const;
+    int32 CountDuplicateActorPlacements() const;
+    int32 CountInteractableEventActors() const;
     FString BuildEventActorStatusSummary(const FGreeislandEventActorStatusViewData& Status) const;
     FSessionActionResult FailResult(const FString& Message);
     FSessionActionResult HandleActionResult(const FSessionActionResult& ActionResult);

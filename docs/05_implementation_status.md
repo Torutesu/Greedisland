@@ -42,6 +42,7 @@
 - HUD panel definition DTO
 - HUD action definition DTO
 - HUD action state DTO
+- HUD verification check DTO
 - HUD walkthrough checklist DTO
 - HUD walkthrough progress DTO
 - HUD event actor status DTO
@@ -238,6 +239,16 @@ python3 scripts/validate_events/ue_runtime_viewdata_surface_smoke_test.py
 
 ```text
 OK: UE runtime viewdata surface smoke tests passed
+```
+
+```bash
+python3 scripts/validate_events/ue_verification_check_smoke_test.py
+```
+
+結果:
+
+```text
+OK: UE verification check smoke tests passed
 ```
 
 ```bash

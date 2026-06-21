@@ -22,6 +22,7 @@
   - `GetRecommendedHudChecklist` で最小HUDに置くべき表示項目とボタン一覧を取得できる
   - `GetRecommendedHudPanels` で最小HUDをどのパネルに分けるか取得できる
   - `GetRecommendedHudActions` と `GetHudActionStates` でボタン定義と有効/無効状態を取得できる
+  - `GetVerificationChecks` でMVP bring-up の pass/fail 一覧を取得できる
   - `GetRecommendedWalkthrough` で MVP 一周の推奨確認手順を取得できる
   - `GetWalkthroughProgress` で MVP 一周の進捗状態を取得できる
   - `GetEventActorStatusViewData` で EventActor の配置状態と進行状態の食い違いを一覧確認できる
@@ -182,6 +183,16 @@
 - `AvailabilityLabel`
 - `Detail`
 
+`VerificationChecks` の各要素では以下を読める:
+
+- `CheckId`
+- `Category`
+- `Label`
+- `bPassed`
+- `StatusLabel`
+- `Detail`
+- `bRequiredForMinimalLoop`
+
 `HandCardViewData` / `OwnedCardViewData` では以下も読める:
 
 - `KindLabel`
@@ -257,10 +268,11 @@
 16. `RecommendedHudPanels` を見れば、Session Status / Event Reconciliation / Combat Hand などのパネル分けをそのまま決められる
 17. `RecommendedHudActions` を見れば、ボタン名、結びつけるメソッド、置き場所をそのまま決められる
 18. `HudActionStates` を使えば、ボタンの enabled/disabled を Blueprint 側で個別実装せずに済む
-19. `StateSummary` / `StatusSummary` をそのまま行表示すれば、ListView の行整形ロジックをかなり減らせる
-20. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
-21. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
-22. `RecommendedBlueprintAssets` をそのまま表示すれば、作るべき BP アセット一覧として使える
+19. `VerificationChecks` を一覧表示すれば、Pass/Needs Work の bring-up レポートをそのまま出せる
+20. `StateSummary` / `StatusSummary` をそのまま行表示すれば、ListView の行整形ロジックをかなり減らせる
+21. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
+22. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
+23. `RecommendedBlueprintAssets` をそのまま表示すれば、作るべき BP アセット一覧として使える
 
 レベル配置ベースで進める場合:
 

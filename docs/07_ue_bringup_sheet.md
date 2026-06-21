@@ -92,6 +92,7 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 - `WalkthroughProgress`
 - `RecommendedHudActions`
 - `HudActionStates`
+- `VerificationChecks`
 
 行表示の近道:
 
@@ -135,6 +136,15 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
   - `Fallback AI`
 
 `HudActionStates` を見て、各ボタンの enabled/disabled を切り替える。
+
+`VerificationChecks` は、HUD 上の最終確認欄として使う。
+
+- `StatusLabel`
+  - `Pass` / `Needs Work`
+- `Detail`
+  - 何が足りないかの短い説明
+- `bRequiredForMinimalLoop`
+  - MVP の必須項目だけを先に見たいときのフィルタ用
 
 ### Actions
 
