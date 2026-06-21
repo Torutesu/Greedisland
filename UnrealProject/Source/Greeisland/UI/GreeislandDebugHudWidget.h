@@ -137,6 +137,33 @@ struct FGreeislandEventActorStatusViewData
     FString StatusSummary;
 };
 
+USTRUCT(BlueprintType)
+struct FGreeislandHudPanelDefinition
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString PanelId;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Title;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Purpose;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString SuggestedWidgetType;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    int32 Priority = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bRecommendedForMinimalLoop = true;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    TArray<FString> BindingHints;
+};
+
 UCLASS(Abstract, Blueprintable)
 class GREEISLAND_API UGreeislandDebugHudWidget : public UUserWidget
 {
@@ -306,6 +333,12 @@ public:
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const TArray<FGreeislandHudPanelDefinition>& GetRecommendedHudPanels() const
+    {
+        return RecommendedHudPanels;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
     const TArray<FGreeislandWalkthroughStep>& GetRecommendedWalkthrough() const
     {
         return RecommendedWalkthrough;
@@ -406,6 +439,9 @@ protected:
     TArray<FGreeislandHudChecklistItem> RecommendedHudChecklist;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    TArray<FGreeislandHudPanelDefinition> RecommendedHudPanels;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     TArray<FGreeislandWalkthroughStep> RecommendedWalkthrough;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
@@ -417,6 +453,7 @@ protected:
 private:
     void ApplyProjectSettingsDefaults();
     void BuildRecommendedHudChecklist();
+    void BuildRecommendedHudPanels();
     void BuildRecommendedWalkthrough();
     void BuildRecommendedBlueprintAssets();
     void BuildWalkthroughProgress();

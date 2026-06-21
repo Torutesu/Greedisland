@@ -39,6 +39,7 @@
 - Event placement checklist DTO
 - Event route checklist DTO
 - HUD layout checklist DTO
+- HUD panel definition DTO
 - HUD walkthrough checklist DTO
 - HUD walkthrough progress DTO
 - HUD event actor status DTO

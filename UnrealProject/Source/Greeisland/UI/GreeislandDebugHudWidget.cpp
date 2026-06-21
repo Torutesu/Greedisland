@@ -13,6 +13,7 @@ void UGreeislandDebugHudWidget::NativeConstruct()
     Super::NativeConstruct();
     ApplyProjectSettingsDefaults();
     BuildRecommendedHudChecklist();
+    BuildRecommendedHudPanels();
     BuildRecommendedWalkthrough();
     BuildRecommendedBlueprintAssets();
     RefreshPresentation();
@@ -338,6 +339,124 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudChecklist()
     AddChecklistItem(TEXT("Actions"), TEXT("Grant Developer Card"), TEXT("GrantDeveloperCard"));
     AddChecklistItem(TEXT("Actions"), TEXT("Build AI Request"), TEXT("BuildAiRequestForActiveEvent"), false);
     AddChecklistItem(TEXT("Actions"), TEXT("Build Fallback AI Response"), TEXT("BuildFallbackAiResponseForActiveEvent"), false);
+}
+
+void UGreeislandDebugHudWidget::BuildRecommendedHudPanels()
+{
+    RecommendedHudPanels.Reset();
+
+    auto AddPanel =
+        [this](
+            const FString& PanelId,
+            const FString& Title,
+            const FString& Purpose,
+            const FString& SuggestedWidgetType,
+            int32 Priority,
+            const TArray<FString>& BindingHints,
+            bool bRecommended = true)
+    {
+        FGreeislandHudPanelDefinition Panel;
+        Panel.PanelId = PanelId;
+        Panel.Title = Title;
+        Panel.Purpose = Purpose;
+        Panel.SuggestedWidgetType = SuggestedWidgetType;
+        Panel.Priority = Priority;
+        Panel.bRecommendedForMinimalLoop = bRecommended;
+        Panel.BindingHints = BindingHints;
+        RecommendedHudPanels.Add(Panel);
+    };
+
+    AddPanel(
+        TEXT("session_status"),
+        TEXT("Session Status"),
+        TEXT("起動直後の診断と現在地をまとめて確認する最上段パネル。"),
+        TEXT("VerticalBox"),
+        10,
+        {
+            TEXT("CurrentSnapshot.ActiveEventDisplayName"),
+            TEXT("LastBootstrapDiagnostics.Issues"),
+            TEXT("FocusedEventDisplayName"),
+            TEXT("WalkthroughProgress")
+        });
+
+    AddPanel(
+        TEXT("event_reconciliation"),
+        TEXT("Event Reconciliation"),
+        TEXT("JSON 導線、レベル配置、プレイヤー位置の食い違いを切り分ける。"),
+        TEXT("ListView"),
+        20,
+        {
+            TEXT("LastBootstrapDiagnostics.ExpectedEventPlacements"),
+            TEXT("LastBootstrapDiagnostics.ExpectedEventRoute"),
+            TEXT("EventActorStatusViewData")
+        });
+
+    AddPanel(
+        TEXT("exploration_state"),
+        TEXT("Exploration State"),
+        TEXT("現在開いているイベントと最近の進行ログを追う。"),
+        TEXT("Splitter"),
+        30,
+        {
+            TEXT("EventViewData"),
+            TEXT("CurrentSnapshot.RecentLogLines")
+        });
+
+    AddPanel(
+        TEXT("combat_hand"),
+        TEXT("Combat Hand"),
+        TEXT("手札の使用可否と戦闘進行を確認する。"),
+        TEXT("WrapBox"),
+        40,
+        {
+            TEXT("HandCardViewData"),
+            TEXT("GetPlayableCombatCardIds"),
+            TEXT("CurrentSnapshot.PlayerHp"),
+            TEXT("CurrentSnapshot.EnemyHp"),
+            TEXT("CurrentSnapshot.Energy")
+        });
+
+    AddPanel(
+        TEXT("collection"),
+        TEXT("Collection"),
+        TEXT("取得済みカードとルールハックの状態を確認する。"),
+        TEXT("ListView"),
+        50,
+        {
+            TEXT("OwnedCardViewData")
+        });
+
+    AddPanel(
+        TEXT("actions"),
+        TEXT("Actions"),
+        TEXT("起動、探索、戦闘、保存、開発用注入をまとめる操作列。"),
+        TEXT("UniformGridPanel"),
+        60,
+        {
+            TEXT("BootstrapSessionFromActor"),
+            TEXT("InitializeNewSession"),
+            TEXT("ResolveActiveEvent"),
+            TEXT("StartCombatForActiveEvent"),
+            TEXT("RunEnemyTurn"),
+            TEXT("SaveSession"),
+            TEXT("RestoreSession"),
+            TEXT("GrantDeveloperCard")
+        });
+
+    AddPanel(
+        TEXT("ai_debug"),
+        TEXT("AI Debug"),
+        TEXT("AI GM 入出力の確認専用。最小ループでは任意。"),
+        TEXT("VerticalBox"),
+        70,
+        {
+            TEXT("BuildAiRequestForActiveEvent"),
+            TEXT("BuildFallbackAiResponseForActiveEvent"),
+            TEXT("GetLastBuiltAiRequest"),
+            TEXT("GetLastAiResponse"),
+            TEXT("GetLastAiValidationResult")
+        },
+        false);
 }
 
 void UGreeislandDebugHudWidget::BuildRecommendedWalkthrough()

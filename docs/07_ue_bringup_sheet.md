@@ -72,6 +72,8 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 
 `UGreeislandDebugHudWidget.GetRecommendedHudChecklist()` の返り値と同じ内容。
 
+`UGreeislandDebugHudWidget.GetRecommendedHudPanels()` を見ると、下のセクションをどのパネル単位で分けるかも分かる。
+
 ### Status
 
 - `CurrentSnapshot.ActiveEventDisplayName`
@@ -88,6 +90,16 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 - `LastBootstrapDiagnostics.ExpectedEventRoute`
 - `EventActorStatusViewData`
 - `WalkthroughProgress`
+
+推奨パネル順:
+
+1. `session_status`
+2. `event_reconciliation`
+3. `exploration_state`
+4. `combat_hand`
+5. `collection`
+6. `actions`
+7. `ai_debug` (任意)
 
 ### Actions
 

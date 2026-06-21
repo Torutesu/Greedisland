@@ -20,6 +20,7 @@
   - `GrantDeveloperCard` で任意カードを開発用に所持/デッキへ注入できる
   - `BootstrapSessionFromActor` と `LastBootstrapDiagnostics` でレベル上の BootstrapActor をHUDから直接確認できる
   - `GetRecommendedHudChecklist` で最小HUDに置くべき表示項目とボタン一覧を取得できる
+  - `GetRecommendedHudPanels` で最小HUDをどのパネルに分けるか取得できる
   - `GetRecommendedWalkthrough` で MVP 一周の推奨確認手順を取得できる
   - `GetWalkthroughProgress` で MVP 一周の進捗状態を取得できる
   - `GetEventActorStatusViewData` で EventActor の配置状態と進行状態の食い違いを一覧確認できる
@@ -151,6 +152,16 @@
 - `StatusLabel`
 - `Detail`
 
+`RecommendedHudPanels` の各要素では以下を読める:
+
+- `PanelId`
+- `Title`
+- `Purpose`
+- `SuggestedWidgetType`
+- `Priority`
+- `bRecommendedForMinimalLoop`
+- `BindingHints`
+
 `EventActorStatusViewData` の各要素では以下を読める:
 
 - `EventId`
@@ -211,9 +222,10 @@
 13. `ExpectedEventRoute` を一覧表示すれば、Depth ごとの導線メモとしてそのまま使える
 14. `EventActorStatusViewData` を一覧表示すれば、配置済みなのに進めないイベントと、進行上は開いているのに置かれていないイベントを切り分けられる
 15. `WalkthroughProgress` を一覧表示すれば、次に触るべきMVP手順を HUD 上で自動表示できる
-16. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
-17. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
-18. `RecommendedBlueprintAssets` をそのまま表示すれば、作るべき BP アセット一覧として使える
+16. `RecommendedHudPanels` を見れば、Session Status / Event Reconciliation / Combat Hand などのパネル分けをそのまま決められる
+17. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
+18. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
+19. `RecommendedBlueprintAssets` をそのまま表示すれば、作るべき BP アセット一覧として使える
 
 レベル配置ベースで進める場合:
 
