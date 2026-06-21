@@ -264,6 +264,48 @@ struct FGreeislandHudActionButtonViewData
 };
 
 USTRUCT(BlueprintType)
+struct FGreeislandCurrentObjectiveActionViewData
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    int32 StepOrder = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString StepLabel;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString StepStatusLabel;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString ActionId;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString ActionLabel;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString AvailabilityLabel;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Detail;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FName DefaultNameArgument;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString DefaultStringArgument;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bDefaultFlag = true;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bHasAction = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bEnabled = false;
+};
+
+USTRUCT(BlueprintType)
 struct FGreeislandVerificationCheckItem
 {
     GENERATED_BODY()
@@ -515,6 +557,12 @@ public:
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const FGreeislandCurrentObjectiveActionViewData& GetCurrentObjectiveAction() const
+    {
+        return CurrentObjectiveAction;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
     const TArray<FGreeislandVerificationCheckItem>& GetVerificationChecks() const
     {
         return VerificationChecks;
@@ -648,6 +696,9 @@ protected:
     TArray<FGreeislandHudActionButtonViewData> HudActionButtons;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FGreeislandCurrentObjectiveActionViewData CurrentObjectiveAction;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     TArray<FGreeislandVerificationCheckItem> VerificationChecks;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
@@ -673,6 +724,7 @@ private:
     void BuildEventActorStatusViewData();
     void BuildHudActionStates();
     void BuildHudActionButtons();
+    void BuildCurrentObjectiveAction();
     void BuildVerificationChecks();
     void BuildSessionStatusRows();
     void RefreshBootstrapDiagnostics();
@@ -687,6 +739,7 @@ private:
     int32 CountInteractableEventActors() const;
     FString BuildEventActorStatusSummary(const FGreeislandEventActorStatusViewData& Status) const;
     const FGreeislandHudActionState* FindHudActionStateById(const FString& ActionId) const;
+    const FGreeislandHudActionButtonViewData* FindHudActionButtonById(const FString& ActionId) const;
     FSessionActionResult FailResult(const FString& Message);
     FSessionActionResult HandleActionResult(const FSessionActionResult& ActionResult);
 

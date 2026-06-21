@@ -77,6 +77,7 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 ### Status
 
 - `SessionStatusRows`
+- `CurrentObjectiveAction`
 - `CurrentSnapshot.ActiveEventDisplayName`
 - `LastBootstrapDiagnostics.Issues`
 - `FocusedEventDisplayName`
@@ -128,6 +129,17 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
   - 補足説明
 - `bHealthy`
   - 色替えやアイコン切り替え用
+
+`CurrentObjectiveAction` をその横または直下に置くと、「次に押すべき 1 ボタン」を出しやすい。
+
+- `StepLabel`
+  - いまの walkthrough ステップ名
+- `ActionLabel`
+  - いま押すべきボタン名
+- `AvailabilityLabel`
+  - 押せるかどうか
+- `DefaultNameArgument`
+  - `ExecuteHudActionById` に渡す既定 `Name`
 
 `UGreeislandDebugHudWidget` は既定で `0.2` 秒ごとに自動更新されるので、探索中に `Focused Event` や `Interact Focused` の有効状態が追従する前提でよい。
 

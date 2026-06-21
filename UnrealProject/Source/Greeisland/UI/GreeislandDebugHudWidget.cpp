@@ -78,6 +78,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
         BuildWalkthroughProgress();
         BuildHudActionStates();
         BuildHudActionButtons();
+        BuildCurrentObjectiveAction();
         BuildVerificationChecks();
         BuildSessionStatusRows();
         OnPresentationUpdated();
@@ -95,6 +96,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
     BuildWalkthroughProgress();
     BuildHudActionStates();
     BuildHudActionButtons();
+    BuildCurrentObjectiveAction();
     BuildVerificationChecks();
     BuildSessionStatusRows();
     OnPresentationUpdated();
@@ -493,6 +495,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudChecklist()
     AddChecklistItem(TEXT("Lists"), TEXT("Walkthrough Progress"), TEXT("WalkthroughProgress"));
     AddChecklistItem(TEXT("Lists"), TEXT("Verification Checks"), TEXT("VerificationChecks"));
     AddChecklistItem(TEXT("Lists"), TEXT("HUD Action Buttons"), TEXT("HudActionButtons"));
+    AddChecklistItem(TEXT("Status"), TEXT("Current Objective Action"), TEXT("CurrentObjectiveAction"));
     AddChecklistItem(TEXT("Actions"), TEXT("Bootstrap Session"), TEXT("BootstrapSessionFromActor"));
     AddChecklistItem(TEXT("Actions"), TEXT("Initialize New Session"), TEXT("InitializeNewSession"));
     AddChecklistItem(TEXT("Actions"), TEXT("Restore Session"), TEXT("RestoreSession"));
@@ -1187,6 +1190,130 @@ void UGreeislandDebugHudWidget::BuildHudActionButtons()
     }
 }
 
+void UGreeislandDebugHudWidget::BuildCurrentObjectiveAction()
+{
+    CurrentObjectiveAction = FGreeislandCurrentObjectiveActionViewData();
+
+    const FGreeislandWalkthroughStepState* CurrentStep = nullptr;
+    for (const FGreeislandWalkthroughStepState& Step : WalkthroughProgress)
+    {
+        if (Step.bCurrentFocus)
+        {
+            CurrentStep = &Step;
+            break;
+        }
+    }
+
+    if (!CurrentStep)
+    {
+        return;
+    }
+
+    CurrentObjectiveAction.StepOrder = CurrentStep->Order;
+    CurrentObjectiveAction.StepLabel = CurrentStep->Label;
+    CurrentObjectiveAction.StepStatusLabel = CurrentStep->StatusLabel;
+    CurrentObjectiveAction.Detail = CurrentStep->Detail;
+
+    auto ApplyButton =
+        [this](FGreeislandCurrentObjectiveActionViewData& Objective, const FString& ActionId)
+    {
+        if (const FGreeislandHudActionButtonViewData* Button = FindHudActionButtonById(ActionId))
+        {
+            Objective.ActionId = Button->ActionId;
+            Objective.ActionLabel = Button->Label;
+            Objective.AvailabilityLabel = Button->AvailabilityLabel;
+            Objective.Detail = FString::Printf(TEXT("%s | %s"), *Objective.Detail, *Button->Detail);
+            Objective.DefaultNameArgument = Button->DefaultNameArgument;
+            Objective.DefaultStringArgument = Button->DefaultStringArgument;
+            Objective.bDefaultFlag = Button->bDefaultFlag;
+            Objective.bHasAction = true;
+            Objective.bEnabled = Button->bEnabled;
+            return true;
+        }
+
+        return false;
+    };
+
+    auto ApplyPlayCard =
+        [this](FGreeislandCurrentObjectiveActionViewData& Objective, const FGreeislandCardViewData& Card)
+    {
+        Objective.ActionId = TEXT("play_combat_card");
+        Objective.ActionLabel = FString::Printf(TEXT("Play %s"), *Card.DisplayName.ToString());
+        Objective.AvailabilityLabel = Card.bPlayableNow ? TEXT("Enabled") : TEXT("Disabled");
+        Objective.Detail = FString::Printf(TEXT("%s | %s | %s"), *Objective.Detail, *Card.StateSummary, *Card.DetailSummary);
+        Objective.DefaultNameArgument = Card.CardId;
+        Objective.bDefaultFlag = true;
+        Objective.bHasAction = true;
+        Objective.bEnabled = Card.bPlayableNow;
+    };
+
+    if (CurrentStep->Order == 1)
+    {
+        if (!ApplyButton(CurrentObjectiveAction, TEXT("bootstrap_session")))
+        {
+            ApplyButton(CurrentObjectiveAction, TEXT("initialize_new_session"));
+        }
+        else if (!CurrentObjectiveAction.bEnabled)
+        {
+            ApplyButton(CurrentObjectiveAction, TEXT("initialize_new_session"));
+        }
+        return;
+    }
+
+    if (CurrentStep->Order == 7)
+    {
+        if (!LastBootstrapDiagnostics.bSaveExists)
+        {
+            ApplyButton(CurrentObjectiveAction, TEXT("save_session"));
+        }
+        else
+        {
+            ApplyButton(CurrentObjectiveAction, TEXT("restore_session"));
+        }
+        return;
+    }
+
+    if (CurrentStep->Order == 5 && CurrentSnapshot.bCombatActive && CurrentSnapshot.ActiveEventId == CurrentStep->EventId)
+    {
+        for (const FGreeislandCardViewData& Card : HandCardViewData)
+        {
+            if (Card.bHasPrimaryAction && Card.bPrimaryActionEnabled)
+            {
+                ApplyPlayCard(CurrentObjectiveAction, Card);
+                return;
+            }
+        }
+
+        ApplyButton(CurrentObjectiveAction, TEXT("run_enemy_turn"));
+        return;
+    }
+
+    if (bHasFocusedEvent && FocusedEventId == CurrentStep->EventId)
+    {
+        ApplyButton(CurrentObjectiveAction, TEXT("interact_focused_event"));
+        return;
+    }
+
+    if (CurrentSnapshot.ActiveEventId == CurrentStep->EventId)
+    {
+        const FGreeislandEventViewData* Event = FindEventViewDataById(CurrentStep->EventId);
+        if (Event && Event->bHasPrimaryAction)
+        {
+            CurrentObjectiveAction.ActionId = Event->PrimaryActionId;
+            CurrentObjectiveAction.ActionLabel = Event->PrimaryActionLabel;
+            CurrentObjectiveAction.AvailabilityLabel = Event->bPrimaryActionEnabled ? TEXT("Enabled") : TEXT("Disabled");
+            CurrentObjectiveAction.Detail = FString::Printf(TEXT("%s | %s | %s"), *CurrentObjectiveAction.Detail, *Event->StatusSummary, *Event->DetailSummary);
+            CurrentObjectiveAction.DefaultNameArgument = Event->PrimaryActionNameArgument;
+            CurrentObjectiveAction.bDefaultFlag = true;
+            CurrentObjectiveAction.bHasAction = true;
+            CurrentObjectiveAction.bEnabled = Event->bPrimaryActionEnabled;
+            return;
+        }
+    }
+
+    ApplyButton(CurrentObjectiveAction, TEXT("interact_focused_event"));
+}
+
 void UGreeislandDebugHudWidget::BuildVerificationChecks()
 {
     VerificationChecks.Reset();
@@ -1544,6 +1671,20 @@ const FGreeislandHudActionState* UGreeislandDebugHudWidget::FindHudActionStateBy
         if (State.ActionId == ActionId)
         {
             return &State;
+        }
+    }
+
+    return nullptr;
+}
+
+const FGreeislandHudActionButtonViewData* UGreeislandDebugHudWidget::FindHudActionButtonById(
+    const FString& ActionId) const
+{
+    for (const FGreeislandHudActionButtonViewData& Button : HudActionButtons)
+    {
+        if (Button.ActionId == ActionId)
+        {
+            return &Button;
         }
     }
 

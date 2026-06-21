@@ -43,6 +43,7 @@
 - HUD action definition DTO
 - HUD action state DTO
 - HUD action button aggregate DTO
+- Current objective action helper DTO
 - HUD ActionId-based action executor
 - HUD verification check DTO
 - HUD auto-refresh tick for focused event / action state / session status
