@@ -22,6 +22,12 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 python3 scripts/validate_events/ue_editor_preflight_smoke_test.py
 ```
 
+UE が入っているマシンでは、次のコマンドで `projectfiles / build-editor / build-game / open-editor` の実行コマンドを確認できる:
+
+```bash
+python3 scripts/ue_build_helper.py --action print-plan
+```
+
 ## 1. 作る Blueprint アセット
 
 `UGreeislandDebugHudWidget.GetRecommendedBlueprintAssets()` の返り値と同じ内容。

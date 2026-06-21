@@ -10,6 +10,8 @@
 
 エディタを開く前に `python3 scripts/validate_events/ue_editor_preflight_smoke_test.py` を通しておくと、`uproject` / `Target.cs` / `Build.cs` / `DefaultGame.ini` / `DefaultInput.ini` / JSON 配置の前提をまとめて確認できる。
 
+UE が入っている環境に持っていったら、`python3 scripts/ue_build_helper.py --action print-plan` で `GenerateProjectFiles.sh` / `Build.sh` / `UnrealEditor` の解決結果を先に確認できる。
+
 ## すでに用意されているC++クラス
 
 - `UGreeislandGameSubsystem`

@@ -1,0 +1,199 @@
+#!/usr/bin/env python3
+"""Prepare or run Unreal build/editor commands for the local Greeisland project."""
+
+from __future__ import annotations
+
+import argparse
+import os
+import subprocess
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+
+
+@dataclass(frozen=True)
+class UnrealTooling:
+    engine_root: Path | None
+    editor_binary: Path | None
+    projectfiles_script: Path | None
+    build_script: Path | None
+    uht_binary: Path | None
+
+
+def repo_root() -> Path:
+    return Path(__file__).resolve().parents[1]
+
+
+def uproject_path() -> Path:
+    return repo_root() / "UnrealProject" / "Greeisland.uproject"
+
+
+def common_engine_roots() -> list[Path]:
+    env_candidates = []
+    for env_var in ("UE5_ROOT", "UNREAL_ENGINE_ROOT", "UE_EDITOR", "UNREAL_EDITOR"):
+        value = os.environ.get(env_var)
+        if value:
+            env_candidates.append(Path(value).expanduser())
+
+    static_candidates = [
+        Path("/Applications/UE_5.8"),
+        Path("/Applications/Epic Games/UE_5.8"),
+        Path("/Users/Shared/Epic Games/UE_5.8"),
+    ]
+
+    candidates: list[Path] = []
+    seen: set[str] = set()
+    for candidate in env_candidates + static_candidates:
+        normalized = normalize_engine_root(candidate)
+        key = str(normalized)
+        if key in seen:
+            continue
+        seen.add(key)
+        candidates.append(normalized)
+    return candidates
+
+
+def normalize_engine_root(candidate: Path) -> Path:
+    candidate_str = str(candidate)
+    if candidate_str.endswith("UnrealEditor.app"):
+        return candidate.parents[4]
+    if candidate_str.endswith("UnrealEditor"):
+        return candidate.parents[3]
+    if candidate.name == "Engine":
+        return candidate.parent
+    return candidate
+
+
+def detect_tooling() -> UnrealTooling:
+    for engine_root in common_engine_roots():
+        editor_app = engine_root / "Engine" / "Binaries" / "Mac" / "UnrealEditor.app"
+        editor_bin = engine_root / "Engine" / "Binaries" / "Mac" / "UnrealEditor"
+        build_script = engine_root / "Engine" / "Build" / "BatchFiles" / "Mac" / "Build.sh"
+        projectfiles_script = engine_root / "Engine" / "Build" / "BatchFiles" / "Mac" / "GenerateProjectFiles.sh"
+        uht_binary = engine_root / "Engine" / "Binaries" / "Mac" / "UnrealHeaderTool"
+
+        editor_candidate = editor_bin if editor_bin.exists() else editor_app
+        if any(path.exists() for path in (editor_app, editor_bin, build_script, projectfiles_script, uht_binary)):
+            return UnrealTooling(
+                engine_root=engine_root,
+                editor_binary=editor_candidate if editor_candidate.exists() else None,
+                projectfiles_script=projectfiles_script if projectfiles_script.exists() else None,
+                build_script=build_script if build_script.exists() else None,
+                uht_binary=uht_binary if uht_binary.exists() else None,
+            )
+
+    return UnrealTooling(
+        engine_root=None,
+        editor_binary=None,
+        projectfiles_script=None,
+        build_script=None,
+        uht_binary=None,
+    )
+
+
+def build_commands(tooling: UnrealTooling) -> dict[str, list[str] | None]:
+    project = str(uproject_path())
+    commands: dict[str, list[str] | None] = {
+        "projectfiles": None,
+        "build_editor": None,
+        "build_game": None,
+        "open_editor": None,
+    }
+
+    if tooling.projectfiles_script:
+        commands["projectfiles"] = [
+            str(tooling.projectfiles_script),
+            f"-project={project}",
+            "-game",
+            "-engine",
+        ]
+
+    if tooling.build_script:
+        commands["build_editor"] = [
+            str(tooling.build_script),
+            "GreeislandEditor",
+            "Mac",
+            "Development",
+            f"-Project={project}",
+            "-Progress",
+        ]
+        commands["build_game"] = [
+            str(tooling.build_script),
+            "Greeisland",
+            "Mac",
+            "Development",
+            f"-Project={project}",
+            "-Progress",
+        ]
+
+    if tooling.editor_binary:
+        commands["open_editor"] = [str(tooling.editor_binary), project]
+
+    return commands
+
+
+def print_plan(tooling: UnrealTooling) -> int:
+    commands = build_commands(tooling)
+    print(f"Repo: {repo_root()}")
+    print(f"Project: {uproject_path()}")
+    print(f"Engine root: {tooling.engine_root if tooling.engine_root else 'NOT FOUND'}")
+    print(f"UnrealEditor: {tooling.editor_binary if tooling.editor_binary else 'NOT FOUND'}")
+    print(f"Build.sh: {tooling.build_script if tooling.build_script else 'NOT FOUND'}")
+    print(f"GenerateProjectFiles.sh: {tooling.projectfiles_script if tooling.projectfiles_script else 'NOT FOUND'}")
+    print(f"UnrealHeaderTool: {tooling.uht_binary if tooling.uht_binary else 'NOT FOUND'}")
+    print("")
+    print("Available commands:")
+    for key in ("projectfiles", "build_editor", "build_game", "open_editor"):
+        command = commands[key]
+        if command:
+            print(f"- {key}: {' '.join(command)}")
+        else:
+            print(f"- {key}: unavailable")
+
+    return 0
+
+
+def run_named_command(tooling: UnrealTooling, action: str) -> int:
+    commands = build_commands(tooling)
+    command = commands.get(action)
+    if not command:
+        print(f"{action} is unavailable because Unreal tooling was not found.", file=sys.stderr)
+        return 2
+
+    print(f"Running: {' '.join(command)}")
+    completed = subprocess.run(command, cwd=repo_root())
+    return completed.returncode
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--action",
+        choices=("print-plan", "projectfiles", "build-editor", "build-game", "open-editor"),
+        default="print-plan",
+        help="Action to run. Defaults to printing the resolved Unreal commands.",
+    )
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    tooling = detect_tooling()
+
+    if args.action == "print-plan":
+        return print_plan(tooling)
+    if args.action == "projectfiles":
+        return run_named_command(tooling, "projectfiles")
+    if args.action == "build-editor":
+        return run_named_command(tooling, "build_editor")
+    if args.action == "build-game":
+        return run_named_command(tooling, "build_game")
+    if args.action == "open-editor":
+        return run_named_command(tooling, "open_editor")
+
+    print(f"Unknown action: {args.action}", file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

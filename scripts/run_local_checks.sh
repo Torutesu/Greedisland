@@ -3,6 +3,7 @@ set -euo pipefail
 
 python3 scripts/validate_cards/validate_cards.py data/cards/cards.mvp.json
 python3 scripts/validate_events/validate_events.py data/events/events.mvp.json
+python3 scripts/validate_events/ue_build_helper_smoke_test.py
 python3 scripts/validate_events/ue_editor_preflight_smoke_test.py
 python3 scripts/validate_events/ue_path_resolution_smoke_test.py
 python3 scripts/validate_events/ue_bootstrap_defaults_smoke_test.py
