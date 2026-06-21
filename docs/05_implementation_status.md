@@ -37,6 +37,7 @@
 - HUD向け bootstrap diagnostics 表示補助
 - EventActor 配置漏れ / 重複の bootstrap diagnostics
 - Event placement checklist DTO
+- Event route checklist DTO
 - HUD layout checklist DTO
 - HUD walkthrough checklist DTO
 - Blueprint asset checklist DTO
@@ -181,6 +182,16 @@ python3 scripts/validate_events/ue_bootstrap_defaults_smoke_test.py
 
 ```text
 OK: UE bootstrap defaults smoke tests passed
+```
+
+```bash
+python3 scripts/validate_events/ue_route_graph_smoke_test.py
+```
+
+結果:
+
+```text
+OK: UE route graph smoke tests passed
 ```
 
 ```bash

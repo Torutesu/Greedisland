@@ -35,6 +35,42 @@ struct FGreeislandExpectedEventPlacement
 };
 
 USTRUCT(BlueprintType)
+struct FGreeislandExpectedEventRouteNode
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    FName EventId;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    FText DisplayName;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    FString EventType;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    int32 RouteDepth = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    int32 SuggestedLane = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    bool bIsEntryPoint = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    bool bIsTerminal = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    int32 PlacementCount = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    TArray<FName> IncomingEventIds;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    TArray<FName> NextEventIds;
+};
+
+USTRUCT(BlueprintType)
 struct FGreeislandBootstrapDiagnostics
 {
     GENERATED_BODY()
@@ -77,6 +113,9 @@ struct FGreeislandBootstrapDiagnostics
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
     TArray<FGreeislandExpectedEventPlacement> ExpectedEventPlacements;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    TArray<FGreeislandExpectedEventRouteNode> ExpectedEventRoute;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
     TArray<FString> Issues;

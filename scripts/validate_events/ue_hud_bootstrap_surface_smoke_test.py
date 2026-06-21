@@ -37,6 +37,8 @@ def main() -> int:
     assert_true("UnexpectedEventActorIds" in bootstrap_text, "bootstrap diagnostics expose unexpected events")
     assert_true("FGreeislandExpectedEventPlacement" in bootstrap_text, "bootstrap diagnostics expose placement checklist struct")
     assert_true("ExpectedEventPlacements" in bootstrap_text, "bootstrap diagnostics expose placement checklist array")
+    assert_true("FGreeislandExpectedEventRouteNode" in bootstrap_text, "bootstrap diagnostics expose route checklist struct")
+    assert_true("ExpectedEventRoute" in bootstrap_text, "bootstrap diagnostics expose route checklist array")
     assert_true(bringup_sheet.exists(), "bring-up sheet exists", bringup_sheet)
 
     print("OK: UE HUD bootstrap surface smoke tests passed")

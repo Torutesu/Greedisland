@@ -85,6 +85,7 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 - `OwnedCardViewData`
 - `CurrentSnapshot.RecentLogLines`
 - `LastBootstrapDiagnostics.ExpectedEventPlacements`
+- `LastBootstrapDiagnostics.ExpectedEventRoute`
 
 ### Actions
 
@@ -110,8 +111,32 @@ Play 後、まず以下だけ確認する。
 2. `LastBootstrapDiagnostics.MissingEventActorIds` が空
 3. `LastBootstrapDiagnostics.DuplicateEventActorIds` が空
 4. `LastBootstrapDiagnostics.ExpectedEventPlacements` の `PlacementCount` が全イベントで 1
+5. `LastBootstrapDiagnostics.ExpectedEventRoute` の `RouteDepth` が
+   - `event_wake_cache_001 = 0`
+   - `event_contract_broker_001 = 1`
+   - `event_silent_shrine_001 = 2`
+   - `event_ridge_scout_001 = 2`
+   - `event_proxy_gate_001 = 3`
 
 ここで崩れていたら、先にレベル配置か JSON パスを直す。
+
+## 5.5. 配置するときの並べ方
+
+`ExpectedEventRoute` は、レベル上のざっくりした導線メモとして使う。
+
+- `RouteDepth`
+  - 0 から右方向または奥方向へ 1 列ずつ進める
+- `SuggestedLane`
+  - 同じ `RouteDepth` の中で上下にずらす順番の目安
+- `IncomingEventIds` / `NextEventIds`
+  - 分岐と合流の確認用
+
+MVP の最小配置イメージ:
+
+- Depth 0: `event_wake_cache_001`
+- Depth 1: `event_contract_broker_001`
+- Depth 2: `event_silent_shrine_001`, `event_ridge_scout_001`
+- Depth 3: `event_proxy_gate_001`
 
 ## 6. MVP 一周の確認順
 

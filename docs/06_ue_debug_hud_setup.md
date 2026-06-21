@@ -35,6 +35,7 @@
   - `GetBootstrapDiagnostics` で JSON パス解決、save slot 有無、Subsystem 利用可否を事前確認できる
   - `MissingEventActorIds` / `DuplicateEventActorIds` / `UnexpectedEventActorIds` でマップ上のイベント配置ミスを確認できる
   - `ExpectedEventPlacements` で JSON 定義順の配置チェックリストをそのまま UI に出せる
+  - `ExpectedEventRoute` で分岐込みの推奨導線を UI に出せる
 
 ## UE側で作るもの
 
@@ -147,6 +148,19 @@
 - `bIsDuplicate`
 - `NextEventIds`
 
+`LastBootstrapDiagnostics.ExpectedEventRoute` の各要素では以下を読める:
+
+- `EventId`
+- `DisplayName`
+- `EventType`
+- `RouteDepth`
+- `SuggestedLane`
+- `bIsEntryPoint`
+- `bIsTerminal`
+- `PlacementCount`
+- `IncomingEventIds`
+- `NextEventIds`
+
 更新通知:
 
 - `OnPresentationUpdated`
@@ -166,9 +180,10 @@
 10. `LastBootstrapDiagnostics.Issues` から、JSONパスや save slot の不足を起動前に表示できる
 11. `LastBootstrapDiagnostics.MissingEventActorIds` を見れば、まだ置いていない `BP_GreeislandEventActor` が分かる
 12. `ExpectedEventPlacements` を一覧表示すれば、JSON定義順のマップ配置チェックリストとして使える
-13. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
-14. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
-15. `RecommendedBlueprintAssets` をそのまま表示すれば、作るべき BP アセット一覧として使える
+13. `ExpectedEventRoute` を一覧表示すれば、Depth ごとの導線メモとしてそのまま使える
+14. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
+15. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
+16. `RecommendedBlueprintAssets` をそのまま表示すれば、作るべき BP アセット一覧として使える
 
 レベル配置ベースで進める場合:
 

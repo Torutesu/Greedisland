@@ -31,7 +31,7 @@ Runtime entrypoint:
 - [AGreeislandDebugCharacter](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Characters/GreeislandDebugCharacter.h)
   `WASD` 移動、マウス視点、`E` インタラクトで探索イベントを踏める最小プレイアブルキャラクター
 - [AGreeislandBootstrapActor](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Actors/GreeislandBootstrapActor.h)
-  BeginPlay時にセッション初期化または復元を自動実行するレベル配置用Actor。診断で `EventActor` の配置漏れや重複を拾え、想定イベント順のチェックリストも返せる
+  BeginPlay時にセッション初期化または復元を自動実行するレベル配置用Actor。診断で `EventActor` の配置漏れや重複を拾え、想定イベント順のチェックリストと導線グラフも返せる
 - [AGreeislandEventActor](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Actors/GreeislandEventActor.h)
   `EventId` を持ち、探索イベントまたは戦闘開始をSubsystemへ委譲するレベル配置用Actor。オーバーラップ自動発火と近接インタラクトにも対応
 - [UE5.8 デバッグHUD接続手順](/Users/torutano/Documents/Greeisland/docs/06_ue_debug_hud_setup.md)
@@ -64,6 +64,7 @@ python3 scripts/validate_cards/exploration_smoke_test.py
 python3 scripts/validate_cards/ai_gm_smoke_test.py
 python3 scripts/validate_events/zone_flow_smoke_test.py
 python3 scripts/validate_events/session_flow_smoke_test.py
+python3 scripts/validate_events/ue_route_graph_smoke_test.py
 python3 scripts/validate_events/combat_resolution_smoke_test.py
 python3 scripts/validate_events/defeat_resolution_smoke_test.py
 python3 scripts/validate_events/ai_session_apply_smoke_test.py

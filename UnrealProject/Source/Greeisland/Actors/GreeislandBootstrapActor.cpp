@@ -30,6 +30,14 @@ FString EventTypeToString(EExplorationEventType EventType)
 
     return TEXT("Unknown");
 }
+
+void AddUniqueName(TArray<FName>& Names, FName Name)
+{
+    if (!Name.IsNone())
+    {
+        Names.AddUnique(Name);
+    }
+}
 }
 
 AGreeislandBootstrapActor::AGreeislandBootstrapActor()
@@ -165,11 +173,28 @@ FGreeislandBootstrapDiagnostics AGreeislandBootstrapActor::GetBootstrapDiagnosti
             UExplorationEventLibrary::LoadZoneEventsFromJsonFile(Diagnostics.EffectiveEventJsonPath, EventSet, LoadErrors))
         {
             TSet<FName> ExpectedIds;
+            TMap<FName, FExplorationEventDefinition> EventDefinitionById;
+            TMap<FName, TArray<FName>> IncomingEventIdsByEventId;
+
             for (const FExplorationEventDefinition& Event : EventSet.Events)
             {
                 Diagnostics.ExpectedEventIds.Add(Event.EventId);
                 ExpectedIds.Add(Event.EventId);
+                EventDefinitionById.Add(Event.EventId, Event);
+                IncomingEventIdsByEventId.FindOrAdd(Event.EventId);
+            }
 
+            for (const FExplorationEventDefinition& Event : EventSet.Events)
+            {
+                for (const FName& NextEventId : Event.NextEventIds)
+                {
+                    TArray<FName>& IncomingIds = IncomingEventIdsByEventId.FindOrAdd(NextEventId);
+                    AddUniqueName(IncomingIds, Event.EventId);
+                }
+            }
+
+            for (const FExplorationEventDefinition& Event : EventSet.Events)
+            {
                 const int32 Count = SeenEventActorIds.FindRef(Event.EventId);
                 FGreeislandExpectedEventPlacement Placement;
                 Placement.EventId = Event.EventId;
@@ -197,6 +222,67 @@ FGreeislandBootstrapDiagnostics AGreeislandBootstrapActor::GetBootstrapDiagnosti
                 {
                     Diagnostics.UnexpectedEventActorIds.Add(Pair.Key);
                 }
+            }
+
+            TMap<FName, int32> RouteDepthByEventId;
+            TArray<FName> Frontier;
+            for (const FExplorationEventDefinition& Event : EventSet.Events)
+            {
+                const TArray<FName>* IncomingIds = IncomingEventIdsByEventId.Find(Event.EventId);
+                if (!IncomingIds || IncomingIds->Num() == 0)
+                {
+                    RouteDepthByEventId.Add(Event.EventId, 0);
+                    Frontier.Add(Event.EventId);
+                }
+            }
+
+            for (int32 FrontierIndex = 0; FrontierIndex < Frontier.Num(); ++FrontierIndex)
+            {
+                const FName CurrentEventId = Frontier[FrontierIndex];
+                const int32* CurrentDepth = RouteDepthByEventId.Find(CurrentEventId);
+                const FExplorationEventDefinition* CurrentEvent = EventDefinitionById.Find(CurrentEventId);
+                if (!CurrentDepth || !CurrentEvent)
+                {
+                    continue;
+                }
+
+                for (const FName& NextEventId : CurrentEvent->NextEventIds)
+                {
+                    const int32 CandidateDepth = *CurrentDepth + 1;
+                    if (!RouteDepthByEventId.Contains(NextEventId))
+                    {
+                        RouteDepthByEventId.Add(NextEventId, CandidateDepth);
+                        Frontier.Add(NextEventId);
+                    }
+                }
+            }
+
+            TMap<int32, int32> SuggestedLaneCountsByDepth;
+            for (int32 EventIndex = 0; EventIndex < EventSet.Events.Num(); ++EventIndex)
+            {
+                const FExplorationEventDefinition& Event = EventSet.Events[EventIndex];
+                FGreeislandExpectedEventRouteNode RouteNode;
+                RouteNode.EventId = Event.EventId;
+                RouteNode.DisplayName = Event.DisplayName;
+                RouteNode.EventType = EventTypeToString(Event.Type);
+                RouteNode.RouteDepth = RouteDepthByEventId.FindRef(Event.EventId);
+                RouteNode.SuggestedLane = SuggestedLaneCountsByDepth.FindOrAdd(RouteNode.RouteDepth);
+                SuggestedLaneCountsByDepth.FindOrAdd(RouteNode.RouteDepth) += 1;
+                RouteNode.bIsTerminal = Event.NextEventIds.Num() == 0;
+                RouteNode.PlacementCount = SeenEventActorIds.FindRef(Event.EventId);
+                RouteNode.NextEventIds = Event.NextEventIds;
+
+                if (const TArray<FName>* IncomingIds = IncomingEventIdsByEventId.Find(Event.EventId))
+                {
+                    RouteNode.IncomingEventIds = *IncomingIds;
+                    RouteNode.bIsEntryPoint = IncomingIds->Num() == 0;
+                }
+                else
+                {
+                    RouteNode.bIsEntryPoint = true;
+                }
+
+                Diagnostics.ExpectedEventRoute.Add(RouteNode);
             }
         }
         else
