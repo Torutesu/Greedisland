@@ -16,6 +16,7 @@
   - `BuildAiRequestForActiveEvent` で Claude API 等へ送る前段の入力を取得可能
   - `BuildFallbackAiResponseForActiveEvent` と `ValidateAiResponseForActiveEvent` で固定文面フォールバックと検証結果を取得可能
   - `GrantDeveloperCard` で任意カードを開発用に所持/デッキへ注入できる
+  - `BootstrapSessionFromActor` と `LastBootstrapDiagnostics` でレベル上の BootstrapActor をHUDから直接確認できる
 - `AGreeislandDebugHud`
   - `DebugHudWidgetClass` を生成してViewportへ追加する `AHUD`
 - `AGreeislandDebugGameMode`
@@ -100,6 +101,7 @@
 - `LastBuiltAiRequest`
 - `LastAiResponse`
 - `LastAiValidationResult`
+- `LastBootstrapDiagnostics`
 
 `HandCardViewData` / `OwnedCardViewData` では追加で以下を読める:
 
@@ -122,6 +124,7 @@
 7. `BuildAiRequestForActiveEvent` で `AllowedRewardCardIds` や `PlayerChoice` を含むAI GM入力を確認できる
 8. `BuildFallbackAiResponseForActiveEvent` で API 失敗時の固定文面を表示できる
 9. `HandCardViewData` の `UnplayableReasons` から、どの制約で使えないかをそのままUI表示できる
+10. `LastBootstrapDiagnostics.Issues` から、JSONパスや save slot の不足を起動前に表示できる
 
 レベル配置ベースで進める場合:
 

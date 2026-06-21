@@ -5,6 +5,7 @@ python3 scripts/validate_cards/validate_cards.py data/cards/cards.mvp.json
 python3 scripts/validate_events/validate_events.py data/events/events.mvp.json
 python3 scripts/validate_events/ue_path_resolution_smoke_test.py
 python3 scripts/validate_events/ue_bootstrap_defaults_smoke_test.py
+python3 scripts/validate_events/ue_hud_bootstrap_surface_smoke_test.py
 python3 scripts/validate_cards/rule_smoke_test.py
 python3 scripts/validate_cards/combat_smoke_test.py
 python3 scripts/validate_cards/playability_reason_smoke_test.py

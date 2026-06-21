@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "AiGm/AiGmTypes.h"
+#include "Actors/GreeislandBootstrapActor.h"
 #include "Runtime/GreeislandGameSubsystem.h"
 #include "Session/GameSessionTypes.h"
 #include "GreeislandDebugHudWidget.generated.h"
@@ -50,6 +51,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
     FSessionActionResult GrantDeveloperCard(FName CardId, bool bAddToDeck = true);
+
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
+    FSessionActionResult BootstrapSessionFromActor();
 
     UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
     bool BuildAiRequestForActiveEvent(const FString& PlayerChoice, FAiGmRequest& OutRequest);
@@ -154,6 +158,12 @@ public:
         return LastAiValidationResult;
     }
 
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const FGreeislandBootstrapDiagnostics& GetLastBootstrapDiagnostics() const
+    {
+        return LastBootstrapDiagnostics;
+    }
+
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config")
     bool bUseProjectSettingsDefaults = true;
@@ -227,9 +237,14 @@ protected:
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     FAiGmValidationResult LastAiValidationResult;
 
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FGreeislandBootstrapDiagnostics LastBootstrapDiagnostics;
+
 private:
     void ApplyProjectSettingsDefaults();
+    void RefreshBootstrapDiagnostics();
     void RefreshFocusedEventPresentation();
+    AGreeislandBootstrapActor* FindBootstrapActor() const;
     FSessionActionResult FailResult(const FString& Message);
     FSessionActionResult HandleActionResult(const FSessionActionResult& ActionResult);
 };

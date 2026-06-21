@@ -34,6 +34,7 @@
 - 1ゾーンMVP一周の統合スモークテスト
 - UE起動向けJSONパス解決チェック
 - BootstrapActor と Project Settings の既定値同期チェック
+- HUD向け bootstrap diagnostics 表示補助
 - GameInstanceSubsystem ベースのランタイム接続層
 - UMG向け UI snapshot / playable card 取得API
 - Blueprint向け card/event view data 取得API

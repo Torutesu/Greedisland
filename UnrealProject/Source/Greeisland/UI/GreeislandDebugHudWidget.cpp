@@ -1,7 +1,9 @@
 #include "UI/GreeislandDebugHudWidget.h"
 
+#include "Actors/GreeislandBootstrapActor.h"
 #include "Actors/GreeislandEventActor.h"
 #include "Characters/GreeislandDebugCharacter.h"
+#include "EngineUtils.h"
 #include "Engine/GameInstance.h"
 #include "Runtime/GreeislandProjectSettings.h"
 
@@ -33,6 +35,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
         OwnedCardViewData.Reset();
         HandCardViewData.Reset();
         EventViewData.Reset();
+        RefreshBootstrapDiagnostics();
         RefreshFocusedEventPresentation();
         OnPresentationUpdated();
         return;
@@ -43,6 +46,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
     Subsystem->BuildOwnedCardViewData(OwnedCardViewData);
     Subsystem->BuildHandCardViewData(HandCardViewData);
     Subsystem->BuildEventViewData(EventViewData);
+    RefreshBootstrapDiagnostics();
     RefreshFocusedEventPresentation();
     OnPresentationUpdated();
 }
@@ -163,6 +167,19 @@ FSessionActionResult UGreeislandDebugHudWidget::GrantDeveloperCard(FName CardId,
     return HandleActionResult(Subsystem->GrantDeveloperCard(CardId, bAddToDeck));
 }
 
+FSessionActionResult UGreeislandDebugHudWidget::BootstrapSessionFromActor()
+{
+    AGreeislandBootstrapActor* BootstrapActor = FindBootstrapActor();
+    if (!BootstrapActor)
+    {
+        return HandleActionResult(FailResult(TEXT("No GreeislandBootstrapActor was found in the current world.")));
+    }
+
+    const FSessionActionResult Result = BootstrapActor->BootstrapSession();
+    RefreshBootstrapDiagnostics();
+    return HandleActionResult(Result);
+}
+
 bool UGreeislandDebugHudWidget::BuildAiRequestForActiveEvent(
     const FString& PlayerChoice,
     FAiGmRequest& OutRequest)
@@ -277,6 +294,20 @@ void UGreeislandDebugHudWidget::ApplyProjectSettingsDefaults()
     SnapshotLogLineCount = Settings->SnapshotLogLineCount;
 }
 
+void UGreeislandDebugHudWidget::RefreshBootstrapDiagnostics()
+{
+    LastBootstrapDiagnostics = FGreeislandBootstrapDiagnostics();
+
+    AGreeislandBootstrapActor* BootstrapActor = FindBootstrapActor();
+    if (!BootstrapActor)
+    {
+        LastBootstrapDiagnostics.Issues.Add(TEXT("No GreeislandBootstrapActor was found in the current world."));
+        return;
+    }
+
+    LastBootstrapDiagnostics = BootstrapActor->GetBootstrapDiagnostics();
+}
+
 void UGreeislandDebugHudWidget::RefreshFocusedEventPresentation()
 {
     bHasFocusedEvent = false;
@@ -304,6 +335,22 @@ void UGreeislandDebugHudWidget::RefreshFocusedEventPresentation()
     bHasFocusedEvent = true;
     FocusedEventId = EventDefinition.EventId;
     FocusedEventDisplayName = FText::FromString(EventDefinition.DisplayName);
+}
+
+AGreeislandBootstrapActor* UGreeislandDebugHudWidget::FindBootstrapActor() const
+{
+    UWorld* World = GetWorld();
+    if (!World)
+    {
+        return nullptr;
+    }
+
+    for (TActorIterator<AGreeislandBootstrapActor> It(World); It; ++It)
+    {
+        return *It;
+    }
+
+    return nullptr;
 }
 
 FSessionActionResult UGreeislandDebugHudWidget::FailResult(const FString& Message)
