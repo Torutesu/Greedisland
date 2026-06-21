@@ -264,6 +264,45 @@ def print_doctor(tooling: UnrealTooling) -> int:
     return 0
 
 
+def build_runtime_checklist_lines(tooling: UnrealTooling) -> list[str]:
+    commands = build_commands(tooling)
+    lines: list[str] = [
+        "UE Runtime Verification Checklist",
+        "",
+        "1. Run preflight:",
+        "   python3 scripts/validate_events/ue_editor_preflight_smoke_test.py",
+        "2. Run doctor:",
+        "   python3 scripts/ue_build_helper.py --action doctor",
+    ]
+
+    bootstrap_sequence = build_sequence(commands, "bootstrap_editor")
+    if bootstrap_sequence:
+        lines.append("3. Bootstrap editor loop:")
+        for command in bootstrap_sequence:
+            lines.append(f"   {' '.join(command)}")
+    else:
+        lines.append("3. Bootstrap editor loop:")
+        lines.append("   unavailable until UE5.8 / UE5_ROOT is available")
+
+    lines.extend(
+        [
+            "4. In Unreal Editor, confirm World Settings -> GameMode Override uses BP_GreeislandDebugGameMode or the C++ debug game mode.",
+            "5. Confirm BP_GreeislandBootstrapActor is placed exactly once and EventActors cover wake_cache / contract_broker / silent_shrine / ridge_scout / proxy_gate.",
+            "6. Press Play and confirm the debug HUD appears.",
+            "7. Verify SessionStatusRows and CurrentObjectiveAction update after bootstrap.",
+            "8. Walk the Bring-up Sheet flow: Wake Cache -> Contract Broker -> Silent Shrine -> Ridge Scout Battle -> Proxy Gate -> Save/Restore.",
+            "9. Capture evidence for missing items: editor launch, UHT/build output, HUD rendering, card load, walkthrough completion.",
+        ]
+    )
+    return lines
+
+
+def print_runtime_checklist(tooling: UnrealTooling) -> int:
+    for line in build_runtime_checklist_lines(tooling):
+        print(line)
+    return 0
+
+
 def run_named_command(tooling: UnrealTooling, action: str) -> int:
     commands = build_commands(tooling)
     sequence = build_sequence(commands, action)
@@ -284,7 +323,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--action",
-        choices=("doctor", "print-plan", "projectfiles", "build-editor", "build-game", "open-editor", "bootstrap-editor"),
+        choices=("doctor", "print-plan", "checklist", "projectfiles", "build-editor", "build-game", "open-editor", "bootstrap-editor"),
         default="print-plan",
         help="Action to run. Defaults to printing the resolved Unreal commands.",
     )
@@ -297,6 +336,8 @@ def main() -> int:
 
     if args.action == "doctor":
         return print_doctor(tooling)
+    if args.action == "checklist":
+        return print_runtime_checklist(tooling)
     if args.action == "print-plan":
         return print_plan(tooling)
     if args.action == "projectfiles":

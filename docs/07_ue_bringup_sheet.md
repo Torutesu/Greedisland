@@ -40,6 +40,12 @@ UE が見つかっていて、そのまま projectfiles -> build-editor -> open-
 python3 scripts/ue_build_helper.py --action bootstrap-editor
 ```
 
+実機確認のチェック順までまとめて見たいときは:
+
+```bash
+python3 scripts/ue_build_helper.py --action checklist
+```
+
 ## 1. 作る Blueprint アセット
 
 `UGreeislandDebugHudWidget.GetRecommendedBlueprintAssets()` の返り値と同じ内容。

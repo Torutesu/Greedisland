@@ -16,6 +16,8 @@ UE が入っている環境に持っていったら、`python3 scripts/ue_build_
 
 UE が見つかっているなら、`python3 scripts/ue_build_helper.py --action bootstrap-editor` で `projectfiles -> build-editor -> open-editor` をそのまま順に流せる。
 
+`python3 scripts/ue_build_helper.py --action checklist` で、エディタ起動後に何をどの順で確認するかの実機チェック順も出せる。
+
 ## すでに用意されているC++クラス
 
 - `UGreeislandGameSubsystem`

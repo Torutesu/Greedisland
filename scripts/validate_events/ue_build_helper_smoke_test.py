@@ -52,6 +52,7 @@ def main() -> int:
         )
         commands = helper.build_commands(tooling)
         bootstrap_sequence = helper.build_sequence(commands, "bootstrap_editor")
+        checklist_lines = helper.build_runtime_checklist_lines(tooling)
         readiness = helper.collect_readiness(tooling)
 
         assert_true(commands["projectfiles"] is not None, "projectfiles command exists")
@@ -67,6 +68,9 @@ def main() -> int:
         assert_equal(bootstrap_sequence[0][0], str(projectfiles_script), "bootstrap starts with projectfiles")
         assert_equal(bootstrap_sequence[1][0], str(build_script), "bootstrap continues with build")
         assert_equal(bootstrap_sequence[2][0], str(editor_bin), "bootstrap ends by opening editor")
+        assert_true(any("UE Runtime Verification Checklist" in line for line in checklist_lines), "checklist title exists")
+        assert_true(any("Wake Cache" in line for line in checklist_lines), "checklist references walkthrough flow")
+        assert_true(any("GenerateProjectFiles.sh" in line for line in checklist_lines), "checklist includes projectfiles command")
         assert_true(any(item.label == "Build.sh available" and item.ok for item in readiness), "readiness sees Build.sh")
         assert_true(any(item.label == "UnrealEditor detected" and item.ok for item in readiness), "readiness sees editor")
 
