@@ -90,6 +90,8 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 - `LastBootstrapDiagnostics.ExpectedEventRoute`
 - `EventActorStatusViewData`
 - `WalkthroughProgress`
+- `RecommendedHudActions`
+- `HudActionStates`
 
 推奨パネル順:
 
@@ -100,6 +102,24 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 5. `collection`
 6. `actions`
 7. `ai_debug` (任意)
+
+推奨アクションの置き方:
+
+- `actions` パネル
+  - `Bootstrap`
+  - `New Session`
+  - `Restore`
+  - `Save`
+  - `Interact Focused`
+  - `Resolve Active`
+  - `Start Combat`
+  - `Enemy Turn`
+  - `Grant Card`
+- `ai_debug` パネル
+  - `Build AI Request`
+  - `Fallback AI`
+
+`HudActionStates` を見て、各ボタンの enabled/disabled を切り替える。
 
 ### Actions
 

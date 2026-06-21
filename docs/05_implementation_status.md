@@ -40,6 +40,8 @@
 - Event route checklist DTO
 - HUD layout checklist DTO
 - HUD panel definition DTO
+- HUD action definition DTO
+- HUD action state DTO
 - HUD walkthrough checklist DTO
 - HUD walkthrough progress DTO
 - HUD event actor status DTO
@@ -215,6 +217,16 @@ python3 scripts/validate_events/ue_event_actor_status_smoke_test.py
 
 ```text
 OK: UE event actor status smoke tests passed
+```
+
+```bash
+python3 scripts/validate_events/ue_hud_action_state_smoke_test.py
+```
+
+結果:
+
+```text
+OK: UE HUD action state smoke tests passed
 ```
 
 ```bash

@@ -164,6 +164,57 @@ struct FGreeislandHudPanelDefinition
     TArray<FString> BindingHints;
 };
 
+USTRUCT(BlueprintType)
+struct FGreeislandHudActionDefinition
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString ActionId;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Label;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString MethodName;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString PanelId;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Purpose;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString EnableWhen;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString InputHint;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    int32 Priority = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bRecommendedForMinimalLoop = true;
+};
+
+USTRUCT(BlueprintType)
+struct FGreeislandHudActionState
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString ActionId;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bEnabled = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString AvailabilityLabel;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Detail;
+};
+
 UCLASS(Abstract, Blueprintable)
 class GREEISLAND_API UGreeislandDebugHudWidget : public UUserWidget
 {
@@ -339,6 +390,18 @@ public:
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const TArray<FGreeislandHudActionDefinition>& GetRecommendedHudActions() const
+    {
+        return RecommendedHudActions;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const TArray<FGreeislandHudActionState>& GetHudActionStates() const
+    {
+        return HudActionStates;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
     const TArray<FGreeislandWalkthroughStep>& GetRecommendedWalkthrough() const
     {
         return RecommendedWalkthrough;
@@ -442,6 +505,12 @@ protected:
     TArray<FGreeislandHudPanelDefinition> RecommendedHudPanels;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    TArray<FGreeislandHudActionDefinition> RecommendedHudActions;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    TArray<FGreeislandHudActionState> HudActionStates;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     TArray<FGreeislandWalkthroughStep> RecommendedWalkthrough;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
@@ -454,16 +523,19 @@ private:
     void ApplyProjectSettingsDefaults();
     void BuildRecommendedHudChecklist();
     void BuildRecommendedHudPanels();
+    void BuildRecommendedHudActions();
     void BuildRecommendedWalkthrough();
     void BuildRecommendedBlueprintAssets();
     void BuildWalkthroughProgress();
     void BuildEventActorStatusViewData();
+    void BuildHudActionStates();
     void RefreshBootstrapDiagnostics();
     void RefreshFocusedEventPresentation();
     AGreeislandBootstrapActor* FindBootstrapActor() const;
     const FGreeislandEventViewData* FindEventViewDataById(FName EventId) const;
     bool HasOwnedCard(FName CardId) const;
     bool HasCompletedEvent(FName EventId) const;
+    FString BuildHudActionDetail(const FGreeislandHudActionDefinition& Action) const;
     FString BuildEventActorStatusSummary(const FGreeislandEventActorStatusViewData& Status) const;
     FSessionActionResult FailResult(const FString& Message);
     FSessionActionResult HandleActionResult(const FSessionActionResult& ActionResult);

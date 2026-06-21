@@ -14,6 +14,7 @@ void UGreeislandDebugHudWidget::NativeConstruct()
     ApplyProjectSettingsDefaults();
     BuildRecommendedHudChecklist();
     BuildRecommendedHudPanels();
+    BuildRecommendedHudActions();
     BuildRecommendedWalkthrough();
     BuildRecommendedBlueprintAssets();
     RefreshPresentation();
@@ -44,6 +45,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
         RefreshBootstrapDiagnostics();
         RefreshFocusedEventPresentation();
         BuildEventActorStatusViewData();
+        BuildHudActionStates();
         BuildWalkthroughProgress();
         OnPresentationUpdated();
         return;
@@ -57,6 +59,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
     RefreshBootstrapDiagnostics();
     RefreshFocusedEventPresentation();
     BuildEventActorStatusViewData();
+    BuildHudActionStates();
     BuildWalkthroughProgress();
     OnPresentationUpdated();
 }
@@ -519,6 +522,138 @@ void UGreeislandDebugHudWidget::BuildRecommendedWalkthrough()
         TEXT("OwnedCardViewData と CompletedQuestIds が維持され、ゾーンクリア状態も復元される"));
 }
 
+void UGreeislandDebugHudWidget::BuildRecommendedHudActions()
+{
+    RecommendedHudActions.Reset();
+
+    auto AddAction =
+        [this](
+            const FString& ActionId,
+            const FString& Label,
+            const FString& MethodName,
+            const FString& PanelId,
+            const FString& Purpose,
+            const FString& EnableWhen,
+            const FString& InputHint,
+            int32 Priority,
+            bool bRecommended = true)
+    {
+        FGreeislandHudActionDefinition Action;
+        Action.ActionId = ActionId;
+        Action.Label = Label;
+        Action.MethodName = MethodName;
+        Action.PanelId = PanelId;
+        Action.Purpose = Purpose;
+        Action.EnableWhen = EnableWhen;
+        Action.InputHint = InputHint;
+        Action.Priority = Priority;
+        Action.bRecommendedForMinimalLoop = bRecommended;
+        RecommendedHudActions.Add(Action);
+    };
+
+    AddAction(
+        TEXT("bootstrap_session"),
+        TEXT("Bootstrap"),
+        TEXT("BootstrapSessionFromActor"),
+        TEXT("actions"),
+        TEXT("BootstrapActor の設定でセッション初期化または復元を走らせる。"),
+        TEXT("BootstrapActor が存在するとき"),
+        TEXT("Button"),
+        10);
+    AddAction(
+        TEXT("initialize_new_session"),
+        TEXT("New Session"),
+        TEXT("InitializeNewSession"),
+        TEXT("actions"),
+        TEXT("JSON から新規セッションを作る。"),
+        TEXT("カード/イベント JSON が読めるとき"),
+        TEXT("Button"),
+        20);
+    AddAction(
+        TEXT("restore_session"),
+        TEXT("Restore"),
+        TEXT("RestoreSession"),
+        TEXT("actions"),
+        TEXT("既存 save slot からセッションを戻す。"),
+        TEXT("SaveSession 実行済み、または save slot が存在するとき"),
+        TEXT("Button"),
+        30);
+    AddAction(
+        TEXT("save_session"),
+        TEXT("Save"),
+        TEXT("SaveSession"),
+        TEXT("actions"),
+        TEXT("現在の進行を保存する。"),
+        TEXT("セッション初期化後"),
+        TEXT("Button"),
+        40);
+    AddAction(
+        TEXT("interact_focused_event"),
+        TEXT("Interact Focused"),
+        TEXT("InteractWithFocusedEvent"),
+        TEXT("actions"),
+        TEXT("近接中の EventActor をそのまま起動する。"),
+        TEXT("FocusedEventDisplayName があり、近接イベントがあるとき"),
+        TEXT("Key E"),
+        50);
+    AddAction(
+        TEXT("resolve_active_event"),
+        TEXT("Resolve Active"),
+        TEXT("ResolveActiveEvent"),
+        TEXT("actions"),
+        TEXT("アクティブな非戦闘イベントを直接解決する。"),
+        TEXT("セッション初期化済み、かつ battle event ではないとき"),
+        TEXT("Button"),
+        60);
+    AddAction(
+        TEXT("start_active_combat"),
+        TEXT("Start Combat"),
+        TEXT("StartCombatForActiveEvent"),
+        TEXT("actions"),
+        TEXT("アクティブな battle event の戦闘を開始する。"),
+        TEXT("アクティブイベントが battle で、まだ combat 中ではないとき"),
+        TEXT("Button"),
+        70);
+    AddAction(
+        TEXT("run_enemy_turn"),
+        TEXT("Enemy Turn"),
+        TEXT("RunEnemyTurn"),
+        TEXT("actions"),
+        TEXT("現在の combat state を一手進める。"),
+        TEXT("combat 中のとき"),
+        TEXT("Button"),
+        80);
+    AddAction(
+        TEXT("grant_developer_card"),
+        TEXT("Grant Card"),
+        TEXT("GrantDeveloperCard"),
+        TEXT("actions"),
+        TEXT("詰まった箇所を飛ばすために開発用カードを追加する。"),
+        TEXT("セッション初期化後"),
+        TEXT("Button + CardId"),
+        90);
+    AddAction(
+        TEXT("build_ai_request"),
+        TEXT("Build AI Request"),
+        TEXT("BuildAiRequestForActiveEvent"),
+        TEXT("ai_debug"),
+        TEXT("AI GM へ送る入力を確認する。"),
+        TEXT("アクティブイベントがあるとき"),
+        TEXT("Button"),
+        100,
+        false);
+    AddAction(
+        TEXT("build_fallback_ai"),
+        TEXT("Fallback AI"),
+        TEXT("BuildFallbackAiResponseForActiveEvent"),
+        TEXT("ai_debug"),
+        TEXT("AI 失敗時の固定文面を確認する。"),
+        TEXT("アクティブイベントがあるとき"),
+        TEXT("Button"),
+        110,
+        false);
+}
+
 void UGreeislandDebugHudWidget::BuildRecommendedBlueprintAssets()
 {
     RecommendedBlueprintAssets.Reset();
@@ -781,6 +916,69 @@ void UGreeislandDebugHudWidget::BuildEventActorStatusViewData()
     }
 }
 
+void UGreeislandDebugHudWidget::BuildHudActionStates()
+{
+    HudActionStates.Reset();
+
+    for (const FGreeislandHudActionDefinition& Action : RecommendedHudActions)
+    {
+        FGreeislandHudActionState State;
+        State.ActionId = Action.ActionId;
+
+        if (Action.ActionId == TEXT("bootstrap_session"))
+        {
+            State.bEnabled = FindBootstrapActor() != nullptr;
+        }
+        else if (Action.ActionId == TEXT("initialize_new_session"))
+        {
+            State.bEnabled = true;
+        }
+        else if (Action.ActionId == TEXT("restore_session"))
+        {
+            State.bEnabled = LastBootstrapDiagnostics.bSaveExists;
+        }
+        else if (Action.ActionId == TEXT("save_session"))
+        {
+            State.bEnabled = CurrentSnapshot.bHasInitializedSession;
+        }
+        else if (Action.ActionId == TEXT("interact_focused_event"))
+        {
+            State.bEnabled = bHasFocusedEvent;
+        }
+        else if (Action.ActionId == TEXT("resolve_active_event"))
+        {
+            const FGreeislandEventViewData* Event = FindEventViewDataById(CurrentSnapshot.ActiveEventId);
+            State.bEnabled = CurrentSnapshot.bHasInitializedSession &&
+                Event != nullptr &&
+                Event->Type != EExplorationEventType::Battle;
+        }
+        else if (Action.ActionId == TEXT("start_active_combat"))
+        {
+            const FGreeislandEventViewData* Event = FindEventViewDataById(CurrentSnapshot.ActiveEventId);
+            State.bEnabled = CurrentSnapshot.bHasInitializedSession &&
+                !CurrentSnapshot.bCombatActive &&
+                Event != nullptr &&
+                Event->Type == EExplorationEventType::Battle;
+        }
+        else if (Action.ActionId == TEXT("run_enemy_turn"))
+        {
+            State.bEnabled = CurrentSnapshot.bCombatActive;
+        }
+        else if (Action.ActionId == TEXT("grant_developer_card"))
+        {
+            State.bEnabled = CurrentSnapshot.bHasInitializedSession;
+        }
+        else if (Action.ActionId == TEXT("build_ai_request") || Action.ActionId == TEXT("build_fallback_ai"))
+        {
+            State.bEnabled = CurrentSnapshot.bHasInitializedSession && !CurrentSnapshot.ActiveEventId.IsNone();
+        }
+
+        State.AvailabilityLabel = State.bEnabled ? TEXT("Enabled") : TEXT("Disabled");
+        State.Detail = BuildHudActionDetail(Action);
+        HudActionStates.Add(State);
+    }
+}
+
 void UGreeislandDebugHudWidget::RefreshBootstrapDiagnostics()
 {
     LastBootstrapDiagnostics = FGreeislandBootstrapDiagnostics();
@@ -866,6 +1064,37 @@ bool UGreeislandDebugHudWidget::HasCompletedEvent(FName EventId) const
     }
 
     return false;
+}
+
+FString UGreeislandDebugHudWidget::BuildHudActionDetail(const FGreeislandHudActionDefinition& Action) const
+{
+    if (Action.ActionId == TEXT("restore_session") && !LastBootstrapDiagnostics.bSaveExists)
+    {
+        return TEXT("Save slot がまだ無いので Restore は待機。");
+    }
+
+    if (Action.ActionId == TEXT("interact_focused_event") && !bHasFocusedEvent)
+    {
+        return TEXT("イベント地点に近づくと有効になる。");
+    }
+
+    if (Action.ActionId == TEXT("resolve_active_event") || Action.ActionId == TEXT("start_active_combat"))
+    {
+        if (const FGreeislandEventViewData* Event = FindEventViewDataById(CurrentSnapshot.ActiveEventId))
+        {
+            return FString::Printf(
+                TEXT("Active=%s (%s)"),
+                *Event->EventId.ToString(),
+                Event->Type == EExplorationEventType::Battle ? TEXT("Battle") : TEXT("NonBattle"));
+        }
+    }
+
+    if (Action.ActionId == TEXT("run_enemy_turn") && !CurrentSnapshot.bCombatActive)
+    {
+        return TEXT("Combat 開始後に有効になる。");
+    }
+
+    return Action.EnableWhen;
 }
 
 FString UGreeislandDebugHudWidget::BuildEventActorStatusSummary(
