@@ -17,6 +17,7 @@
   - `BuildFallbackAiResponseForActiveEvent` と `ValidateAiResponseForActiveEvent` で固定文面フォールバックと検証結果を取得可能
   - `GrantDeveloperCard` で任意カードを開発用に所持/デッキへ注入できる
   - `BootstrapSessionFromActor` と `LastBootstrapDiagnostics` でレベル上の BootstrapActor をHUDから直接確認できる
+  - `GetRecommendedHudChecklist` で最小HUDに置くべき表示項目とボタン一覧を取得できる
 - `AGreeislandDebugHud`
   - `DebugHudWidgetClass` を生成してViewportへ追加する `AHUD`
 - `AGreeislandDebugGameMode`
@@ -110,6 +111,13 @@
 - `EffectivePartySize`
 - `UnplayableReasons`
 
+`RecommendedHudChecklist` の各要素では以下を読める:
+
+- `Group`
+- `Label`
+- `BindingHint`
+- `bRecommendedByDefault`
+
 `LastBootstrapDiagnostics.ExpectedEventPlacements` の各要素では以下を読める:
 
 - `EventId`
@@ -139,6 +147,7 @@
 10. `LastBootstrapDiagnostics.Issues` から、JSONパスや save slot の不足を起動前に表示できる
 11. `LastBootstrapDiagnostics.MissingEventActorIds` を見れば、まだ置いていない `BP_GreeislandEventActor` が分かる
 12. `ExpectedEventPlacements` を一覧表示すれば、JSON定義順のマップ配置チェックリストとして使える
+13. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
 
 レベル配置ベースで進める場合:
 

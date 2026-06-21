@@ -8,6 +8,24 @@
 #include "Session/GameSessionTypes.h"
 #include "GreeislandDebugHudWidget.generated.h"
 
+USTRUCT(BlueprintType)
+struct FGreeislandHudChecklistItem
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Group;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Label;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString BindingHint;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bRecommendedByDefault = true;
+};
+
 UCLASS(Abstract, Blueprintable)
 class GREEISLAND_API UGreeislandDebugHudWidget : public UUserWidget
 {
@@ -164,6 +182,12 @@ public:
         return LastBootstrapDiagnostics;
     }
 
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const TArray<FGreeislandHudChecklistItem>& GetRecommendedHudChecklist() const
+    {
+        return RecommendedHudChecklist;
+    }
+
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config")
     bool bUseProjectSettingsDefaults = true;
@@ -240,8 +264,12 @@ protected:
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     FGreeislandBootstrapDiagnostics LastBootstrapDiagnostics;
 
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    TArray<FGreeislandHudChecklistItem> RecommendedHudChecklist;
+
 private:
     void ApplyProjectSettingsDefaults();
+    void BuildRecommendedHudChecklist();
     void RefreshBootstrapDiagnostics();
     void RefreshFocusedEventPresentation();
     AGreeislandBootstrapActor* FindBootstrapActor() const;

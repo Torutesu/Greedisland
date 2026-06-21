@@ -11,6 +11,7 @@ void UGreeislandDebugHudWidget::NativeConstruct()
 {
     Super::NativeConstruct();
     ApplyProjectSettingsDefaults();
+    BuildRecommendedHudChecklist();
     RefreshPresentation();
 }
 
@@ -292,6 +293,40 @@ void UGreeislandDebugHudWidget::ApplyProjectSettingsDefaults()
     DefaultPlayerId = Settings->DefaultPlayerId;
     DefaultOpeningDrawCount = Settings->DefaultOpeningDrawCount;
     SnapshotLogLineCount = Settings->SnapshotLogLineCount;
+}
+
+void UGreeislandDebugHudWidget::BuildRecommendedHudChecklist()
+{
+    RecommendedHudChecklist.Reset();
+
+    auto AddChecklistItem = [this](const FString& Group, const FString& Label, const FString& BindingHint, bool bRecommended = true)
+    {
+        FGreeislandHudChecklistItem Item;
+        Item.Group = Group;
+        Item.Label = Label;
+        Item.BindingHint = BindingHint;
+        Item.bRecommendedByDefault = bRecommended;
+        RecommendedHudChecklist.Add(Item);
+    };
+
+    AddChecklistItem(TEXT("Status"), TEXT("Current Event Name"), TEXT("CurrentSnapshot.ActiveEventDisplayName"));
+    AddChecklistItem(TEXT("Status"), TEXT("Bootstrap Issues"), TEXT("LastBootstrapDiagnostics.Issues"));
+    AddChecklistItem(TEXT("Status"), TEXT("Focused Event Name"), TEXT("FocusedEventDisplayName"));
+    AddChecklistItem(TEXT("Lists"), TEXT("Available Events"), TEXT("EventViewData"));
+    AddChecklistItem(TEXT("Lists"), TEXT("Hand Cards"), TEXT("HandCardViewData"));
+    AddChecklistItem(TEXT("Lists"), TEXT("Owned Cards"), TEXT("OwnedCardViewData"));
+    AddChecklistItem(TEXT("Lists"), TEXT("Recent Log Lines"), TEXT("CurrentSnapshot.RecentLogLines"));
+    AddChecklistItem(TEXT("Lists"), TEXT("Expected Event Placements"), TEXT("LastBootstrapDiagnostics.ExpectedEventPlacements"));
+    AddChecklistItem(TEXT("Actions"), TEXT("Bootstrap Session"), TEXT("BootstrapSessionFromActor"));
+    AddChecklistItem(TEXT("Actions"), TEXT("Initialize New Session"), TEXT("InitializeNewSession"));
+    AddChecklistItem(TEXT("Actions"), TEXT("Restore Session"), TEXT("RestoreSession"));
+    AddChecklistItem(TEXT("Actions"), TEXT("Save Session"), TEXT("SaveSession"));
+    AddChecklistItem(TEXT("Actions"), TEXT("Resolve Active Event"), TEXT("ResolveActiveEvent"));
+    AddChecklistItem(TEXT("Actions"), TEXT("Start Combat For Active Event"), TEXT("StartCombatForActiveEvent"));
+    AddChecklistItem(TEXT("Actions"), TEXT("Run Enemy Turn"), TEXT("RunEnemyTurn"));
+    AddChecklistItem(TEXT("Actions"), TEXT("Grant Developer Card"), TEXT("GrantDeveloperCard"));
+    AddChecklistItem(TEXT("Actions"), TEXT("Build AI Request"), TEXT("BuildAiRequestForActiveEvent"), false);
+    AddChecklistItem(TEXT("Actions"), TEXT("Build Fallback AI Response"), TEXT("BuildFallbackAiResponseForActiveEvent"), false);
 }
 
 void UGreeislandDebugHudWidget::RefreshBootstrapDiagnostics()
