@@ -139,6 +139,19 @@ def build_commands(tooling: UnrealTooling) -> dict[str, list[str] | None]:
     return commands
 
 
+def build_sequence(commands: dict[str, list[str] | None], action: str) -> list[list[str]] | None:
+    if action == "bootstrap_editor":
+        ordered = [commands["projectfiles"], commands["build_editor"], commands["open_editor"]]
+        if not all(ordered):
+            return None
+        return [command for command in ordered if command is not None]
+
+    command = commands.get(action)
+    if command is None:
+        return None
+    return [command]
+
+
 def collect_readiness(tooling: UnrealTooling) -> list[ReadinessItem]:
     items: list[ReadinessItem] = []
     project = uproject_path()
@@ -236,6 +249,11 @@ def print_doctor(tooling: UnrealTooling) -> int:
     if tooling.engine_root is None:
         print("- Install UE5.8 or set UE5_ROOT / UNREAL_ENGINE_ROOT, then rerun this doctor.")
     else:
+        bootstrap_sequence = build_sequence(commands, "bootstrap_editor")
+        if bootstrap_sequence:
+            print("- Bootstrap editor loop:")
+            for command in bootstrap_sequence:
+                print(f"  {' '.join(command)}")
         if commands["projectfiles"]:
             print(f"- Generate project files: {' '.join(commands['projectfiles'])}")
         if commands["build_editor"]:
@@ -248,21 +266,25 @@ def print_doctor(tooling: UnrealTooling) -> int:
 
 def run_named_command(tooling: UnrealTooling, action: str) -> int:
     commands = build_commands(tooling)
-    command = commands.get(action)
-    if not command:
+    sequence = build_sequence(commands, action)
+    if not sequence:
         print(f"{action} is unavailable because Unreal tooling was not found.", file=sys.stderr)
         return 2
 
-    print(f"Running: {' '.join(command)}")
-    completed = subprocess.run(command, cwd=repo_root())
-    return completed.returncode
+    for command in sequence:
+        print(f"Running: {' '.join(command)}")
+        completed = subprocess.run(command, cwd=repo_root())
+        if completed.returncode != 0:
+            return completed.returncode
+
+    return 0
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--action",
-        choices=("doctor", "print-plan", "projectfiles", "build-editor", "build-game", "open-editor"),
+        choices=("doctor", "print-plan", "projectfiles", "build-editor", "build-game", "open-editor", "bootstrap-editor"),
         default="print-plan",
         help="Action to run. Defaults to printing the resolved Unreal commands.",
     )
@@ -285,6 +307,8 @@ def main() -> int:
         return run_named_command(tooling, "build_game")
     if args.action == "open-editor":
         return run_named_command(tooling, "open_editor")
+    if args.action == "bootstrap-editor":
+        return run_named_command(tooling, "bootstrap_editor")
 
     print(f"Unknown action: {args.action}", file=sys.stderr)
     return 2

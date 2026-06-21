@@ -34,6 +34,12 @@ python3 scripts/ue_build_helper.py --action print-plan
 python3 scripts/ue_build_helper.py --action doctor
 ```
 
+UE が見つかっていて、そのまま projectfiles -> build-editor -> open-editor を流したいときは:
+
+```bash
+python3 scripts/ue_build_helper.py --action bootstrap-editor
+```
+
 ## 1. 作る Blueprint アセット
 
 `UGreeislandDebugHudWidget.GetRecommendedBlueprintAssets()` の返り値と同じ内容。

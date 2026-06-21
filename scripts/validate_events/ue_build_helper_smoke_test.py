@@ -51,6 +51,7 @@ def main() -> int:
             uht_binary=uht_binary,
         )
         commands = helper.build_commands(tooling)
+        bootstrap_sequence = helper.build_sequence(commands, "bootstrap_editor")
         readiness = helper.collect_readiness(tooling)
 
         assert_true(commands["projectfiles"] is not None, "projectfiles command exists")
@@ -61,6 +62,11 @@ def main() -> int:
         assert_equal(commands["build_game"][1], "Greeisland", "game target name")
         assert_true(any("Greeisland.uproject" in token for token in commands["projectfiles"]), "projectfiles includes uproject")
         assert_equal(commands["open_editor"][0], str(editor_bin), "open editor uses binary")
+        assert_true(bootstrap_sequence is not None, "bootstrap editor sequence exists")
+        assert_equal(len(bootstrap_sequence), 3, "bootstrap sequence step count")
+        assert_equal(bootstrap_sequence[0][0], str(projectfiles_script), "bootstrap starts with projectfiles")
+        assert_equal(bootstrap_sequence[1][0], str(build_script), "bootstrap continues with build")
+        assert_equal(bootstrap_sequence[2][0], str(editor_bin), "bootstrap ends by opening editor")
         assert_true(any(item.label == "Build.sh available" and item.ok for item in readiness), "readiness sees Build.sh")
         assert_true(any(item.label == "UnrealEditor detected" and item.ok for item in readiness), "readiness sees editor")
 

@@ -14,6 +14,8 @@ UE が入っている環境に持っていったら、`python3 scripts/ue_build_
 
 `python3 scripts/ue_build_helper.py --action doctor` を使うと、見つかっていないツールと次に叩くべきコマンドをまとめて出せる。
 
+UE が見つかっているなら、`python3 scripts/ue_build_helper.py --action bootstrap-editor` で `projectfiles -> build-editor -> open-editor` をそのまま順に流せる。
+
 ## すでに用意されているC++クラス
 
 - `UGreeislandGameSubsystem`
