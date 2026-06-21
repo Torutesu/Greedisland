@@ -335,6 +335,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudChecklist()
     AddChecklistItem(TEXT("Lists"), TEXT("Expected Event Route"), TEXT("LastBootstrapDiagnostics.ExpectedEventRoute"));
     AddChecklistItem(TEXT("Lists"), TEXT("Event Actor Status"), TEXT("EventActorStatusViewData"));
     AddChecklistItem(TEXT("Lists"), TEXT("Walkthrough Progress"), TEXT("WalkthroughProgress"));
+    AddChecklistItem(TEXT("Lists"), TEXT("Verification Checks"), TEXT("VerificationChecks"));
     AddChecklistItem(TEXT("Actions"), TEXT("Bootstrap Session"), TEXT("BootstrapSessionFromActor"));
     AddChecklistItem(TEXT("Actions"), TEXT("Initialize New Session"), TEXT("InitializeNewSession"));
     AddChecklistItem(TEXT("Actions"), TEXT("Restore Session"), TEXT("RestoreSession"));
@@ -382,7 +383,8 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudPanels()
             TEXT("CurrentSnapshot.ActiveEventDisplayName"),
             TEXT("LastBootstrapDiagnostics.Issues"),
             TEXT("FocusedEventDisplayName"),
-            TEXT("WalkthroughProgress")
+            TEXT("WalkthroughProgress"),
+            TEXT("VerificationChecks")
         });
 
     AddPanel(
@@ -675,7 +677,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedBlueprintAssets()
     AddBlueprintAsset(
         TEXT("BP_GreeislandDebugHudWidget"),
         TEXT("UGreeislandDebugHudWidget"),
-        TEXT("RecommendedHudChecklist / RecommendedWalkthrough / WalkthroughProgress / EventActorStatusViewData / LastBootstrapDiagnostics を表示する"));
+        TEXT("RecommendedHudChecklist / RecommendedWalkthrough / WalkthroughProgress / VerificationChecks / EventActorStatusViewData / LastBootstrapDiagnostics を表示する"));
     AddBlueprintAsset(
         TEXT("BP_GreeislandDebugHud"),
         TEXT("AGreeislandDebugHud"),

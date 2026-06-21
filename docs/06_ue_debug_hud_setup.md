@@ -193,6 +193,8 @@
 - `Detail`
 - `bRequiredForMinimalLoop`
 
+`Session Status` パネルでは、`WalkthroughProgress` と `VerificationChecks` を並べると起動直後の確認が一番早い。
+
 `HandCardViewData` / `OwnedCardViewData` では以下も読める:
 
 - `KindLabel`

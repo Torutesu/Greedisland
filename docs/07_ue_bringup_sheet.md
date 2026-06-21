@@ -109,6 +109,8 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
   - 補足1: `StatusSummary`
   - 補足2: `DetailSummary`
 
+起動直後は `WalkthroughProgress` と `VerificationChecks` を先頭に置くと、どこで止まっているか見分けやすい。
+
 推奨パネル順:
 
 1. `session_status`
