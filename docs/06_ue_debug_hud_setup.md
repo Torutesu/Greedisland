@@ -28,6 +28,7 @@
   - `GetWalkthroughProgress` で MVP 一周の進捗状態を取得できる
   - `GetEventActorStatusViewData` で EventActor の配置状態と進行状態の食い違いを一覧確認できる
   - `GetRecommendedBlueprintAssets` で作成すべき BP アセットと親クラス、最低設定を取得できる
+  - `bAutoRefreshPresentation` が既定で有効なので、歩行中の focused event や action state も HUD 上で自動追従する
 - `AGreeislandDebugHud`
   - `DebugHudWidgetClass` を生成してViewportへ追加する `AHUD`
 - `AGreeislandDebugGameMode`
@@ -204,6 +205,8 @@
 - `bHealthy`
 
 `Session Status` パネルでは、まず `SessionStatusRows` を先頭に置き、その下に `WalkthroughProgress` と `VerificationChecks` を並べると起動直後の確認が一番早い。
+
+`bAutoRefreshPresentation = true` のままなら、`FocusedEventDisplayName`、`EventActorStatusViewData`、`HudActionStates`、`SessionStatusRows` は探索中も定期更新される。既定の `AutoRefreshIntervalSeconds` は `0.2`。
 
 `HandCardViewData` / `OwnedCardViewData` では以下も読める:
 

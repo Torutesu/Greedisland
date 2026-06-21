@@ -21,6 +21,32 @@ void UGreeislandDebugHudWidget::NativeConstruct()
     RefreshPresentation();
 }
 
+void UGreeislandDebugHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+    Super::NativeTick(MyGeometry, InDeltaTime);
+
+    if (!bAutoRefreshPresentation)
+    {
+        return;
+    }
+
+    UWorld* World = GetWorld();
+    if (!World)
+    {
+        return;
+    }
+
+    const double RefreshInterval = FMath::Max(0.0, static_cast<double>(AutoRefreshIntervalSeconds));
+    const double NowSeconds = World->GetTimeSeconds();
+    if (LastPresentationRefreshTimeSeconds >= 0.0 &&
+        (NowSeconds - LastPresentationRefreshTimeSeconds) < RefreshInterval)
+    {
+        return;
+    }
+
+    RefreshPresentation();
+}
+
 UGreeislandGameSubsystem* UGreeislandDebugHudWidget::GetGreeislandSubsystem() const
 {
     const UGameInstance* GameInstance = GetGameInstance();
@@ -34,6 +60,9 @@ UGreeislandGameSubsystem* UGreeislandDebugHudWidget::GetGreeislandSubsystem() co
 
 void UGreeislandDebugHudWidget::RefreshPresentation()
 {
+    UWorld* World = GetWorld();
+    LastPresentationRefreshTimeSeconds = World ? World->GetTimeSeconds() : -1.0;
+
     UGreeislandGameSubsystem* Subsystem = GetGreeislandSubsystem();
     if (!Subsystem)
     {
@@ -330,6 +359,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudChecklist()
     AddChecklistItem(TEXT("Status"), TEXT("Bootstrap Issues"), TEXT("LastBootstrapDiagnostics.Issues"));
     AddChecklistItem(TEXT("Status"), TEXT("Focused Event Name"), TEXT("FocusedEventDisplayName"));
     AddChecklistItem(TEXT("Status"), TEXT("Session Status Rows"), TEXT("SessionStatusRows"));
+    AddChecklistItem(TEXT("Status"), TEXT("Auto Refresh State"), TEXT("bAutoRefreshPresentation / AutoRefreshIntervalSeconds"), false);
     AddChecklistItem(TEXT("Lists"), TEXT("Available Events"), TEXT("EventViewData"));
     AddChecklistItem(TEXT("Lists"), TEXT("Hand Cards"), TEXT("HandCardViewData"));
     AddChecklistItem(TEXT("Lists"), TEXT("Owned Cards"), TEXT("OwnedCardViewData"));
@@ -681,7 +711,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedBlueprintAssets()
     AddBlueprintAsset(
         TEXT("BP_GreeislandDebugHudWidget"),
         TEXT("UGreeislandDebugHudWidget"),
-        TEXT("RecommendedHudChecklist / RecommendedWalkthrough / WalkthroughProgress / VerificationChecks / EventActorStatusViewData / LastBootstrapDiagnostics を表示する"));
+        TEXT("RecommendedHudChecklist / RecommendedWalkthrough / WalkthroughProgress / VerificationChecks / EventActorStatusViewData / LastBootstrapDiagnostics を表示し、bAutoRefreshPresentation を有効のまま使う"));
     AddBlueprintAsset(
         TEXT("BP_GreeislandDebugHud"),
         TEXT("AGreeislandDebugHud"),

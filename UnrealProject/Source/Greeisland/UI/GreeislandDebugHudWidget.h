@@ -273,6 +273,7 @@ class GREEISLAND_API UGreeislandDebugHudWidget : public UUserWidget
 
 public:
     virtual void NativeConstruct() override;
+    virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
     UGreeislandGameSubsystem* GetGreeislandSubsystem() const;
@@ -484,6 +485,12 @@ public:
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config")
+    bool bAutoRefreshPresentation = true;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config", meta=(ClampMin="0.0"))
+    float AutoRefreshIntervalSeconds = 0.2f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config")
     bool bUseProjectSettingsDefaults = true;
 
     UFUNCTION(BlueprintImplementableEvent, Category = "Greeisland|UI")
@@ -613,4 +620,6 @@ private:
     FString BuildEventActorStatusSummary(const FGreeislandEventActorStatusViewData& Status) const;
     FSessionActionResult FailResult(const FString& Message);
     FSessionActionResult HandleActionResult(const FSessionActionResult& ActionResult);
+
+    double LastPresentationRefreshTimeSeconds = -1.0;
 };

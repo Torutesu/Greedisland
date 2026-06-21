@@ -43,6 +43,7 @@
 - HUD action definition DTO
 - HUD action state DTO
 - HUD verification check DTO
+- HUD auto-refresh tick for focused event / action state / session status
 - HUD walkthrough checklist DTO
 - HUD walkthrough progress DTO
 - HUD event actor status DTO

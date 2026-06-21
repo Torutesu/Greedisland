@@ -125,6 +125,8 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 - `bHealthy`
   - 色替えやアイコン切り替え用
 
+`UGreeislandDebugHudWidget` は既定で `0.2` 秒ごとに自動更新されるので、探索中に `Focused Event` や `Interact Focused` の有効状態が追従する前提でよい。
+
 推奨パネル順:
 
 1. `session_status`
@@ -281,6 +283,10 @@ MVP の最小配置イメージ:
   - `HUDClass`
   - `DebugHudWidgetClass`
   の 3 点を順に確認する
+
+- Focused Event やボタン状態が歩いても変わらない:
+  - `BP_GreeislandDebugHudWidget` 側で `bAutoRefreshPresentation` を無効にしていないか確認する
+  - `AutoRefreshIntervalSeconds` を極端に大きくしていないか確認する
 
 - プレイヤーが動かない:
   - `DefaultInput.ini`
