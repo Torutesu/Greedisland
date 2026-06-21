@@ -12,6 +12,7 @@ void UGreeislandDebugHudWidget::NativeConstruct()
     Super::NativeConstruct();
     ApplyProjectSettingsDefaults();
     BuildRecommendedHudChecklist();
+    BuildRecommendedWalkthrough();
     RefreshPresentation();
 }
 
@@ -327,6 +328,66 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudChecklist()
     AddChecklistItem(TEXT("Actions"), TEXT("Grant Developer Card"), TEXT("GrantDeveloperCard"));
     AddChecklistItem(TEXT("Actions"), TEXT("Build AI Request"), TEXT("BuildAiRequestForActiveEvent"), false);
     AddChecklistItem(TEXT("Actions"), TEXT("Build Fallback AI Response"), TEXT("BuildFallbackAiResponseForActiveEvent"), false);
+}
+
+void UGreeislandDebugHudWidget::BuildRecommendedWalkthrough()
+{
+    RecommendedWalkthrough.Reset();
+
+    auto AddWalkthroughStep =
+        [this](int32 Order, const FString& Label, FName EventId, const FString& ActionHint, const FString& SuccessHint)
+    {
+        FGreeislandWalkthroughStep Step;
+        Step.Order = Order;
+        Step.Label = Label;
+        Step.EventId = EventId;
+        Step.ActionHint = ActionHint;
+        Step.SuccessHint = SuccessHint;
+        RecommendedWalkthrough.Add(Step);
+    };
+
+    AddWalkthroughStep(
+        1,
+        TEXT("Bootstrap Session"),
+        NAME_None,
+        TEXT("BootstrapSessionFromActor or InitializeNewSession"),
+        TEXT("LastBootstrapDiagnostics.Issues が空で、CurrentSnapshot.bHasInitializedSession が true"));
+    AddWalkthroughStep(
+        2,
+        TEXT("Wake Cache"),
+        TEXT("event_wake_cache_001"),
+        TEXT("開始地点の EventActor を E で起動、または ResolveEventById(event_wake_cache_001)"),
+        TEXT("OwnedCardViewData に starter cards、EventViewData に event_contract_broker_001"));
+    AddWalkthroughStep(
+        3,
+        TEXT("Contract Broker"),
+        TEXT("event_contract_broker_001"),
+        TEXT("契約屋リオへ接触。必要なら BuildFallbackAiResponseForActiveEvent で会話文面も確認"),
+        TEXT("item_contract_001 / rule_party_proxy_001 が揃い、event_silent_shrine_001 と event_ridge_scout_001 が開放"));
+    AddWalkthroughStep(
+        4,
+        TEXT("Silent Shrine"),
+        TEXT("event_silent_shrine_001"),
+        TEXT("Quest EventActor を起動して制約系カードを取得"),
+        TEXT("CompletedQuestIds に event_silent_shrine_001、OwnedCardViewData に con_silent_oath_001 などが追加"));
+    AddWalkthroughStep(
+        5,
+        TEXT("Ridge Scout Battle"),
+        TEXT("event_ridge_scout_001"),
+        TEXT("StartCombatForActiveEvent で戦闘開始し、HandCardViewData を使って勝利まで進める"),
+        TEXT("con_four_party_001 が獲得され、event_proxy_gate_001 が開放"));
+    AddWalkthroughStep(
+        6,
+        TEXT("Proxy Gate"),
+        TEXT("event_proxy_gate_001"),
+        TEXT("必要カードが揃ったらゲート EventActor を起動"),
+        TEXT("key_zone_core_001 が獲得され、CurrentSnapshot.bZoneCleared が true"));
+    AddWalkthroughStep(
+        7,
+        TEXT("Save And Restore"),
+        NAME_None,
+        TEXT("SaveSession のあと RestoreSession を実行"),
+        TEXT("OwnedCardViewData と CompletedQuestIds が維持され、ゾーンクリア状態も復元される"));
 }
 
 void UGreeislandDebugHudWidget::RefreshBootstrapDiagnostics()

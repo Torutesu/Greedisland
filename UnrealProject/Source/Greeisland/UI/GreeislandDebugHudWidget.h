@@ -26,6 +26,27 @@ struct FGreeislandHudChecklistItem
     bool bRecommendedByDefault = true;
 };
 
+USTRUCT(BlueprintType)
+struct FGreeislandWalkthroughStep
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    int32 Order = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Label;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FName EventId;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString ActionHint;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString SuccessHint;
+};
+
 UCLASS(Abstract, Blueprintable)
 class GREEISLAND_API UGreeislandDebugHudWidget : public UUserWidget
 {
@@ -188,6 +209,12 @@ public:
         return RecommendedHudChecklist;
     }
 
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const TArray<FGreeislandWalkthroughStep>& GetRecommendedWalkthrough() const
+    {
+        return RecommendedWalkthrough;
+    }
+
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config")
     bool bUseProjectSettingsDefaults = true;
@@ -267,9 +294,13 @@ protected:
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     TArray<FGreeislandHudChecklistItem> RecommendedHudChecklist;
 
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    TArray<FGreeislandWalkthroughStep> RecommendedWalkthrough;
+
 private:
     void ApplyProjectSettingsDefaults();
     void BuildRecommendedHudChecklist();
+    void BuildRecommendedWalkthrough();
     void RefreshBootstrapDiagnostics();
     void RefreshFocusedEventPresentation();
     AGreeislandBootstrapActor* FindBootstrapActor() const;

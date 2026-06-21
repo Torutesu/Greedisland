@@ -38,6 +38,7 @@
 - EventActor 配置漏れ / 重複の bootstrap diagnostics
 - Event placement checklist DTO
 - HUD layout checklist DTO
+- HUD walkthrough checklist DTO
 - GameInstanceSubsystem ベースのランタイム接続層
 - UMG向け UI snapshot / playable card 取得API
 - Blueprint向け card/event view data 取得API

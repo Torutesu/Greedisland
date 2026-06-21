@@ -18,6 +18,7 @@
   - `GrantDeveloperCard` で任意カードを開発用に所持/デッキへ注入できる
   - `BootstrapSessionFromActor` と `LastBootstrapDiagnostics` でレベル上の BootstrapActor をHUDから直接確認できる
   - `GetRecommendedHudChecklist` で最小HUDに置くべき表示項目とボタン一覧を取得できる
+  - `GetRecommendedWalkthrough` で MVP 一周の推奨確認手順を取得できる
 - `AGreeislandDebugHud`
   - `DebugHudWidgetClass` を生成してViewportへ追加する `AHUD`
 - `AGreeislandDebugGameMode`
@@ -118,6 +119,14 @@
 - `BindingHint`
 - `bRecommendedByDefault`
 
+`RecommendedWalkthrough` の各要素では以下を読める:
+
+- `Order`
+- `Label`
+- `EventId`
+- `ActionHint`
+- `SuccessHint`
+
 `LastBootstrapDiagnostics.ExpectedEventPlacements` の各要素では以下を読める:
 
 - `EventId`
@@ -148,6 +157,7 @@
 11. `LastBootstrapDiagnostics.MissingEventActorIds` を見れば、まだ置いていない `BP_GreeislandEventActor` が分かる
 12. `ExpectedEventPlacements` を一覧表示すれば、JSON定義順のマップ配置チェックリストとして使える
 13. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
+14. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
 
 レベル配置ベースで進める場合:
 
