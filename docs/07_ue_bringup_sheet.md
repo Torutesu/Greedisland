@@ -76,6 +76,7 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 
 ### Status
 
+- `SessionStatusRows`
 - `CurrentSnapshot.ActiveEventDisplayName`
 - `LastBootstrapDiagnostics.Issues`
 - `FocusedEventDisplayName`
@@ -110,6 +111,19 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
   - 補足2: `DetailSummary`
 
 起動直後は `WalkthroughProgress` と `VerificationChecks` を先頭に置くと、どこで止まっているか見分けやすい。
+
+`SessionStatusRows` を最上段の repeater/list にそのまま流すと、Blueprint 側で文言を組み立てずに済む。
+
+- `Label`
+  - 行見出し
+- `Value`
+  - 現在値
+- `StatusLabel`
+  - `Ready` / `Clean` / `Live` / `In Range` などの短い状態表示
+- `Detail`
+  - 補足説明
+- `bHealthy`
+  - 色替えやアイコン切り替え用
 
 推奨パネル順:
 

@@ -12,6 +12,7 @@ python3 scripts/validate_events/ue_event_actor_status_smoke_test.py
 python3 scripts/validate_events/ue_hud_action_state_smoke_test.py
 python3 scripts/validate_events/ue_runtime_viewdata_surface_smoke_test.py
 python3 scripts/validate_events/ue_verification_check_smoke_test.py
+python3 scripts/validate_events/ue_session_status_rows_smoke_test.py
 python3 scripts/validate_cards/rule_smoke_test.py
 python3 scripts/validate_cards/combat_smoke_test.py
 python3 scripts/validate_cards/playability_reason_smoke_test.py

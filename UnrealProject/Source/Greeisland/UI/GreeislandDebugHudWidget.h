@@ -242,6 +242,30 @@ struct FGreeislandVerificationCheckItem
     bool bRequiredForMinimalLoop = true;
 };
 
+USTRUCT(BlueprintType)
+struct FGreeislandSessionStatusRow
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString RowId;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Label;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Value;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString StatusLabel;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString Detail;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bHealthy = false;
+};
+
 UCLASS(Abstract, Blueprintable)
 class GREEISLAND_API UGreeislandDebugHudWidget : public UUserWidget
 {
@@ -435,6 +459,12 @@ public:
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const TArray<FGreeislandSessionStatusRow>& GetSessionStatusRows() const
+    {
+        return SessionStatusRows;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
     const TArray<FGreeislandWalkthroughStep>& GetRecommendedWalkthrough() const
     {
         return RecommendedWalkthrough;
@@ -547,6 +577,9 @@ protected:
     TArray<FGreeislandVerificationCheckItem> VerificationChecks;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    TArray<FGreeislandSessionStatusRow> SessionStatusRows;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     TArray<FGreeislandWalkthroughStep> RecommendedWalkthrough;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
@@ -566,6 +599,7 @@ private:
     void BuildEventActorStatusViewData();
     void BuildHudActionStates();
     void BuildVerificationChecks();
+    void BuildSessionStatusRows();
     void RefreshBootstrapDiagnostics();
     void RefreshFocusedEventPresentation();
     AGreeislandBootstrapActor* FindBootstrapActor() const;

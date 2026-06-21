@@ -23,6 +23,7 @@
   - `GetRecommendedHudPanels` で最小HUDをどのパネルに分けるか取得できる
   - `GetRecommendedHudActions` と `GetHudActionStates` でボタン定義と有効/無効状態を取得できる
   - `GetVerificationChecks` でMVP bring-up の pass/fail 一覧を取得できる
+  - `GetSessionStatusRows` で最上段パネル用の行データをそのまま取得できる
   - `GetRecommendedWalkthrough` で MVP 一周の推奨確認手順を取得できる
   - `GetWalkthroughProgress` で MVP 一周の進捗状態を取得できる
   - `GetEventActorStatusViewData` で EventActor の配置状態と進行状態の食い違いを一覧確認できる
@@ -193,7 +194,16 @@
 - `Detail`
 - `bRequiredForMinimalLoop`
 
-`Session Status` パネルでは、`WalkthroughProgress` と `VerificationChecks` を並べると起動直後の確認が一番早い。
+`SessionStatusRows` の各要素では以下を読める:
+
+- `RowId`
+- `Label`
+- `Value`
+- `StatusLabel`
+- `Detail`
+- `bHealthy`
+
+`Session Status` パネルでは、まず `SessionStatusRows` を先頭に置き、その下に `WalkthroughProgress` と `VerificationChecks` を並べると起動直後の確認が一番早い。
 
 `HandCardViewData` / `OwnedCardViewData` では以下も読める:
 

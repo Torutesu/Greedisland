@@ -46,9 +46,10 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
         RefreshBootstrapDiagnostics();
         RefreshFocusedEventPresentation();
         BuildEventActorStatusViewData();
+        BuildWalkthroughProgress();
         BuildHudActionStates();
         BuildVerificationChecks();
-        BuildWalkthroughProgress();
+        BuildSessionStatusRows();
         OnPresentationUpdated();
         return;
     }
@@ -61,9 +62,10 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
     RefreshBootstrapDiagnostics();
     RefreshFocusedEventPresentation();
     BuildEventActorStatusViewData();
+    BuildWalkthroughProgress();
     BuildHudActionStates();
     BuildVerificationChecks();
-    BuildWalkthroughProgress();
+    BuildSessionStatusRows();
     OnPresentationUpdated();
 }
 
@@ -327,6 +329,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudChecklist()
     AddChecklistItem(TEXT("Status"), TEXT("Current Event Name"), TEXT("CurrentSnapshot.ActiveEventDisplayName"));
     AddChecklistItem(TEXT("Status"), TEXT("Bootstrap Issues"), TEXT("LastBootstrapDiagnostics.Issues"));
     AddChecklistItem(TEXT("Status"), TEXT("Focused Event Name"), TEXT("FocusedEventDisplayName"));
+    AddChecklistItem(TEXT("Status"), TEXT("Session Status Rows"), TEXT("SessionStatusRows"));
     AddChecklistItem(TEXT("Lists"), TEXT("Available Events"), TEXT("EventViewData"));
     AddChecklistItem(TEXT("Lists"), TEXT("Hand Cards"), TEXT("HandCardViewData"));
     AddChecklistItem(TEXT("Lists"), TEXT("Owned Cards"), TEXT("OwnedCardViewData"));
@@ -380,6 +383,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudPanels()
         TEXT("VerticalBox"),
         10,
         {
+            TEXT("SessionStatusRows"),
             TEXT("CurrentSnapshot.ActiveEventDisplayName"),
             TEXT("LastBootstrapDiagnostics.Issues"),
             TEXT("FocusedEventDisplayName"),
@@ -1091,6 +1095,160 @@ void UGreeislandDebugHudWidget::BuildVerificationChecks()
             ? TEXT("アクティブイベントがないと AI request は組めない。")
             : TEXT("Build AI Request / Fallback AI を試せる。"),
         false);
+}
+
+void UGreeislandDebugHudWidget::BuildSessionStatusRows()
+{
+    SessionStatusRows.Reset();
+
+    auto AddRow =
+        [this](
+            const FString& RowId,
+            const FString& Label,
+            const FString& Value,
+            bool bHealthy,
+            const FString& Detail,
+            const FString& HealthyLabel = TEXT("Healthy"),
+            const FString& UnhealthyLabel = TEXT("Needs Work"))
+    {
+        FGreeislandSessionStatusRow Row;
+        Row.RowId = RowId;
+        Row.Label = Label;
+        Row.Value = Value;
+        Row.bHealthy = bHealthy;
+        Row.StatusLabel = bHealthy ? HealthyLabel : UnhealthyLabel;
+        Row.Detail = Detail;
+        SessionStatusRows.Add(Row);
+    };
+
+    const int32 MissingPlacements = CountMissingActorPlacements();
+    const int32 DuplicatePlacements = CountDuplicateActorPlacements();
+    const int32 InteractableEvents = CountInteractableEventActors();
+    const int32 PlayableCardCount = PlayableCombatCardIds.Num();
+    const FString ZoneLabel = CurrentSnapshot.ZoneId.IsNone()
+        ? TEXT("No Zone")
+        : CurrentSnapshot.ZoneId.ToString();
+
+    AddRow(
+        TEXT("session"),
+        TEXT("Session"),
+        CurrentSnapshot.bHasInitializedSession ? TEXT("Initialized") : TEXT("Not Initialized"),
+        CurrentSnapshot.bHasInitializedSession,
+        CurrentSnapshot.bHasInitializedSession
+            ? FString::Printf(
+                TEXT("%s | Available %d | Owned %d | Completed %d"),
+                *ZoneLabel,
+                CurrentSnapshot.AvailableEventIds.Num(),
+                CurrentSnapshot.OwnedCardIds.Num(),
+                CurrentSnapshot.CompletedQuestIds.Num())
+            : TEXT("BootstrapSessionFromActor または InitializeNewSession を実行する。"),
+        TEXT("Ready"));
+
+    AddRow(
+        TEXT("bootstrap"),
+        TEXT("Bootstrap"),
+        LastBootstrapDiagnostics.Issues.Num() == 0
+            ? TEXT("Diagnostics Clean")
+            : FString::Printf(TEXT("%d Issues"), LastBootstrapDiagnostics.Issues.Num()),
+        LastBootstrapDiagnostics.Issues.Num() == 0,
+        LastBootstrapDiagnostics.Issues.Num() == 0
+            ? FString::Printf(
+                TEXT("Save=%s | Missing=%d | Duplicate=%d"),
+                LastBootstrapDiagnostics.bSaveExists ? TEXT("Present") : TEXT("None"),
+                MissingPlacements,
+                DuplicatePlacements)
+            : FString::Join(LastBootstrapDiagnostics.Issues, TEXT(" | ")),
+        TEXT("Clean"));
+
+    AddRow(
+        TEXT("active_event"),
+        TEXT("Active Event"),
+        CurrentSnapshot.ActiveEventId.IsNone()
+            ? TEXT("No Active Event")
+            : CurrentSnapshot.ActiveEventDisplayName.ToString(),
+        !CurrentSnapshot.ActiveEventId.IsNone(),
+        CurrentSnapshot.ActiveEventId.IsNone()
+            ? TEXT("探索地点へ移動するとアクティブイベントが切り替わる。")
+            : FString::Printf(
+                TEXT("%s | Combat=%s | Interactable=%d"),
+                *CurrentSnapshot.ActiveEventId.ToString(),
+                CurrentSnapshot.bCombatActive ? TEXT("On") : TEXT("Off"),
+                InteractableEvents),
+        TEXT("Live"),
+        TEXT("Idle"));
+
+    AddRow(
+        TEXT("focus"),
+        TEXT("Focused Event"),
+        bHasFocusedEvent ? FocusedEventDisplayName.ToString() : TEXT("No Focused Event"),
+        bHasFocusedEvent,
+        bHasFocusedEvent
+            ? FString::Printf(TEXT("%s | Press E or use Interact Focused"), *FocusedEventId.ToString())
+            : TEXT("イベント地点に近づくと近接フォーカスが入る。"),
+        TEXT("In Range"),
+        TEXT("Out Of Range"));
+
+    const FGreeislandWalkthroughStepState* NextStep = nullptr;
+    for (const FGreeislandWalkthroughStepState& Step : WalkthroughProgress)
+    {
+        if (Step.bCurrentFocus)
+        {
+            NextStep = &Step;
+            break;
+        }
+    }
+
+    const bool bWalkthroughHealthy = WalkthroughProgress.Num() > 0;
+    AddRow(
+        TEXT("walkthrough"),
+        TEXT("Walkthrough"),
+        NextStep != nullptr
+            ? FString::Printf(TEXT("%d. %s"), NextStep->Order, *NextStep->Label)
+            : (CurrentSnapshot.bZoneCleared ? TEXT("Zone Clear Reached") : TEXT("No Walkthrough State")),
+        bWalkthroughHealthy,
+        NextStep != nullptr
+            ? FString::Printf(TEXT("%s | %s"), *NextStep->StatusLabel, *NextStep->Detail)
+            : (CurrentSnapshot.bZoneCleared
+                ? TEXT("Final gate clear 済み。Save/Restore 検証へ進める。")
+                : TEXT("RefreshPresentation 後に進捗行が埋まる。")),
+        TEXT("Tracked"),
+        TEXT("Pending"));
+
+    AddRow(
+        TEXT("combat"),
+        TEXT("Combat"),
+        CurrentSnapshot.bCombatActive
+            ? FString::Printf(
+                TEXT("HP %d / Enemy %d / Energy %d"),
+                CurrentSnapshot.PlayerHp,
+                CurrentSnapshot.EnemyHp,
+                CurrentSnapshot.Energy)
+            : TEXT("Exploration"),
+        !CurrentSnapshot.bCombatActive || CurrentSnapshot.PlayerHp > 0,
+        CurrentSnapshot.bCombatActive
+            ? FString::Printf(
+                TEXT("Hand %d | Playable %d"),
+                HandCardViewData.Num(),
+                PlayableCardCount)
+            : FString::Printf(
+                TEXT("Available Events %d | Interactable %d"),
+                CurrentSnapshot.AvailableEventIds.Num(),
+                InteractableEvents),
+        TEXT("Stable"),
+        TEXT("At Risk"));
+
+    AddRow(
+        TEXT("progression"),
+        TEXT("Progression"),
+        CurrentSnapshot.bZoneCleared ? TEXT("Zone Cleared") : TEXT("In Progress"),
+        CurrentSnapshot.bZoneCleared,
+        FString::Printf(
+            TEXT("Completed Quests %d | Deck %d | Hand %d"),
+            CurrentSnapshot.CompletedQuestIds.Num(),
+            CurrentSnapshot.DeckCardIds.Num(),
+            CurrentSnapshot.HandCardIds.Num()),
+        TEXT("Complete"),
+        TEXT("Tracking"));
 }
 
 void UGreeislandDebugHudWidget::RefreshBootstrapDiagnostics()
