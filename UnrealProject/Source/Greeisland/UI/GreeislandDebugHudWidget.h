@@ -90,6 +90,9 @@ public:
     }
 
 protected:
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config")
+    bool bUseProjectSettingsDefaults = true;
+
     UFUNCTION(BlueprintImplementableEvent, Category = "Greeisland|UI")
     void OnPresentationUpdated();
 
@@ -136,6 +139,7 @@ protected:
     FSessionActionResult LastActionResult;
 
 private:
+    void ApplyProjectSettingsDefaults();
     FSessionActionResult FailResult(const FString& Message);
     FSessionActionResult HandleActionResult(const FSessionActionResult& ActionResult);
 };

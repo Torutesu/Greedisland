@@ -10,6 +10,7 @@ public class Greeisland : ModuleRules
         {
             "Core",
             "CoreUObject",
+            "DeveloperSettings",
             "Engine",
             "InputCore",
             "Json",
@@ -24,4 +25,3 @@ public class Greeisland : ModuleRules
         });
     }
 }
-

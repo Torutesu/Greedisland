@@ -27,12 +27,18 @@ Runtime entrypoint:
   `DebugHudWidgetClass` を指定すると BeginPlay でWidgetをViewportへ載せるHUDクラス
 - [AGreeislandDebugGameMode](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugGameMode.h)
   `PlayerController` と `HUD` をデバッグ向けにまとめたGameMode足場
+- [AGreeislandBootstrapActor](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Actors/GreeislandBootstrapActor.h)
+  BeginPlay時にセッション初期化または復元を自動実行するレベル配置用Actor
+- [AGreeislandEventActor](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Actors/GreeislandEventActor.h)
+  `EventId` を持ち、探索イベントまたは戦闘開始をSubsystemへ委譲するレベル配置用Actor
 - [UE5.8 デバッグHUD接続手順](/Users/torutano/Documents/Greeisland/docs/06_ue_debug_hud_setup.md)
 
 Project config:
 
 - [DefaultGame.ini](/Users/torutano/Documents/Greeisland/UnrealProject/Config/DefaultGame.ini)
   C++の `AGreeislandDebugGameMode` をデフォルトGameModeに設定
+- [UGreeislandProjectSettings](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Runtime/GreeislandProjectSettings.h)
+  `Project Settings > Game > Greeisland` から JSON パスや保存スロットなどを調整できる
 
 ## Validation
 

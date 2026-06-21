@@ -32,6 +32,14 @@
    - Parent Class: `AGreeislandDebugGameMode`
    - 必要なら `HUD Class` を `BP_GreeislandDebugHud` に差し替え
 
+4. `BP_GreeislandBootstrapActor`
+   - Parent Class: `AGreeislandBootstrapActor`
+   - マップに1個置く
+
+5. `BP_GreeislandEventActor`
+   - Parent Class: `AGreeislandEventActor`
+   - Eventごとに複製して `EventId` を設定
+
 ## World Settings / Project Settings
 
 最短では、対象マップの `World Settings` で `GameMode Override` を `BP_GreeislandDebugGameMode` にする。
@@ -42,6 +50,7 @@
 
 - `UnrealProject/Config/DefaultGame.ini` では C++ の `AGreeislandDebugGameMode` が `GlobalDefaultGameMode` に設定済み
 - Blueprint版を使う場合は `Project Settings` または `World Settings` で `BP_GreeislandDebugGameMode` へ差し替える
+- `Project Settings > Game > Greeisland` では `CardJsonPath`、`EventJsonPath`、`SaveSlotName`、`DefaultOpeningDrawCount` などを変更できる
 
 ## Widget Blueprint の最初の配置案
 
@@ -83,3 +92,10 @@
 3. `ResolveActiveEvent` で開始箱を解決する
 4. `OwnedCardViewData` に starter cards が出る
 5. `EventViewData` に次イベントが解放される
+
+レベル配置ベースで進める場合:
+
+1. `BP_GreeislandBootstrapActor` を1個置く
+2. `BP_GreeislandEventActor` をイベント地点ごとに置く
+3. それぞれの `EventId` を `data/events/events.mvp.json` に対応させる
+4. プレイヤー接触やボタン入力から `TriggerEvent` を呼ぶ

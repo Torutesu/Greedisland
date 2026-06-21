@@ -1,10 +1,12 @@
 #include "UI/GreeislandDebugHudWidget.h"
 
 #include "Engine/GameInstance.h"
+#include "Runtime/GreeislandProjectSettings.h"
 
 void UGreeislandDebugHudWidget::NativeConstruct()
 {
     Super::NativeConstruct();
+    ApplyProjectSettingsDefaults();
     RefreshPresentation();
 }
 
@@ -149,6 +151,28 @@ FSessionActionResult UGreeislandDebugHudWidget::ApplyAiRewardResponse(
     Response.AllowedRewardCardIds = AllowedRewardCardIds;
     Response.DifficultyHint = TEXT("medium");
     return HandleActionResult(Subsystem->ApplyAiResponse(Response, PlayerChoice));
+}
+
+void UGreeislandDebugHudWidget::ApplyProjectSettingsDefaults()
+{
+    if (!bUseProjectSettingsDefaults)
+    {
+        return;
+    }
+
+    const UGreeislandProjectSettings* Settings = GetDefault<UGreeislandProjectSettings>();
+    if (!Settings)
+    {
+        return;
+    }
+
+    CardJsonPath = Settings->CardJsonPath;
+    EventJsonPath = Settings->EventJsonPath;
+    SaveSlotName = Settings->SaveSlotName;
+    SaveUserIndex = Settings->SaveUserIndex;
+    DefaultPlayerId = Settings->DefaultPlayerId;
+    DefaultOpeningDrawCount = Settings->DefaultOpeningDrawCount;
+    SnapshotLogLineCount = Settings->SnapshotLogLineCount;
 }
 
 FSessionActionResult UGreeislandDebugHudWidget::FailResult(const FString& Message)

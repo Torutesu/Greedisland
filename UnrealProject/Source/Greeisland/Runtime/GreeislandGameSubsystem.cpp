@@ -130,6 +130,27 @@ FSessionActionResult UGreeislandGameSubsystem::ResolveEvent(FName EventId)
     return Result;
 }
 
+FSessionActionResult UGreeislandGameSubsystem::ResolveOrStartEvent(FName EventId, int32 OpeningDrawCount)
+{
+    FSessionActionResult Guard = EnsureInitialized();
+    if (!Guard.bSuccess)
+    {
+        return Guard;
+    }
+
+    FExplorationEventDefinition Event;
+    if (!GetEventDefinition(EventId, Event))
+    {
+        return FailResult(FString::Printf(TEXT("Unknown event %s."), *EventId.ToString()));
+    }
+
+    FSessionActionResult Result = (Event.Type == EExplorationEventType::Battle)
+        ? UGameSessionLibrary::StartCombatForEvent(Session, EventId, OpeningDrawCount)
+        : UGameSessionLibrary::ResolveEventInSession(Session, EventId);
+    AppendRuntimeLogs(Result);
+    return Result;
+}
+
 FSessionActionResult UGreeislandGameSubsystem::StartCombat(FName EventId, int32 OpeningDrawCount)
 {
     FSessionActionResult Guard = EnsureInitialized();
@@ -361,6 +382,25 @@ void UGreeislandGameSubsystem::BuildEventViewData(TArray<FGreeislandEventViewDat
         ViewData.bIsActive = Session.ActiveEventId == Event.EventId;
         OutEvents.Add(ViewData);
     }
+}
+
+bool UGreeislandGameSubsystem::GetEventDefinition(FName EventId, FExplorationEventDefinition& OutEvent) const
+{
+    if (!bHasInitializedSession)
+    {
+        return false;
+    }
+
+    for (const FExplorationEventDefinition& Event : Session.ZoneEventSet.Events)
+    {
+        if (Event.EventId == EventId)
+        {
+            OutEvent = Event;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 FSessionActionResult UGreeislandGameSubsystem::FailResult(const FString& Message) const

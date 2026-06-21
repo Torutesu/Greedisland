@@ -38,6 +38,8 @@
 - ViewportへデバッグHUDを自動表示するAHUD足場
 - Debug PlayerController / Debug GameMode とUE接続手順
 - UnrealProject/Config の初期GameMode設定
+- DeveloperSettings 経由のDebug HUD設定
+- レベル配置用 BootstrapActor / EventActor
 - Unreal C++カード型定義
 - Unreal C++カードJSONローダー
 - Unreal C++ルール解決器 v0

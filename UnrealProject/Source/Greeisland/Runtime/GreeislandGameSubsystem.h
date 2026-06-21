@@ -143,6 +143,9 @@ public:
     FSessionActionResult ResolveEvent(FName EventId);
 
     UFUNCTION(BlueprintCallable, Category = "Greeisland|Runtime")
+    FSessionActionResult ResolveOrStartEvent(FName EventId, int32 OpeningDrawCount = 5);
+
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Runtime")
     FSessionActionResult StartCombat(FName EventId, int32 OpeningDrawCount);
 
     UFUNCTION(BlueprintCallable, Category = "Greeisland|Runtime")
@@ -176,6 +179,9 @@ public:
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
     void BuildEventViewData(TArray<FGreeislandEventViewData>& OutEvents) const;
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
+    bool GetEventDefinition(FName EventId, FExplorationEventDefinition& OutEvent) const;
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
     const FGreeislandGameSession& GetSession() const
