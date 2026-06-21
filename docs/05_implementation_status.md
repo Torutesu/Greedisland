@@ -196,6 +196,16 @@ OK: UE route graph smoke tests passed
 ```
 
 ```bash
+python3 scripts/validate_events/ue_walkthrough_progress_smoke_test.py
+```
+
+結果:
+
+```text
+OK: UE walkthrough progress smoke tests passed
+```
+
+```bash
 python3 scripts/validate_events/combat_resolution_smoke_test.py
 ```
 
