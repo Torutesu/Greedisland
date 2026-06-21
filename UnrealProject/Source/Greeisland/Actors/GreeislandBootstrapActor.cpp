@@ -10,6 +10,28 @@
 #include "Runtime/GreeislandProjectSettings.h"
 #include "Misc/Paths.h"
 
+namespace
+{
+FString EventTypeToString(EExplorationEventType EventType)
+{
+    switch (EventType)
+    {
+        case EExplorationEventType::Battle:
+            return TEXT("Battle");
+        case EExplorationEventType::Treasure:
+            return TEXT("Treasure");
+        case EExplorationEventType::Npc:
+            return TEXT("Npc");
+        case EExplorationEventType::Quest:
+            return TEXT("Quest");
+        case EExplorationEventType::KeyGate:
+            return TEXT("KeyGate");
+    }
+
+    return TEXT("Unknown");
+}
+}
+
 AGreeislandBootstrapActor::AGreeislandBootstrapActor()
 {
     PrimaryActorTick.bCanEverTick = false;
@@ -149,6 +171,16 @@ FGreeislandBootstrapDiagnostics AGreeislandBootstrapActor::GetBootstrapDiagnosti
                 ExpectedIds.Add(Event.EventId);
 
                 const int32 Count = SeenEventActorIds.FindRef(Event.EventId);
+                FGreeislandExpectedEventPlacement Placement;
+                Placement.EventId = Event.EventId;
+                Placement.DisplayName = Event.DisplayName;
+                Placement.EventType = EventTypeToString(Event.Type);
+                Placement.PlacementCount = Count;
+                Placement.bIsPlaced = Count > 0;
+                Placement.bIsDuplicate = Count > 1;
+                Placement.NextEventIds = Event.NextEventIds;
+                Diagnostics.ExpectedEventPlacements.Add(Placement);
+
                 if (Count == 0)
                 {
                     Diagnostics.MissingEventActorIds.Add(Event.EventId);

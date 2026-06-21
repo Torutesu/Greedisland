@@ -8,6 +8,33 @@
 class UGreeislandGameSubsystem;
 
 USTRUCT(BlueprintType)
+struct FGreeislandExpectedEventPlacement
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    FName EventId;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    FText DisplayName;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    FString EventType;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    int32 PlacementCount = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    bool bIsPlaced = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    bool bIsDuplicate = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    TArray<FName> NextEventIds;
+};
+
+USTRUCT(BlueprintType)
 struct FGreeislandBootstrapDiagnostics
 {
     GENERATED_BODY()
@@ -47,6 +74,9 @@ struct FGreeislandBootstrapDiagnostics
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
     TArray<FName> UnexpectedEventActorIds;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    TArray<FGreeislandExpectedEventPlacement> ExpectedEventPlacements;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
     TArray<FString> Issues;

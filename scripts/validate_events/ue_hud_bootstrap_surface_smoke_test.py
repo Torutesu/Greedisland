@@ -25,6 +25,8 @@ def main() -> int:
     assert_true("MissingEventActorIds" in bootstrap_text, "bootstrap diagnostics expose missing events")
     assert_true("DuplicateEventActorIds" in bootstrap_text, "bootstrap diagnostics expose duplicate events")
     assert_true("UnexpectedEventActorIds" in bootstrap_text, "bootstrap diagnostics expose unexpected events")
+    assert_true("FGreeislandExpectedEventPlacement" in bootstrap_text, "bootstrap diagnostics expose placement checklist struct")
+    assert_true("ExpectedEventPlacements" in bootstrap_text, "bootstrap diagnostics expose placement checklist array")
 
     print("OK: UE HUD bootstrap surface smoke tests passed")
     return 0

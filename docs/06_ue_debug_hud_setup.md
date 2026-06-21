@@ -29,6 +29,7 @@
   - `bUseProjectSettingsDefaults` が有効なら `Project Settings > Game > Greeisland` の JSON / save 設定をそのまま使う
   - `GetBootstrapDiagnostics` で JSON パス解決、save slot 有無、Subsystem 利用可否を事前確認できる
   - `MissingEventActorIds` / `DuplicateEventActorIds` / `UnexpectedEventActorIds` でマップ上のイベント配置ミスを確認できる
+  - `ExpectedEventPlacements` で JSON 定義順の配置チェックリストをそのまま UI に出せる
 
 ## UE側で作るもの
 
@@ -109,6 +110,16 @@
 - `EffectivePartySize`
 - `UnplayableReasons`
 
+`LastBootstrapDiagnostics.ExpectedEventPlacements` の各要素では以下を読める:
+
+- `EventId`
+- `DisplayName`
+- `EventType`
+- `PlacementCount`
+- `bIsPlaced`
+- `bIsDuplicate`
+- `NextEventIds`
+
 更新通知:
 
 - `OnPresentationUpdated`
@@ -127,6 +138,7 @@
 9. `HandCardViewData` の `UnplayableReasons` から、どの制約で使えないかをそのままUI表示できる
 10. `LastBootstrapDiagnostics.Issues` から、JSONパスや save slot の不足を起動前に表示できる
 11. `LastBootstrapDiagnostics.MissingEventActorIds` を見れば、まだ置いていない `BP_GreeislandEventActor` が分かる
+12. `ExpectedEventPlacements` を一覧表示すれば、JSON定義順のマップ配置チェックリストとして使える
 
 レベル配置ベースで進める場合:
 

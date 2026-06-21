@@ -30,7 +30,7 @@ Runtime entrypoint:
 - [AGreeislandDebugCharacter](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Characters/GreeislandDebugCharacter.h)
   `WASD` 移動、マウス視点、`E` インタラクトで探索イベントを踏める最小プレイアブルキャラクター
 - [AGreeislandBootstrapActor](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Actors/GreeislandBootstrapActor.h)
-  BeginPlay時にセッション初期化または復元を自動実行するレベル配置用Actor。診断で `EventActor` の配置漏れや重複も拾える
+  BeginPlay時にセッション初期化または復元を自動実行するレベル配置用Actor。診断で `EventActor` の配置漏れや重複を拾え、想定イベント順のチェックリストも返せる
 - [AGreeislandEventActor](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Actors/GreeislandEventActor.h)
   `EventId` を持ち、探索イベントまたは戦闘開始をSubsystemへ委譲するレベル配置用Actor。オーバーラップ自動発火と近接インタラクトにも対応
 - [UE5.8 デバッグHUD接続手順](/Users/torutano/Documents/Greeisland/docs/06_ue_debug_hud_setup.md)
