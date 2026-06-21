@@ -319,6 +319,127 @@ FSessionActionResult UGreeislandDebugHudWidget::ApplyAiRewardResponse(
     return HandleActionResult(Subsystem->ApplyAiResponse(Response, PlayerChoice));
 }
 
+FSessionActionResult UGreeislandDebugHudWidget::ExecuteHudActionById(
+    const FString& ActionId,
+    FName OptionalNameArgument,
+    const FString& OptionalStringArgument,
+    bool bOptionalFlag)
+{
+    const FGreeislandHudActionState* ActionState = FindHudActionStateById(ActionId);
+    if (ActionState && !ActionState->bEnabled)
+    {
+        return HandleActionResult(FailResult(FString::Printf(
+            TEXT("HUD action '%s' is currently disabled: %s"),
+            *ActionId,
+            *ActionState->Detail)));
+    }
+
+    if (ActionId == TEXT("bootstrap_session"))
+    {
+        return BootstrapSessionFromActor();
+    }
+
+    if (ActionId == TEXT("initialize_new_session"))
+    {
+        return InitializeNewSession();
+    }
+
+    if (ActionId == TEXT("restore_session"))
+    {
+        return RestoreSession();
+    }
+
+    if (ActionId == TEXT("save_session"))
+    {
+        return SaveSession();
+    }
+
+    if (ActionId == TEXT("interact_focused_event"))
+    {
+        return InteractWithFocusedEvent();
+    }
+
+    if (ActionId == TEXT("resolve_active_event"))
+    {
+        return ResolveActiveEvent();
+    }
+
+    if (ActionId == TEXT("start_active_combat"))
+    {
+        return StartCombatForActiveEvent();
+    }
+
+    if (ActionId == TEXT("run_enemy_turn"))
+    {
+        return RunEnemyTurn();
+    }
+
+    if (ActionId == TEXT("grant_developer_card"))
+    {
+        const FName CardId = OptionalNameArgument.IsNone() ? DefaultDeveloperGrantCardId : OptionalNameArgument;
+        if (CardId.IsNone())
+        {
+            return HandleActionResult(FailResult(TEXT("No developer card id was provided.")));
+        }
+
+        return GrantDeveloperCard(CardId, bOptionalFlag);
+    }
+
+    if (ActionId == TEXT("play_combat_card"))
+    {
+        if (OptionalNameArgument.IsNone())
+        {
+            return HandleActionResult(FailResult(TEXT("play_combat_card requires OptionalNameArgument = CardId.")));
+        }
+
+        return PlayCombatCardById(OptionalNameArgument);
+    }
+
+    if (ActionId == TEXT("build_ai_request"))
+    {
+        FAiGmRequest Request;
+        if (!BuildAiRequestForActiveEvent(OptionalStringArgument, Request))
+        {
+            return HandleActionResult(FailResult(TEXT("Failed to build AI request for the current active event.")));
+        }
+
+        FSessionActionResult Result;
+        Result.bSuccess = true;
+        Result.Reasons.Add(FString::Printf(
+            TEXT("Built AI request for %s with choice '%s'."),
+            CurrentSnapshot.ActiveEventId.IsNone() ? TEXT("no active event") : *CurrentSnapshot.ActiveEventId.ToString(),
+            OptionalStringArgument.IsEmpty() ? TEXT("<empty>") : *OptionalStringArgument));
+        RefreshPresentation();
+        OnActionResultUpdated(Result);
+        LastActionResult = Result;
+        return LastActionResult;
+    }
+
+    if (ActionId == TEXT("build_fallback_ai"))
+    {
+        FAiGmResponse Response;
+        if (!BuildFallbackAiResponseForActiveEvent(OptionalStringArgument, Response))
+        {
+            return HandleActionResult(FailResult(TEXT("Failed to build fallback AI response for the current active event.")));
+        }
+
+        FSessionActionResult Result;
+        Result.bSuccess = true;
+        Result.Reasons.Add(FString::Printf(
+            TEXT("Built fallback AI response for %s with choice '%s'."),
+            CurrentSnapshot.ActiveEventId.IsNone() ? TEXT("no active event") : *CurrentSnapshot.ActiveEventId.ToString(),
+            OptionalStringArgument.IsEmpty() ? TEXT("<empty>") : *OptionalStringArgument));
+        RefreshPresentation();
+        OnActionResultUpdated(Result);
+        LastActionResult = Result;
+        return LastActionResult;
+    }
+
+    return HandleActionResult(FailResult(FString::Printf(
+        TEXT("Unknown HUD action id '%s'."),
+        *ActionId)));
+}
+
 void UGreeislandDebugHudWidget::ApplyProjectSettingsDefaults()
 {
     if (!bUseProjectSettingsDefaults)
@@ -377,6 +498,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudChecklist()
     AddChecklistItem(TEXT("Actions"), TEXT("Start Combat For Active Event"), TEXT("StartCombatForActiveEvent"));
     AddChecklistItem(TEXT("Actions"), TEXT("Run Enemy Turn"), TEXT("RunEnemyTurn"));
     AddChecklistItem(TEXT("Actions"), TEXT("Grant Developer Card"), TEXT("GrantDeveloperCard"));
+    AddChecklistItem(TEXT("Actions"), TEXT("Execute HUD Action"), TEXT("ExecuteHudActionById"));
     AddChecklistItem(TEXT("Actions"), TEXT("Build AI Request"), TEXT("BuildAiRequestForActiveEvent"), false);
     AddChecklistItem(TEXT("Actions"), TEXT("Build Fallback AI Response"), TEXT("BuildFallbackAiResponseForActiveEvent"), false);
 }
@@ -665,16 +787,16 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudActions()
     AddAction(
         TEXT("grant_developer_card"),
         TEXT("Grant Card"),
-        TEXT("GrantDeveloperCard"),
+        TEXT("ExecuteHudActionById"),
         TEXT("actions"),
         TEXT("詰まった箇所を飛ばすために開発用カードを追加する。"),
-        TEXT("セッション初期化後"),
-        TEXT("Button + CardId"),
+        TEXT("セッション初期化後。OptionalNameArgument 未指定なら DefaultDeveloperGrantCardId を使う"),
+        TEXT("Button"),
         90);
     AddAction(
         TEXT("build_ai_request"),
         TEXT("Build AI Request"),
-        TEXT("BuildAiRequestForActiveEvent"),
+        TEXT("ExecuteHudActionById"),
         TEXT("ai_debug"),
         TEXT("AI GM へ送る入力を確認する。"),
         TEXT("アクティブイベントがあるとき"),
@@ -684,7 +806,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudActions()
     AddAction(
         TEXT("build_fallback_ai"),
         TEXT("Fallback AI"),
-        TEXT("BuildFallbackAiResponseForActiveEvent"),
+        TEXT("ExecuteHudActionById"),
         TEXT("ai_debug"),
         TEXT("AI 失敗時の固定文面を確認する。"),
         TEXT("アクティブイベントがあるとき"),
@@ -1366,6 +1488,19 @@ bool UGreeislandDebugHudWidget::HasCompletedEvent(FName EventId) const
     }
 
     return false;
+}
+
+const FGreeislandHudActionState* UGreeislandDebugHudWidget::FindHudActionStateById(const FString& ActionId) const
+{
+    for (const FGreeislandHudActionState& State : HudActionStates)
+    {
+        if (State.ActionId == ActionId)
+        {
+            return &State;
+        }
+    }
+
+    return nullptr;
 }
 
 FString UGreeislandDebugHudWidget::BuildHudActionDetail(const FGreeislandHudActionDefinition& Action) const

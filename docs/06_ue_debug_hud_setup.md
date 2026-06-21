@@ -22,6 +22,7 @@
   - `GetRecommendedHudChecklist` で最小HUDに置くべき表示項目とボタン一覧を取得できる
   - `GetRecommendedHudPanels` で最小HUDをどのパネルに分けるか取得できる
   - `GetRecommendedHudActions` と `GetHudActionStates` でボタン定義と有効/無効状態を取得できる
+  - `ExecuteHudActionById` で `ActionId` から主要ボタン処理をそのまま実行できる
   - `GetVerificationChecks` でMVP bring-up の pass/fail 一覧を取得できる
   - `GetSessionStatusRows` で最上段パネル用の行データをそのまま取得できる
   - `GetRecommendedWalkthrough` で MVP 一周の推奨確認手順を取得できる
@@ -184,6 +185,15 @@
 - `bEnabled`
 - `AvailabilityLabel`
 - `Detail`
+
+`ExecuteHudActionById(ActionId, OptionalNameArgument, OptionalStringArgument, bOptionalFlag)` を使えば、Blueprint 側で `ActionId` ごとの分岐を書かずに主要ボタンを実行できる。
+
+- `grant_developer_card`
+  - `OptionalNameArgument` 未指定なら `DefaultDeveloperGrantCardId` を使う
+- `build_ai_request`
+  - `OptionalStringArgument` を player choice として使う
+- `build_fallback_ai`
+  - `OptionalStringArgument` を player choice として使う
 
 `VerificationChecks` の各要素では以下を読める:
 

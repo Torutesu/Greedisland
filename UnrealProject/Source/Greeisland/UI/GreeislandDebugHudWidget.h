@@ -333,6 +333,13 @@ public:
         const FString& PlayerChoice,
         EAiGmIntent Intent = EAiGmIntent::Reward);
 
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
+    FSessionActionResult ExecuteHudActionById(
+        const FString& ActionId,
+        FName OptionalNameArgument = NAME_None,
+        const FString& OptionalStringArgument = TEXT(""),
+        bool bOptionalFlag = true);
+
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
     const FGreeislandUiSnapshot& GetCurrentSnapshot() const
     {
@@ -520,6 +527,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config")
     int32 SnapshotLogLineCount = 12;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config")
+    FName DefaultDeveloperGrantCardId = TEXT("con_four_party_001");
+
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     FGreeislandUiSnapshot CurrentSnapshot;
 
@@ -618,6 +628,7 @@ private:
     int32 CountDuplicateActorPlacements() const;
     int32 CountInteractableEventActors() const;
     FString BuildEventActorStatusSummary(const FGreeislandEventActorStatusViewData& Status) const;
+    const FGreeislandHudActionState* FindHudActionStateById(const FString& ActionId) const;
     FSessionActionResult FailResult(const FString& Message);
     FSessionActionResult HandleActionResult(const FSessionActionResult& ActionResult);
 

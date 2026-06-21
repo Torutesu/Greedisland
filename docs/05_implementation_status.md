@@ -42,6 +42,7 @@
 - HUD panel definition DTO
 - HUD action definition DTO
 - HUD action state DTO
+- HUD ActionId-based action executor
 - HUD verification check DTO
 - HUD auto-refresh tick for focused event / action state / session status
 - HUD walkthrough checklist DTO

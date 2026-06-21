@@ -155,6 +155,15 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 
 `HudActionStates` を見て、各ボタンの enabled/disabled を切り替える。
 
+ボタン実行の近道:
+
+- `RecommendedHudActions[i].ActionId`
+  - ボタンの識別子
+- `ExecuteHudActionById(ActionId, OptionalNameArgument, OptionalStringArgument, bOptionalFlag)`
+  - Blueprint 側で action ごとの分岐を書かずに押下処理を流せる
+- `grant_developer_card`
+  - `OptionalNameArgument` を空にすると `DefaultDeveloperGrantCardId` を使う
+
 `VerificationChecks` は、HUD 上の最終確認欄として使う。
 
 - `StatusLabel`
