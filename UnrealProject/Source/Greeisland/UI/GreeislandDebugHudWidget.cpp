@@ -13,6 +13,7 @@ void UGreeislandDebugHudWidget::NativeConstruct()
     ApplyProjectSettingsDefaults();
     BuildRecommendedHudChecklist();
     BuildRecommendedWalkthrough();
+    BuildRecommendedBlueprintAssets();
     RefreshPresentation();
 }
 
@@ -388,6 +389,47 @@ void UGreeislandDebugHudWidget::BuildRecommendedWalkthrough()
         NAME_None,
         TEXT("SaveSession のあと RestoreSession を実行"),
         TEXT("OwnedCardViewData と CompletedQuestIds が維持され、ゾーンクリア状態も復元される"));
+}
+
+void UGreeislandDebugHudWidget::BuildRecommendedBlueprintAssets()
+{
+    RecommendedBlueprintAssets.Reset();
+
+    auto AddBlueprintAsset =
+        [this](const FString& AssetName, const FString& ParentClassName, const FString& RequiredSetup, bool bRequired = true)
+    {
+        FGreeislandBlueprintAssetChecklistItem Item;
+        Item.AssetName = AssetName;
+        Item.ParentClassName = ParentClassName;
+        Item.RequiredSetup = RequiredSetup;
+        Item.bRequiredForMinimalLoop = bRequired;
+        RecommendedBlueprintAssets.Add(Item);
+    };
+
+    AddBlueprintAsset(
+        TEXT("BP_GreeislandDebugHudWidget"),
+        TEXT("UGreeislandDebugHudWidget"),
+        TEXT("RecommendedHudChecklist / RecommendedWalkthrough / LastBootstrapDiagnostics を表示する"));
+    AddBlueprintAsset(
+        TEXT("BP_GreeislandDebugHud"),
+        TEXT("AGreeislandDebugHud"),
+        TEXT("DebugHudWidgetClass に BP_GreeislandDebugHudWidget を設定する"));
+    AddBlueprintAsset(
+        TEXT("BP_GreeislandDebugGameMode"),
+        TEXT("AGreeislandDebugGameMode"),
+        TEXT("必要なら HUD Class を BP_GreeislandDebugHud に差し替える"));
+    AddBlueprintAsset(
+        TEXT("BP_GreeislandBootstrapActor"),
+        TEXT("AGreeislandBootstrapActor"),
+        TEXT("bUseProjectSettingsDefaults を有効にし、レベルに1個だけ置く"));
+    AddBlueprintAsset(
+        TEXT("BP_GreeislandEventActor"),
+        TEXT("AGreeislandEventActor"),
+        TEXT("ExpectedEventPlacements に合わせて複製し、それぞれの EventId を設定する"));
+    AddBlueprintAsset(
+        TEXT("BP_GreeislandDebugCharacter"),
+        TEXT("AGreeislandDebugCharacter"),
+        TEXT("必要なら見た目メッシュを差し込み、WASD / Mouse / E 動作を確認する"));
 }
 
 void UGreeislandDebugHudWidget::RefreshBootstrapDiagnostics()

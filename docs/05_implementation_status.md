@@ -39,6 +39,7 @@
 - Event placement checklist DTO
 - HUD layout checklist DTO
 - HUD walkthrough checklist DTO
+- Blueprint asset checklist DTO
 - GameInstanceSubsystem ベースのランタイム接続層
 - UMG向け UI snapshot / playable card 取得API
 - Blueprint向け card/event view data 取得API

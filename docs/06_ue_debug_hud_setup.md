@@ -19,6 +19,7 @@
   - `BootstrapSessionFromActor` と `LastBootstrapDiagnostics` でレベル上の BootstrapActor をHUDから直接確認できる
   - `GetRecommendedHudChecklist` で最小HUDに置くべき表示項目とボタン一覧を取得できる
   - `GetRecommendedWalkthrough` で MVP 一周の推奨確認手順を取得できる
+  - `GetRecommendedBlueprintAssets` で作成すべき BP アセットと親クラス、最低設定を取得できる
 - `AGreeislandDebugHud`
   - `DebugHudWidgetClass` を生成してViewportへ追加する `AHUD`
 - `AGreeislandDebugGameMode`
@@ -127,6 +128,13 @@
 - `ActionHint`
 - `SuccessHint`
 
+`RecommendedBlueprintAssets` の各要素では以下を読める:
+
+- `AssetName`
+- `ParentClassName`
+- `RequiredSetup`
+- `bRequiredForMinimalLoop`
+
 `LastBootstrapDiagnostics.ExpectedEventPlacements` の各要素では以下を読める:
 
 - `EventId`
@@ -158,6 +166,7 @@
 12. `ExpectedEventPlacements` を一覧表示すれば、JSON定義順のマップ配置チェックリストとして使える
 13. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
 14. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
+15. `RecommendedBlueprintAssets` をそのまま表示すれば、作るべき BP アセット一覧として使える
 
 レベル配置ベースで進める場合:
 
