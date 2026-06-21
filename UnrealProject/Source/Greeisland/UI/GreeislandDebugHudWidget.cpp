@@ -187,6 +187,49 @@ bool UGreeislandDebugHudWidget::BuildAiRequestForActiveEvent(
     return true;
 }
 
+bool UGreeislandDebugHudWidget::BuildFallbackAiResponseForActiveEvent(
+    const FString& PlayerChoice,
+    FAiGmResponse& OutResponse)
+{
+    bHasLastAiResponse = false;
+    LastAiResponse = FAiGmResponse();
+    LastAiValidationResult = FAiGmValidationResult();
+    OutResponse = FAiGmResponse();
+
+    UGreeislandGameSubsystem* Subsystem = GetGreeislandSubsystem();
+    if (!Subsystem)
+    {
+        return false;
+    }
+
+    if (!Subsystem->BuildFallbackAiResponseForActiveEvent(PlayerChoice, OutResponse))
+    {
+        return false;
+    }
+
+    bHasLastAiResponse = true;
+    LastAiResponse = OutResponse;
+    LastAiValidationResult = Subsystem->ValidateAiResponseForActiveEvent(OutResponse, PlayerChoice);
+    return true;
+}
+
+FAiGmValidationResult UGreeislandDebugHudWidget::ValidateAiResponseForActiveEvent(
+    const FAiGmResponse& Response,
+    const FString& PlayerChoice)
+{
+    LastAiValidationResult = FAiGmValidationResult();
+
+    UGreeislandGameSubsystem* Subsystem = GetGreeislandSubsystem();
+    if (!Subsystem)
+    {
+        LastAiValidationResult.Reasons.Add(TEXT("Game subsystem is unavailable."));
+        return LastAiValidationResult;
+    }
+
+    LastAiValidationResult = Subsystem->ValidateAiResponseForActiveEvent(Response, PlayerChoice);
+    return LastAiValidationResult;
+}
+
 FSessionActionResult UGreeislandDebugHudWidget::ApplyAiRewardResponse(
     const FString& SpeakerName,
     const FString& Dialogue,
@@ -206,6 +249,9 @@ FSessionActionResult UGreeislandDebugHudWidget::ApplyAiRewardResponse(
     Response.Intent = Intent;
     Response.AllowedRewardCardIds = AllowedRewardCardIds;
     Response.DifficultyHint = TEXT("medium");
+    bHasLastAiResponse = true;
+    LastAiResponse = Response;
+    LastAiValidationResult = Subsystem->ValidateAiResponseForActiveEvent(Response, PlayerChoice);
     return HandleActionResult(Subsystem->ApplyAiResponse(Response, PlayerChoice));
 }
 

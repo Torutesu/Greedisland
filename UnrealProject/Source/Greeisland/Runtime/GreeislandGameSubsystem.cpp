@@ -218,6 +218,76 @@ FSessionActionResult UGreeislandGameSubsystem::GrantDeveloperCard(FName CardId, 
     return Result;
 }
 
+FAiGmValidationResult UGreeislandGameSubsystem::ValidateAiResponseForActiveEvent(
+    const FAiGmResponse& Response,
+    const FString& PlayerChoice) const
+{
+    FAiGmValidationResult Result;
+
+    if (!bHasInitializedSession)
+    {
+        Result.Reasons.Add(TEXT("Session is not initialized."));
+        return Result;
+    }
+
+    FAiGmRequest Request;
+    if (!BuildAiRequest(Session.ActiveEventId, PlayerChoice, Request))
+    {
+        Result.Reasons.Add(TEXT("Could not build AI request for the active event."));
+        return Result;
+    }
+
+    return UAiGmValidator::ValidateResponse(Response, Request, Session.KnownCards);
+}
+
+bool UGreeislandGameSubsystem::BuildFallbackAiResponseForActiveEvent(
+    const FString& PlayerChoice,
+    FAiGmResponse& OutResponse) const
+{
+    OutResponse = FAiGmResponse();
+
+    if (!bHasInitializedSession)
+    {
+        return false;
+    }
+
+    FExplorationEventDefinition Event;
+    if (!GetEventDefinition(Session.ActiveEventId, Event))
+    {
+        return false;
+    }
+
+    FAiGmRequest Request;
+    if (!BuildAiRequest(Session.ActiveEventId, PlayerChoice, Request))
+    {
+        return false;
+    }
+
+    OutResponse.SpeakerName = Event.NpcId.IsNone()
+        ? Event.DisplayName
+        : Event.NpcId.ToString().Replace(TEXT("npc_"), TEXT("NPC "));
+
+    if (Request.AllowedRewardCardIds.Num() > 0)
+    {
+        OutResponse.Intent = EAiGmIntent::Reward;
+        OutResponse.AllowedRewardCardIds = { Request.AllowedRewardCardIds[0] };
+        OutResponse.Dialogue = FString::Printf(
+            TEXT("%sを確認した。今回は定型手続きとして報酬を一つだけ渡す。"),
+            PlayerChoice.TrimStartAndEnd().IsEmpty() ? TEXT("申し出") : *PlayerChoice);
+        OutResponse.DifficultyHint = TEXT("low");
+    }
+    else
+    {
+        OutResponse.Intent = EAiGmIntent::Flavor;
+        OutResponse.Dialogue = FString::Printf(
+            TEXT("%sでの反応は記録した。いまは状況説明だけを返す。"),
+            *Event.DisplayName);
+        OutResponse.DifficultyHint = TEXT("medium");
+    }
+
+    return true;
+}
+
 bool UGreeislandGameSubsystem::BuildAiRequest(
     FName EventId,
     const FString& PlayerChoice,

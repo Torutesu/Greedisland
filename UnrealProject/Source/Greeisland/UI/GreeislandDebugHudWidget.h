@@ -55,6 +55,14 @@ public:
     bool BuildAiRequestForActiveEvent(const FString& PlayerChoice, FAiGmRequest& OutRequest);
 
     UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
+    bool BuildFallbackAiResponseForActiveEvent(const FString& PlayerChoice, FAiGmResponse& OutResponse);
+
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
+    FAiGmValidationResult ValidateAiResponseForActiveEvent(
+        const FAiGmResponse& Response,
+        const FString& PlayerChoice);
+
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
     FSessionActionResult ApplyAiRewardResponse(
         const FString& SpeakerName,
         const FString& Dialogue,
@@ -128,6 +136,24 @@ public:
         return bHasLastBuiltAiRequest;
     }
 
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const FAiGmResponse& GetLastAiResponse() const
+    {
+        return LastAiResponse;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    bool HasLastAiResponse() const
+    {
+        return bHasLastAiResponse;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    const FAiGmValidationResult& GetLastAiValidationResult() const
+    {
+        return LastAiValidationResult;
+    }
+
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config")
     bool bUseProjectSettingsDefaults = true;
@@ -191,6 +217,15 @@ protected:
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     FAiGmRequest LastBuiltAiRequest;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bHasLastAiResponse = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FAiGmResponse LastAiResponse;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FAiGmValidationResult LastAiValidationResult;
 
 private:
     void ApplyProjectSettingsDefaults();

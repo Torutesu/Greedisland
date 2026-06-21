@@ -14,6 +14,7 @@
   - Blueprintで見た目を被せる前提の `UUserWidget`
   - 近接中の `FocusedEventId` / `FocusedEventDisplayName` と `InteractWithFocusedEvent` を取得可能
   - `BuildAiRequestForActiveEvent` で Claude API 等へ送る前段の入力を取得可能
+  - `BuildFallbackAiResponseForActiveEvent` と `ValidateAiResponseForActiveEvent` で固定文面フォールバックと検証結果を取得可能
   - `GrantDeveloperCard` で任意カードを開発用に所持/デッキへ注入できる
 - `AGreeislandDebugHud`
   - `DebugHudWidgetClass` を生成してViewportへ追加する `AHUD`
@@ -93,6 +94,8 @@
 - `FocusedEventId`
 - `FocusedEventDisplayName`
 - `LastBuiltAiRequest`
+- `LastAiResponse`
+- `LastAiValidationResult`
 
 更新通知:
 
@@ -108,6 +111,7 @@
 5. `EventViewData` に次イベントが解放される
 6. イベント地点へ近づくと `FocusedEventDisplayName` に対象名が出る
 7. `BuildAiRequestForActiveEvent` で `AllowedRewardCardIds` や `PlayerChoice` を含むAI GM入力を確認できる
+8. `BuildFallbackAiResponseForActiveEvent` で API 失敗時の固定文面を表示できる
 
 レベル配置ベースで進める場合:
 

@@ -7,6 +7,7 @@ python3 scripts/validate_cards/rule_smoke_test.py
 python3 scripts/validate_cards/combat_smoke_test.py
 python3 scripts/validate_cards/exploration_smoke_test.py
 python3 scripts/validate_cards/ai_gm_smoke_test.py
+python3 scripts/validate_events/ai_fallback_smoke_test.py
 python3 scripts/validate_events/zone_flow_smoke_test.py
 python3 scripts/validate_events/session_flow_smoke_test.py
 python3 scripts/validate_events/combat_resolution_smoke_test.py

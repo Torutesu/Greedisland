@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "AiGm/AiGmTypes.h"
+#include "AiGm/AiGmValidator.h"
 #include "Save/GreeislandSaveGame.h"
 #include "Session/GameSessionTypes.h"
 #include "GreeislandGameSubsystem.generated.h"
@@ -161,6 +162,16 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Greeisland|Runtime")
     FSessionActionResult GrantDeveloperCard(FName CardId, bool bAddToDeck = true);
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
+    FAiGmValidationResult ValidateAiResponseForActiveEvent(
+        const FAiGmResponse& Response,
+        const FString& PlayerChoice) const;
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
+    bool BuildFallbackAiResponseForActiveEvent(
+        const FString& PlayerChoice,
+        FAiGmResponse& OutResponse) const;
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
     bool BuildAiRequest(
