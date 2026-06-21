@@ -16,10 +16,10 @@ public:
     }
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Debug HUD")
-    FString CardJsonPath = TEXT("../../../data/cards/cards.mvp.json");
+    FString CardJsonPath = TEXT("../data/cards/cards.mvp.json");
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Debug HUD")
-    FString EventJsonPath = TEXT("../../../data/events/events.mvp.json");
+    FString EventJsonPath = TEXT("../data/events/events.mvp.json");
 
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Debug HUD")
     FString SaveSlotName = TEXT("greeisland-dev-slot");
@@ -36,4 +36,3 @@ public:
     UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Debug HUD")
     int32 SnapshotLogLineCount = 12;
 };
-

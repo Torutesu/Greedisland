@@ -165,10 +165,10 @@ protected:
     void OnActionResultUpdated(const FSessionActionResult& ActionResult);
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config")
-    FString CardJsonPath = TEXT("../../../data/cards/cards.mvp.json");
+    FString CardJsonPath = TEXT("../data/cards/cards.mvp.json");
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config")
-    FString EventJsonPath = TEXT("../../../data/events/events.mvp.json");
+    FString EventJsonPath = TEXT("../data/events/events.mvp.json");
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Config")
     FString SaveSlotName = TEXT("greeisland-dev-slot");

@@ -60,6 +60,7 @@
 
 - `UnrealProject/Config/DefaultGame.ini` では C++ の `AGreeislandDebugGameMode` が `GlobalDefaultGameMode` に設定済み
 - `UnrealProject/Config/DefaultInput.ini` では `WASD`、マウス視点、`E` インタラクトが設定済み
+- `CardJsonPath` / `EventJsonPath` の既定値は `ProjectDir` から見て `../data/cards/cards.mvp.json` と `../data/events/events.mvp.json`
 - Blueprint版を使う場合は `Project Settings` または `World Settings` で `BP_GreeislandDebugGameMode` へ差し替える
 - `Project Settings > Game > Greeisland` では `CardJsonPath`、`EventJsonPath`、`SaveSlotName`、`DefaultOpeningDrawCount` などを変更できる
 

@@ -39,6 +39,7 @@ Project config:
 
 - [DefaultGame.ini](/Users/torutano/Documents/Greeisland/UnrealProject/Config/DefaultGame.ini)
   C++の `AGreeislandDebugGameMode` をデフォルトGameModeに設定
+  `CardJsonPath` / `EventJsonPath` の既定値は `ProjectDir` 基準で `../data/...` に調整済み
 - [DefaultInput.ini](/Users/torutano/Documents/Greeisland/UnrealProject/Config/DefaultInput.ini)
   `WASD` / マウス / `E` の最小入力マッピング
 - [UGreeislandProjectSettings](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Runtime/GreeislandProjectSettings.h)
