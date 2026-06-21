@@ -77,6 +77,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
         BuildEventActorStatusViewData();
         BuildWalkthroughProgress();
         BuildHudActionStates();
+        BuildHudActionButtons();
         BuildVerificationChecks();
         BuildSessionStatusRows();
         OnPresentationUpdated();
@@ -93,6 +94,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
     BuildEventActorStatusViewData();
     BuildWalkthroughProgress();
     BuildHudActionStates();
+    BuildHudActionButtons();
     BuildVerificationChecks();
     BuildSessionStatusRows();
     OnPresentationUpdated();
@@ -490,6 +492,7 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudChecklist()
     AddChecklistItem(TEXT("Lists"), TEXT("Event Actor Status"), TEXT("EventActorStatusViewData"));
     AddChecklistItem(TEXT("Lists"), TEXT("Walkthrough Progress"), TEXT("WalkthroughProgress"));
     AddChecklistItem(TEXT("Lists"), TEXT("Verification Checks"), TEXT("VerificationChecks"));
+    AddChecklistItem(TEXT("Lists"), TEXT("HUD Action Buttons"), TEXT("HudActionButtons"));
     AddChecklistItem(TEXT("Actions"), TEXT("Bootstrap Session"), TEXT("BootstrapSessionFromActor"));
     AddChecklistItem(TEXT("Actions"), TEXT("Initialize New Session"), TEXT("InitializeNewSession"));
     AddChecklistItem(TEXT("Actions"), TEXT("Restore Session"), TEXT("RestoreSession"));
@@ -1137,6 +1140,50 @@ void UGreeislandDebugHudWidget::BuildHudActionStates()
         State.AvailabilityLabel = State.bEnabled ? TEXT("Enabled") : TEXT("Disabled");
         State.Detail = BuildHudActionDetail(Action);
         HudActionStates.Add(State);
+    }
+}
+
+void UGreeislandDebugHudWidget::BuildHudActionButtons()
+{
+    HudActionButtons.Reset();
+
+    for (const FGreeislandHudActionDefinition& Action : RecommendedHudActions)
+    {
+        FGreeislandHudActionButtonViewData Button;
+        Button.ActionId = Action.ActionId;
+        Button.Label = Action.Label;
+        Button.PanelId = Action.PanelId;
+        Button.Purpose = Action.Purpose;
+        Button.EnableWhen = Action.EnableWhen;
+        Button.InputHint = Action.InputHint;
+        Button.Priority = Action.Priority;
+        Button.bRecommendedForMinimalLoop = Action.bRecommendedForMinimalLoop;
+        Button.bDefaultFlag = true;
+
+        if (const FGreeislandHudActionState* State = FindHudActionStateById(Action.ActionId))
+        {
+            Button.bEnabled = State->bEnabled;
+            Button.AvailabilityLabel = State->AvailabilityLabel;
+            Button.Detail = State->Detail;
+        }
+        else
+        {
+            Button.bEnabled = false;
+            Button.AvailabilityLabel = TEXT("Disabled");
+            Button.Detail = Action.EnableWhen;
+        }
+
+        if (Action.ActionId == TEXT("grant_developer_card"))
+        {
+            Button.DefaultNameArgument = DefaultDeveloperGrantCardId;
+            Button.bDefaultFlag = true;
+        }
+        else if (Action.ActionId == TEXT("build_ai_request") || Action.ActionId == TEXT("build_fallback_ai"))
+        {
+            Button.DefaultStringArgument = TEXT("inspect rewards");
+        }
+
+        HudActionButtons.Add(Button);
     }
 }
 

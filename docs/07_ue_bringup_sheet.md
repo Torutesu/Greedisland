@@ -93,6 +93,7 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 - `WalkthroughProgress`
 - `RecommendedHudActions`
 - `HudActionStates`
+- `HudActionButtons`
 - `VerificationChecks`
 
 行表示の近道:
@@ -157,6 +158,19 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
   - `Fallback AI`
 
 `HudActionStates` を見て、各ボタンの enabled/disabled を切り替える。
+
+`HudActionButtons` を使うと、actions パネルはこの配列 1 本で描ける。
+
+- `Label`
+  - ボタン表示名
+- `bEnabled`
+  - enabled/disabled 切り替え
+- `AvailabilityLabel`
+  - 状態表示
+- `Detail`
+  - 補足表示
+- `DefaultNameArgument` / `DefaultStringArgument` / `bDefaultFlag`
+  - `ExecuteHudActionById` にそのまま渡す既定引数
 
 ボタン実行の近道:
 

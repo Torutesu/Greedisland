@@ -22,6 +22,7 @@
   - `GetRecommendedHudChecklist` で最小HUDに置くべき表示項目とボタン一覧を取得できる
   - `GetRecommendedHudPanels` で最小HUDをどのパネルに分けるか取得できる
   - `GetRecommendedHudActions` と `GetHudActionStates` でボタン定義と有効/無効状態を取得できる
+  - `GetHudActionButtons` で actions パネル用の結合済みボタン配列を取得できる
   - `ExecuteHudActionById` で `ActionId` から主要ボタン処理をそのまま実行できる
   - `GetVerificationChecks` でMVP bring-up の pass/fail 一覧を取得できる
   - `GetSessionStatusRows` で最上段パネル用の行データをそのまま取得できる
@@ -186,6 +187,23 @@
 - `AvailabilityLabel`
 - `Detail`
 
+`HudActionButtons` の各要素では以下を読める:
+
+- `ActionId`
+- `Label`
+- `PanelId`
+- `Purpose`
+- `EnableWhen`
+- `InputHint`
+- `bEnabled`
+- `AvailabilityLabel`
+- `Detail`
+- `DefaultNameArgument`
+- `DefaultStringArgument`
+- `bDefaultFlag`
+- `Priority`
+- `bRecommendedForMinimalLoop`
+
 `ExecuteHudActionById(ActionId, OptionalNameArgument, OptionalStringArgument, bOptionalFlag)` を使えば、Blueprint 側で `ActionId` ごとの分岐を書かずに主要ボタンを実行できる。
 
 - `grant_developer_card`
@@ -303,12 +321,13 @@
 16. `RecommendedHudPanels` を見れば、Session Status / Event Reconciliation / Combat Hand などのパネル分けをそのまま決められる
 17. `RecommendedHudActions` を見れば、ボタン名、結びつけるメソッド、置き場所をそのまま決められる
 18. `HudActionStates` を使えば、ボタンの enabled/disabled を Blueprint 側で個別実装せずに済む
-19. `VerificationChecks` を一覧表示すれば、Pass/Needs Work の bring-up レポートをそのまま出せる
-20. `StateSummary` / `StatusSummary` をそのまま行表示すれば、ListView の行整形ロジックをかなり減らせる
-21. `PrimaryActionId` / `PrimaryActionNameArgument` をそのまま `ExecuteHudActionById` に流せば、行ボタンの押下処理もかなり減らせる
-22. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
-23. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
-24. `RecommendedBlueprintAssets` をそのまま表示すれば、作るべき BP アセット一覧として使える
+19. `HudActionButtons` を使えば、definition/state の join なしで actions パネルをそのまま描ける
+20. `VerificationChecks` を一覧表示すれば、Pass/Needs Work の bring-up レポートをそのまま出せる
+21. `StateSummary` / `StatusSummary` をそのまま行表示すれば、ListView の行整形ロジックをかなり減らせる
+22. `PrimaryActionId` / `PrimaryActionNameArgument` をそのまま `ExecuteHudActionById` に流せば、行ボタンの押下処理もかなり減らせる
+23. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
+24. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
+25. `RecommendedBlueprintAssets` をそのまま表示すれば、作るべき BP アセット一覧として使える
 
 レベル配置ベースで進める場合:
 

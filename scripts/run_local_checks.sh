@@ -10,6 +10,7 @@ python3 scripts/validate_events/ue_route_graph_smoke_test.py
 python3 scripts/validate_events/ue_walkthrough_progress_smoke_test.py
 python3 scripts/validate_events/ue_event_actor_status_smoke_test.py
 python3 scripts/validate_events/ue_hud_action_state_smoke_test.py
+python3 scripts/validate_events/ue_hud_action_button_surface_smoke_test.py
 python3 scripts/validate_events/ue_hud_action_executor_smoke_test.py
 python3 scripts/validate_events/ue_runtime_viewdata_surface_smoke_test.py
 python3 scripts/validate_events/ue_row_action_surface_smoke_test.py
