@@ -7,6 +7,33 @@
 
 class UGreeislandGameSubsystem;
 
+USTRUCT(BlueprintType)
+struct FGreeislandBootstrapDiagnostics
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    bool bUsingProjectSettingsDefaults = true;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    FString EffectiveCardJsonPath;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    FString EffectiveEventJsonPath;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    bool bCardJsonExists = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    bool bEventJsonExists = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    bool bSaveExists = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    TArray<FString> Issues;
+};
+
 UENUM(BlueprintType)
 enum class EBootstrapMode : uint8
 {
@@ -31,6 +58,9 @@ public:
     UFUNCTION(BlueprintPure, Category = "Greeisland|Bootstrap")
     UGreeislandGameSubsystem* GetGreeislandSubsystem() const;
 
+    UFUNCTION(BlueprintPure, Category = "Greeisland|Bootstrap")
+    FGreeislandBootstrapDiagnostics GetBootstrapDiagnostics() const;
+
 protected:
     UFUNCTION(BlueprintImplementableEvent, Category = "Greeisland|Bootstrap")
     void OnBootstrapFinished(const FSessionActionResult& ActionResult);
@@ -40,6 +70,9 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Bootstrap")
     EBootstrapMode BootstrapMode = EBootstrapMode::RestoreIfPossible;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    bool bUseProjectSettingsDefaults = true;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Bootstrap")
     FString CardJsonPath = TEXT("../data/cards/cards.mvp.json");
@@ -52,4 +85,11 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Bootstrap")
     int32 SaveUserIndex = 0;
+
+private:
+    void GetEffectiveBootstrapSettings(
+        FString& OutCardJsonPath,
+        FString& OutEventJsonPath,
+        FString& OutSaveSlotName,
+        int32& OutSaveUserIndex) const;
 };

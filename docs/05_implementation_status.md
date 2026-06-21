@@ -33,6 +33,7 @@
 - クエスト/クリア/保存復元の更新テスト
 - 1ゾーンMVP一周の統合スモークテスト
 - UE起動向けJSONパス解決チェック
+- BootstrapActor と Project Settings の既定値同期チェック
 - GameInstanceSubsystem ベースのランタイム接続層
 - UMG向け UI snapshot / playable card 取得API
 - Blueprint向け card/event view data 取得API
@@ -164,6 +165,16 @@ python3 scripts/validate_events/ue_path_resolution_smoke_test.py
 
 ```text
 OK: UE path resolution smoke tests passed
+```
+
+```bash
+python3 scripts/validate_events/ue_bootstrap_defaults_smoke_test.py
+```
+
+結果:
+
+```text
+OK: UE bootstrap defaults smoke tests passed
 ```
 
 ```bash

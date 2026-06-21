@@ -24,6 +24,9 @@
   - マウス表示とクリックを有効にした `APlayerController`
 - `AGreeislandDebugCharacter`
   - `WASD` 移動、マウス視点、`E` インタラクトを持つ最小プレイアブルキャラクター
+- `AGreeislandBootstrapActor`
+  - `bUseProjectSettingsDefaults` が有効なら `Project Settings > Game > Greeisland` の JSON / save 設定をそのまま使う
+  - `GetBootstrapDiagnostics` で JSON パス解決、save slot 有無、Subsystem 利用可否を事前確認できる
 
 ## UE側で作るもの
 
@@ -123,6 +126,7 @@
 レベル配置ベースで進める場合:
 
 1. `BP_GreeislandBootstrapActor` を1個置く
+   - まず `GetBootstrapDiagnostics` を呼び、`Issues` が空であることを確認する
 2. `BP_GreeislandEventActor` をイベント地点ごとに置く
 3. それぞれの `EventId` を `data/events/events.mvp.json` に対応させる
 4. `BP_GreeislandDebugCharacter` でマップを歩き、`E` でイベント地点を起動する
