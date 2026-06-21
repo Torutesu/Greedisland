@@ -33,6 +33,12 @@ public:
     UFUNCTION(BlueprintPure, Category = "Greeisland|Event")
     float GetInteractionRadius() const;
 
+    UFUNCTION(BlueprintPure, Category = "Greeisland|Event")
+    FName GetEventId() const
+    {
+        return EventId;
+    }
+
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Greeisland|Event")
     TObjectPtr<USceneComponent> SceneRoot;

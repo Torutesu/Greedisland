@@ -31,6 +31,24 @@ struct FGreeislandBootstrapDiagnostics
     bool bSaveExists = false;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    int32 BootstrapActorCount = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    int32 EventActorCount = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    TArray<FName> ExpectedEventIds;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    TArray<FName> MissingEventActorIds;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    TArray<FName> DuplicateEventActorIds;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    TArray<FName> UnexpectedEventActorIds;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|Bootstrap")
     TArray<FString> Issues;
 };
 

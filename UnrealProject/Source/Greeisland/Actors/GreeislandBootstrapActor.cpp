@@ -1,7 +1,10 @@
 #include "Actors/GreeislandBootstrapActor.h"
 
+#include "Actors/GreeislandEventActor.h"
 #include "HAL/FileManager.h"
 #include "Engine/GameInstance.h"
+#include "EngineUtils.h"
+#include "Exploration/ExplorationEventLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/GreeislandGameSubsystem.h"
 #include "Runtime/GreeislandProjectSettings.h"
@@ -115,6 +118,64 @@ FGreeislandBootstrapDiagnostics AGreeislandBootstrapActor::GetBootstrapDiagnosti
     Diagnostics.bEventJsonExists = IFileManager::Get().FileExists(*ResolvedEventPath);
     Diagnostics.bSaveExists = UGameplayStatics::DoesSaveGameExist(SaveSlotNameValue, SaveUserIndexValue);
 
+    UWorld* World = GetWorld();
+    if (World)
+    {
+        TMap<FName, int32> SeenEventActorIds;
+        for (TActorIterator<AGreeislandBootstrapActor> BootstrapIt(World); BootstrapIt; ++BootstrapIt)
+        {
+            ++Diagnostics.BootstrapActorCount;
+        }
+
+        for (TActorIterator<AGreeislandEventActor> EventIt(World); EventIt; ++EventIt)
+        {
+            ++Diagnostics.EventActorCount;
+            const FName EventId = EventIt->GetEventId();
+            if (!EventId.IsNone())
+            {
+                SeenEventActorIds.FindOrAdd(EventId) += 1;
+            }
+        }
+
+        FZoneEventSet EventSet;
+        TArray<FString> LoadErrors;
+        if (Diagnostics.bEventJsonExists &&
+            UExplorationEventLibrary::LoadZoneEventsFromJsonFile(Diagnostics.EffectiveEventJsonPath, EventSet, LoadErrors))
+        {
+            TSet<FName> ExpectedIds;
+            for (const FExplorationEventDefinition& Event : EventSet.Events)
+            {
+                Diagnostics.ExpectedEventIds.Add(Event.EventId);
+                ExpectedIds.Add(Event.EventId);
+
+                const int32 Count = SeenEventActorIds.FindRef(Event.EventId);
+                if (Count == 0)
+                {
+                    Diagnostics.MissingEventActorIds.Add(Event.EventId);
+                }
+                else if (Count > 1)
+                {
+                    Diagnostics.DuplicateEventActorIds.Add(Event.EventId);
+                }
+            }
+
+            for (const TPair<FName, int32>& Pair : SeenEventActorIds)
+            {
+                if (!ExpectedIds.Contains(Pair.Key))
+                {
+                    Diagnostics.UnexpectedEventActorIds.Add(Pair.Key);
+                }
+            }
+        }
+        else
+        {
+            for (const FString& Error : LoadErrors)
+            {
+                Diagnostics.Issues.Add(FString::Printf(TEXT("Event JSON diagnostic load failed: %s"), *Error));
+            }
+        }
+    }
+
     if (!Diagnostics.bCardJsonExists)
     {
         Diagnostics.Issues.Add(FString::Printf(TEXT("Card JSON was not found: %s"), *ResolvedCardPath));
@@ -123,6 +184,27 @@ FGreeislandBootstrapDiagnostics AGreeislandBootstrapActor::GetBootstrapDiagnosti
     if (!Diagnostics.bEventJsonExists)
     {
         Diagnostics.Issues.Add(FString::Printf(TEXT("Event JSON was not found: %s"), *ResolvedEventPath));
+    }
+
+    if (Diagnostics.BootstrapActorCount > 1)
+    {
+        Diagnostics.Issues.Add(FString::Printf(
+            TEXT("Multiple GreeislandBootstrapActor instances were found: %d"),
+            Diagnostics.BootstrapActorCount));
+    }
+
+    if (Diagnostics.MissingEventActorIds.Num() > 0)
+    {
+        Diagnostics.Issues.Add(FString::Printf(
+            TEXT("Missing EventActor placements for %d event id(s)."),
+            Diagnostics.MissingEventActorIds.Num()));
+    }
+
+    if (Diagnostics.DuplicateEventActorIds.Num() > 0)
+    {
+        Diagnostics.Issues.Add(FString::Printf(
+            TEXT("Duplicate EventActor placements found for %d event id(s)."),
+            Diagnostics.DuplicateEventActorIds.Num()));
     }
 
     if (BootstrapMode == EBootstrapMode::RestoreOnly && !Diagnostics.bSaveExists)

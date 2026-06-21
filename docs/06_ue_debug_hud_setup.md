@@ -28,6 +28,7 @@
 - `AGreeislandBootstrapActor`
   - `bUseProjectSettingsDefaults` が有効なら `Project Settings > Game > Greeisland` の JSON / save 設定をそのまま使う
   - `GetBootstrapDiagnostics` で JSON パス解決、save slot 有無、Subsystem 利用可否を事前確認できる
+  - `MissingEventActorIds` / `DuplicateEventActorIds` / `UnexpectedEventActorIds` でマップ上のイベント配置ミスを確認できる
 
 ## UE側で作るもの
 
@@ -125,12 +126,14 @@
 8. `BuildFallbackAiResponseForActiveEvent` で API 失敗時の固定文面を表示できる
 9. `HandCardViewData` の `UnplayableReasons` から、どの制約で使えないかをそのままUI表示できる
 10. `LastBootstrapDiagnostics.Issues` から、JSONパスや save slot の不足を起動前に表示できる
+11. `LastBootstrapDiagnostics.MissingEventActorIds` を見れば、まだ置いていない `BP_GreeislandEventActor` が分かる
 
 レベル配置ベースで進める場合:
 
 1. `BP_GreeislandBootstrapActor` を1個置く
    - まず `GetBootstrapDiagnostics` を呼び、`Issues` が空であることを確認する
 2. `BP_GreeislandEventActor` をイベント地点ごとに置く
+   - `MissingEventActorIds` が空になるまで `EventId` を対応づける
 3. それぞれの `EventId` を `data/events/events.mvp.json` に対応させる
 4. `BP_GreeislandDebugCharacter` でマップを歩き、`E` でイベント地点を起動する
 5. 自動発火させたい地点は `BP_GreeislandEventActor` 側で `bAutoTriggerOnOverlap` を有効にする
