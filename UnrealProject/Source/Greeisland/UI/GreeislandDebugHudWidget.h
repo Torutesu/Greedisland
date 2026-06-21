@@ -46,6 +46,9 @@ public:
     FSessionActionResult RunEnemyTurn();
 
     UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
+    FSessionActionResult InteractWithFocusedEvent();
+
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
     FSessionActionResult ApplyAiRewardResponse(
         const FString& SpeakerName,
         const FString& Dialogue,
@@ -87,6 +90,24 @@ public:
     const FSessionActionResult& GetLastActionResult() const
     {
         return LastActionResult;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    FName GetFocusedEventId() const
+    {
+        return FocusedEventId;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    FText GetFocusedEventDisplayName() const
+    {
+        return FocusedEventDisplayName;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
+    bool HasFocusedEvent() const
+    {
+        return bHasFocusedEvent;
     }
 
 protected:
@@ -138,8 +159,18 @@ protected:
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     FSessionActionResult LastActionResult;
 
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    bool bHasFocusedEvent = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FName FocusedEventId;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FText FocusedEventDisplayName;
+
 private:
     void ApplyProjectSettingsDefaults();
+    void RefreshFocusedEventPresentation();
     FSessionActionResult FailResult(const FString& Message);
     FSessionActionResult HandleActionResult(const FSessionActionResult& ActionResult);
 };

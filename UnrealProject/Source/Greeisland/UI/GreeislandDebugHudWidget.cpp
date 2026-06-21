@@ -1,5 +1,7 @@
 #include "UI/GreeislandDebugHudWidget.h"
 
+#include "Actors/GreeislandEventActor.h"
+#include "Characters/GreeislandDebugCharacter.h"
 #include "Engine/GameInstance.h"
 #include "Runtime/GreeislandProjectSettings.h"
 
@@ -31,6 +33,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
         OwnedCardViewData.Reset();
         HandCardViewData.Reset();
         EventViewData.Reset();
+        RefreshFocusedEventPresentation();
         OnPresentationUpdated();
         return;
     }
@@ -40,6 +43,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
     Subsystem->BuildOwnedCardViewData(OwnedCardViewData);
     Subsystem->BuildHandCardViewData(HandCardViewData);
     Subsystem->BuildEventViewData(EventViewData);
+    RefreshFocusedEventPresentation();
     OnPresentationUpdated();
 }
 
@@ -131,6 +135,23 @@ FSessionActionResult UGreeislandDebugHudWidget::RunEnemyTurn()
     return HandleActionResult(Subsystem->RunEnemyTurn(1));
 }
 
+FSessionActionResult UGreeislandDebugHudWidget::InteractWithFocusedEvent()
+{
+    AGreeislandDebugCharacter* Character = Cast<AGreeislandDebugCharacter>(GetOwningPlayerPawn());
+    if (!Character)
+    {
+        return HandleActionResult(FailResult(TEXT("Debug character is unavailable.")));
+    }
+
+    AGreeislandEventActor* EventActor = Character->FindBestInteractableEventActor();
+    if (!EventActor)
+    {
+        return HandleActionResult(FailResult(TEXT("No interactable event is in range.")));
+    }
+
+    return HandleActionResult(EventActor->TriggerEvent());
+}
+
 FSessionActionResult UGreeislandDebugHudWidget::ApplyAiRewardResponse(
     const FString& SpeakerName,
     const FString& Dialogue,
@@ -173,6 +194,35 @@ void UGreeislandDebugHudWidget::ApplyProjectSettingsDefaults()
     DefaultPlayerId = Settings->DefaultPlayerId;
     DefaultOpeningDrawCount = Settings->DefaultOpeningDrawCount;
     SnapshotLogLineCount = Settings->SnapshotLogLineCount;
+}
+
+void UGreeislandDebugHudWidget::RefreshFocusedEventPresentation()
+{
+    bHasFocusedEvent = false;
+    FocusedEventId = NAME_None;
+    FocusedEventDisplayName = FText::GetEmpty();
+
+    AGreeislandDebugCharacter* Character = Cast<AGreeislandDebugCharacter>(GetOwningPlayerPawn());
+    if (!Character)
+    {
+        return;
+    }
+
+    AGreeislandEventActor* EventActor = Character->FindBestInteractableEventActor();
+    if (!EventActor)
+    {
+        return;
+    }
+
+    FExplorationEventDefinition EventDefinition;
+    if (!EventActor->GetBoundEventDefinition(EventDefinition))
+    {
+        return;
+    }
+
+    bHasFocusedEvent = true;
+    FocusedEventId = EventDefinition.EventId;
+    FocusedEventDisplayName = FText::FromString(EventDefinition.DisplayName);
 }
 
 FSessionActionResult UGreeislandDebugHudWidget::FailResult(const FString& Message)

@@ -12,6 +12,7 @@
   - ゲーム進行、保存復元、AI反映、UI向けスナップショット
 - `UGreeislandDebugHudWidget`
   - Blueprintで見た目を被せる前提の `UUserWidget`
+  - 近接中の `FocusedEventId` / `FocusedEventDisplayName` と `InteractWithFocusedEvent` を取得可能
 - `AGreeislandDebugHud`
   - `DebugHudWidgetClass` を生成してViewportへ追加する `AHUD`
 - `AGreeislandDebugGameMode`
@@ -86,6 +87,8 @@
 - `HandCardViewData`
 - `EventViewData`
 - `LastActionResult`
+- `FocusedEventId`
+- `FocusedEventDisplayName`
 
 更新通知:
 
@@ -99,6 +102,7 @@
 3. `ResolveActiveEvent` で開始箱を解決する
 4. `OwnedCardViewData` に starter cards が出る
 5. `EventViewData` に次イベントが解放される
+6. イベント地点へ近づくと `FocusedEventDisplayName` に対象名が出る
 
 レベル配置ベースで進める場合:
 
