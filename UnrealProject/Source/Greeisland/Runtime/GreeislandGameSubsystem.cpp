@@ -338,46 +338,24 @@ FGreeislandUiSnapshot UGreeislandGameSubsystem::BuildUiSnapshot(int32 MaxLogLine
 void UGreeislandGameSubsystem::GetPlayableCombatCardIds(TArray<FName>& OutCardIds) const
 {
     OutCardIds.Reset();
-    if (!bHasInitializedSession || !Session.bCombatActive)
+    FCardPlayContext Context;
+    if (!BuildCombatPlayContext(Context))
     {
         return;
     }
 
-    FCardPlayContext Context;
-    Context.CurrentPhase = EGamePhase::Combat;
-    Context.EnergyAvailable = Session.CombatState.Energy;
-    Context.BasePartySize = 1;
-    Context.HandCount = Session.CombatState.Hand.Num();
-
-    for (const FName& OwnedCardId : Session.OwnedCardIds)
-    {
-        for (const FCardDefinition& Card : Session.KnownCards)
-        {
-            if (Card.CardId != OwnedCardId)
-            {
-                continue;
-            }
-
-            Context.CollectionTags.Append(Card.Tags);
-            break;
-        }
-    }
-
     for (const FName& CardId : Session.CombatState.Hand)
     {
-        for (const FCardDefinition& Card : Session.KnownCards)
+        FCardDefinition Card;
+        if (!FindKnownCard(CardId, Card))
         {
-            if (Card.CardId != CardId)
-            {
-                continue;
-            }
+            continue;
+        }
 
-            const FCardPlayResult Result = URuleResolver::CanPlayCard(Card, Context);
-            if (Result.bCanPlay)
-            {
-                OutCardIds.Add(CardId);
-            }
-            break;
+        const FCardPlayResult Result = URuleResolver::CanPlayCard(Card, Context);
+        if (Result.bCanPlay)
+        {
+            OutCardIds.Add(CardId);
         }
     }
 }
@@ -410,6 +388,17 @@ void UGreeislandGameSubsystem::BuildOwnedCardViewData(TArray<FGreeislandCardView
         ViewData.bInDeck = Session.DeckCardIds.Contains(CardId);
         ViewData.bInHand = Session.CombatState.Hand.Contains(CardId);
         ViewData.bPlayableNow = PlayableCardIds.Contains(CardId);
+
+        if (ViewData.bInHand)
+        {
+            FCardPlayResult PlayResult;
+            if (GetCombatCardPlayResult(CardId, PlayResult))
+            {
+                ViewData.EffectivePartySize = PlayResult.EffectivePartySize;
+                ViewData.UnplayableReasons = PlayResult.Reasons;
+            }
+        }
+
         OutCards.Add(ViewData);
     }
 }
@@ -442,8 +431,34 @@ void UGreeislandGameSubsystem::BuildHandCardViewData(TArray<FGreeislandCardViewD
         ViewData.bInDeck = Session.DeckCardIds.Contains(CardId);
         ViewData.bInHand = true;
         ViewData.bPlayableNow = PlayableCardIds.Contains(CardId);
+        FCardPlayResult PlayResult;
+        if (GetCombatCardPlayResult(CardId, PlayResult))
+        {
+            ViewData.EffectivePartySize = PlayResult.EffectivePartySize;
+            ViewData.UnplayableReasons = PlayResult.Reasons;
+        }
         OutCards.Add(ViewData);
     }
+}
+
+bool UGreeislandGameSubsystem::GetCombatCardPlayResult(FName CardId, FCardPlayResult& OutResult) const
+{
+    OutResult = FCardPlayResult();
+
+    FCardPlayContext Context;
+    if (!BuildCombatPlayContext(Context))
+    {
+        return false;
+    }
+
+    FCardDefinition Card;
+    if (!FindKnownCard(CardId, Card))
+    {
+        return false;
+    }
+
+    OutResult = URuleResolver::CanPlayCard(Card, Context);
+    return true;
 }
 
 void UGreeislandGameSubsystem::BuildEventViewData(TArray<FGreeislandEventViewData>& OutEvents) const
@@ -484,6 +499,38 @@ bool UGreeislandGameSubsystem::GetEventDefinition(FName EventId, FExplorationEve
     }
 
     return false;
+}
+
+bool UGreeislandGameSubsystem::BuildCombatPlayContext(FCardPlayContext& OutContext) const
+{
+    OutContext = FCardPlayContext();
+
+    if (!bHasInitializedSession || !Session.bCombatActive)
+    {
+        return false;
+    }
+
+    OutContext.CurrentPhase = EGamePhase::Combat;
+    OutContext.EnergyAvailable = Session.CombatState.Energy;
+    OutContext.BasePartySize = 1;
+    OutContext.HandCount = Session.CombatState.Hand.Num();
+
+    for (const FName& OwnedCardId : Session.OwnedCardIds)
+    {
+        FCardDefinition Card;
+        if (!FindKnownCard(OwnedCardId, Card))
+        {
+            continue;
+        }
+
+        OutContext.CollectionTags.Append(Card.Tags);
+        if (Card.Kind == ECardKind::Rule || Card.Kind == ECardKind::Constraint)
+        {
+            OutContext.ActiveRuleCards.Add(Card);
+        }
+    }
+
+    return true;
 }
 
 FSessionActionResult UGreeislandGameSubsystem::FailResult(const FString& Message) const

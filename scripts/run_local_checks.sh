@@ -5,6 +5,7 @@ python3 scripts/validate_cards/validate_cards.py data/cards/cards.mvp.json
 python3 scripts/validate_events/validate_events.py data/events/events.mvp.json
 python3 scripts/validate_cards/rule_smoke_test.py
 python3 scripts/validate_cards/combat_smoke_test.py
+python3 scripts/validate_cards/playability_reason_smoke_test.py
 python3 scripts/validate_cards/exploration_smoke_test.py
 python3 scripts/validate_cards/ai_gm_smoke_test.py
 python3 scripts/validate_events/ai_fallback_smoke_test.py

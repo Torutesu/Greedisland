@@ -22,7 +22,7 @@ Runtime entrypoint:
 - [UGreeislandGameSubsystem](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Runtime/GreeislandGameSubsystem.h)
   `BuildUiSnapshot()`、`GetPlayableCombatCardIds()`、`BuildOwnedCardViewData()`、`BuildEventViewData()` でUMG向けの表示データを直接取得できる
 - [UGreeislandDebugHudWidget](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/UI/GreeislandDebugHudWidget.h)
-  Blueprintで見た目を被せるだけで、初期化、イベント解決、戦闘進行、保存復元、近接イベント表示、AI GMリクエスト生成、検証、固定文面フォールバック、開発用カード付与を呼べるデバッグHUDのC++足場
+  Blueprintで見た目を被せるだけで、初期化、イベント解決、戦闘進行、保存復元、近接イベント表示、AI GMリクエスト生成、検証、固定文面フォールバック、開発用カード付与、手札の使用不可理由表示を呼べるデバッグHUDのC++足場
 - [AGreeislandDebugHud](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/UI/GreeislandDebugHud.h)
   `DebugHudWidgetClass` を指定すると BeginPlay でWidgetをViewportへ載せるHUDクラス
 - [AGreeislandDebugGameMode](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugGameMode.h)

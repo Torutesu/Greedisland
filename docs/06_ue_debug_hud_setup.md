@@ -97,6 +97,11 @@
 - `LastAiResponse`
 - `LastAiValidationResult`
 
+`HandCardViewData` / `OwnedCardViewData` では追加で以下を読める:
+
+- `EffectivePartySize`
+- `UnplayableReasons`
+
 更新通知:
 
 - `OnPresentationUpdated`
@@ -112,6 +117,7 @@
 6. イベント地点へ近づくと `FocusedEventDisplayName` に対象名が出る
 7. `BuildAiRequestForActiveEvent` で `AllowedRewardCardIds` や `PlayerChoice` を含むAI GM入力を確認できる
 8. `BuildFallbackAiResponseForActiveEvent` で API 失敗時の固定文面を表示できる
+9. `HandCardViewData` の `UnplayableReasons` から、どの制約で使えないかをそのままUI表示できる
 
 レベル配置ベースで進める場合:
 

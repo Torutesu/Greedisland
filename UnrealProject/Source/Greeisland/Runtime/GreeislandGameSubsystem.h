@@ -90,6 +90,12 @@ struct FGreeislandCardViewData
 
     UPROPERTY(BlueprintReadOnly)
     bool bPlayableNow = false;
+
+    UPROPERTY(BlueprintReadOnly)
+    int32 EffectivePartySize = 1;
+
+    UPROPERTY(BlueprintReadOnly)
+    TArray<FString> UnplayableReasons;
 };
 
 USTRUCT(BlueprintType)
@@ -192,6 +198,9 @@ public:
     void BuildHandCardViewData(TArray<FGreeislandCardViewData>& OutCards) const;
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
+    bool GetCombatCardPlayResult(FName CardId, FCardPlayResult& OutResult) const;
+
+    UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
     void BuildEventViewData(TArray<FGreeislandEventViewData>& OutEvents) const;
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
@@ -210,6 +219,7 @@ public:
     }
 
 private:
+    bool BuildCombatPlayContext(FCardPlayContext& OutContext) const;
     FSessionActionResult FailResult(const FString& Message) const;
     FSessionActionResult EnsureInitialized() const;
     void AppendRuntimeLogs(const FSessionActionResult& ActionResult);
