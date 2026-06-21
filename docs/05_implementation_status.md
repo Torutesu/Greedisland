@@ -33,6 +33,7 @@
 - クエスト/クリア/保存復元の更新テスト
 - 1ゾーンMVP一周の統合スモークテスト
 - UE起動向けJSONパス解決チェック
+- UE editor preflight smoke test
 - BootstrapActor と Project Settings の既定値同期チェック
 - HUD向け bootstrap diagnostics 表示補助
 - EventActor 配置漏れ / 重複の bootstrap diagnostics
@@ -174,6 +175,16 @@ python3 scripts/validate_events/mvp_full_run_smoke_test.py
 
 ```text
 OK: MVP full run smoke tests passed
+```
+
+```bash
+python3 scripts/validate_events/ue_editor_preflight_smoke_test.py
+```
+
+結果:
+
+```text
+OK: UE editor preflight smoke tests passed
 ```
 
 ```bash

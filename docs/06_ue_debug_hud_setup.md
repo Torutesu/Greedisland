@@ -8,6 +8,8 @@
 
 最短で現物確認に入るときは、先に [UE5.8 Bring-up Sheet](/Users/torutano/Documents/Greeisland/docs/07_ue_bringup_sheet.md) を見ると流れを追いやすい。
 
+エディタを開く前に `python3 scripts/validate_events/ue_editor_preflight_smoke_test.py` を通しておくと、`uproject` / `Target.cs` / `Build.cs` / `DefaultGame.ini` / `DefaultInput.ini` / JSON 配置の前提をまとめて確認できる。
+
 ## すでに用意されているC++クラス
 
 - `UGreeislandGameSubsystem`

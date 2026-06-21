@@ -16,6 +16,12 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
   - `../data/cards/cards.mvp.json`
   - `../data/events/events.mvp.json`
 
+エディタ起動前に、ターミナル側ではこれを 1 回通しておくと速い:
+
+```bash
+python3 scripts/validate_events/ue_editor_preflight_smoke_test.py
+```
+
 ## 1. 作る Blueprint アセット
 
 `UGreeislandDebugHudWidget.GetRecommendedBlueprintAssets()` の返り値と同じ内容。
