@@ -46,6 +46,7 @@
 - HUD walkthrough progress DTO
 - HUD event actor status DTO
 - Blueprint asset checklist DTO
+- Runtime card/event summary strings for UI rows
 - GameInstanceSubsystem ベースのランタイム接続層
 - UMG向け UI snapshot / playable card 取得API
 - Blueprint向け card/event view data 取得API
@@ -227,6 +228,16 @@ python3 scripts/validate_events/ue_hud_action_state_smoke_test.py
 
 ```text
 OK: UE HUD action state smoke tests passed
+```
+
+```bash
+python3 scripts/validate_events/ue_runtime_viewdata_surface_smoke_test.py
+```
+
+結果:
+
+```text
+OK: UE runtime viewdata surface smoke tests passed
 ```
 
 ```bash

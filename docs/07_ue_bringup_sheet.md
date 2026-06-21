@@ -93,6 +93,21 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 - `RecommendedHudActions`
 - `HudActionStates`
 
+行表示の近道:
+
+- `HandCardViewData`
+  - タイトル: `DisplayName`
+  - 補足1: `StateSummary`
+  - 補足2: `DetailSummary`
+- `OwnedCardViewData`
+  - タイトル: `DisplayName`
+  - 補足1: `StateSummary`
+  - 補足2: `DetailSummary`
+- `EventViewData`
+  - タイトル: `DisplayName`
+  - 補足1: `StatusSummary`
+  - 補足2: `DetailSummary`
+
 推奨パネル順:
 
 1. `session_status`

@@ -96,6 +96,15 @@ struct FGreeislandCardViewData
 
     UPROPERTY(BlueprintReadOnly)
     TArray<FString> UnplayableReasons;
+
+    UPROPERTY(BlueprintReadOnly)
+    FString KindLabel;
+
+    UPROPERTY(BlueprintReadOnly)
+    FString StateSummary;
+
+    UPROPERTY(BlueprintReadOnly)
+    FString DetailSummary;
 };
 
 USTRUCT(BlueprintType)
@@ -120,6 +129,15 @@ struct FGreeislandEventViewData
 
     UPROPERTY(BlueprintReadOnly)
     bool bIsActive = false;
+
+    UPROPERTY(BlueprintReadOnly)
+    FString TypeLabel;
+
+    UPROPERTY(BlueprintReadOnly)
+    FString StatusSummary;
+
+    UPROPERTY(BlueprintReadOnly)
+    FString DetailSummary;
 };
 
 UCLASS()

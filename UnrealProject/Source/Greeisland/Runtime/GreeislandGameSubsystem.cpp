@@ -7,6 +7,47 @@
 #include "Save/SaveGameMapper.h"
 #include "Session/GameSessionLibrary.h"
 
+namespace
+{
+FString CardKindToLabel(ECardKind Kind)
+{
+    switch (Kind)
+    {
+        case ECardKind::Action:
+            return TEXT("Action");
+        case ECardKind::Item:
+            return TEXT("Item");
+        case ECardKind::Rule:
+            return TEXT("Rule");
+        case ECardKind::Constraint:
+            return TEXT("Constraint");
+        case ECardKind::Key:
+            return TEXT("Key");
+    }
+
+    return TEXT("Unknown");
+}
+
+FString EventTypeToLabel(EExplorationEventType Type)
+{
+    switch (Type)
+    {
+        case EExplorationEventType::Battle:
+            return TEXT("Battle");
+        case EExplorationEventType::Treasure:
+            return TEXT("Treasure");
+        case EExplorationEventType::Npc:
+            return TEXT("Npc");
+        case EExplorationEventType::Quest:
+            return TEXT("Quest");
+        case EExplorationEventType::KeyGate:
+            return TEXT("KeyGate");
+    }
+
+    return TEXT("Unknown");
+}
+}
+
 FSessionActionResult UGreeislandGameSubsystem::InitializeNewSessionFromFiles(
     const FString& CardJsonPath,
     const FString& EventJsonPath)
@@ -388,6 +429,7 @@ void UGreeislandGameSubsystem::BuildOwnedCardViewData(TArray<FGreeislandCardView
         ViewData.bInDeck = Session.DeckCardIds.Contains(CardId);
         ViewData.bInHand = Session.CombatState.Hand.Contains(CardId);
         ViewData.bPlayableNow = PlayableCardIds.Contains(CardId);
+        ViewData.KindLabel = CardKindToLabel(Card.Kind);
 
         if (ViewData.bInHand)
         {
@@ -398,6 +440,33 @@ void UGreeislandGameSubsystem::BuildOwnedCardViewData(TArray<FGreeislandCardView
                 ViewData.UnplayableReasons = PlayResult.Reasons;
             }
         }
+
+        TArray<FString> StateParts;
+        StateParts.Add(ViewData.KindLabel);
+        if (ViewData.bInHand)
+        {
+            StateParts.Add(ViewData.bPlayableNow ? TEXT("Playable") : TEXT("Blocked"));
+        }
+        else if (ViewData.bInDeck)
+        {
+            StateParts.Add(TEXT("In Deck"));
+        }
+        else
+        {
+            StateParts.Add(TEXT("Owned"));
+        }
+        ViewData.StateSummary = FString::Join(StateParts, TEXT(" | "));
+
+        TArray<FString> DetailParts;
+        if (ViewData.bInHand)
+        {
+            DetailParts.Add(FString::Printf(TEXT("party %d"), ViewData.EffectivePartySize));
+        }
+        if (ViewData.UnplayableReasons.Num() > 0)
+        {
+            DetailParts.Add(ViewData.UnplayableReasons[0]);
+        }
+        ViewData.DetailSummary = FString::Join(DetailParts, TEXT(" | "));
 
         OutCards.Add(ViewData);
     }
@@ -431,12 +500,24 @@ void UGreeislandGameSubsystem::BuildHandCardViewData(TArray<FGreeislandCardViewD
         ViewData.bInDeck = Session.DeckCardIds.Contains(CardId);
         ViewData.bInHand = true;
         ViewData.bPlayableNow = PlayableCardIds.Contains(CardId);
+        ViewData.KindLabel = CardKindToLabel(Card.Kind);
         FCardPlayResult PlayResult;
         if (GetCombatCardPlayResult(CardId, PlayResult))
         {
             ViewData.EffectivePartySize = PlayResult.EffectivePartySize;
             ViewData.UnplayableReasons = PlayResult.Reasons;
         }
+        ViewData.StateSummary = FString::Printf(
+            TEXT("%s | %s"),
+            *ViewData.KindLabel,
+            ViewData.bPlayableNow ? TEXT("Playable") : TEXT("Blocked"));
+        TArray<FString> DetailParts;
+        DetailParts.Add(FString::Printf(TEXT("party %d"), ViewData.EffectivePartySize));
+        if (ViewData.UnplayableReasons.Num() > 0)
+        {
+            DetailParts.Add(ViewData.UnplayableReasons[0]);
+        }
+        ViewData.DetailSummary = FString::Join(DetailParts, TEXT(" | "));
         OutCards.Add(ViewData);
     }
 }
@@ -478,6 +559,21 @@ void UGreeislandGameSubsystem::BuildEventViewData(TArray<FGreeislandEventViewDat
         ViewData.bAvailable = Session.ZoneProgress.AvailableEventIds.Contains(Event.EventId);
         ViewData.bCompleted = Session.ZoneProgress.CompletedEventIds.Contains(Event.EventId);
         ViewData.bIsActive = Session.ActiveEventId == Event.EventId;
+        ViewData.TypeLabel = EventTypeToLabel(Event.Type);
+        ViewData.StatusSummary = ViewData.bCompleted
+            ? TEXT("Completed")
+            : (ViewData.bAvailable ? (ViewData.bIsActive ? TEXT("Available | Active") : TEXT("Available")) : TEXT("Locked"));
+
+        TArray<FString> DetailParts;
+        if (Event.RequiredCardIds.Num() > 0)
+        {
+            DetailParts.Add(FString::Printf(TEXT("needs %d"), Event.RequiredCardIds.Num()));
+        }
+        if (Event.RewardCardIds.Num() > 0)
+        {
+            DetailParts.Add(FString::Printf(TEXT("rewards %d"), Event.RewardCardIds.Num()));
+        }
+        ViewData.DetailSummary = FString::Join(DetailParts, TEXT(" | "));
         OutEvents.Add(ViewData);
     }
 }

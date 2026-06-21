@@ -182,6 +182,18 @@
 - `AvailabilityLabel`
 - `Detail`
 
+`HandCardViewData` / `OwnedCardViewData` では以下も読める:
+
+- `KindLabel`
+- `StateSummary`
+- `DetailSummary`
+
+`EventViewData` では以下も読める:
+
+- `TypeLabel`
+- `StatusSummary`
+- `DetailSummary`
+
 `EventActorStatusViewData` の各要素では以下を読める:
 
 - `EventId`
@@ -245,9 +257,10 @@
 16. `RecommendedHudPanels` を見れば、Session Status / Event Reconciliation / Combat Hand などのパネル分けをそのまま決められる
 17. `RecommendedHudActions` を見れば、ボタン名、結びつけるメソッド、置き場所をそのまま決められる
 18. `HudActionStates` を使えば、ボタンの enabled/disabled を Blueprint 側で個別実装せずに済む
-19. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
-20. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
-21. `RecommendedBlueprintAssets` をそのまま表示すれば、作るべき BP アセット一覧として使える
+19. `StateSummary` / `StatusSummary` をそのまま行表示すれば、ListView の行整形ロジックをかなり減らせる
+20. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
+21. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える
+22. `RecommendedBlueprintAssets` をそのまま表示すれば、作るべき BP アセット一覧として使える
 
 レベル配置ベースで進める場合:
 
