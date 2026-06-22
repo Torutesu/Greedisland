@@ -53,6 +53,7 @@ def main() -> int:
         commands = helper.build_commands(tooling)
         bootstrap_sequence = helper.build_sequence(commands, "bootstrap_editor")
         checklist_lines = helper.build_runtime_checklist_lines(tooling)
+        report_lines = helper.build_report_template_lines(tooling)
         readiness = helper.collect_readiness(tooling)
 
         assert_true(commands["projectfiles"] is not None, "projectfiles command exists")
@@ -71,6 +72,11 @@ def main() -> int:
         assert_true(any("UE Runtime Verification Checklist" in line for line in checklist_lines), "checklist title exists")
         assert_true(any("Wake Cache" in line for line in checklist_lines), "checklist references walkthrough flow")
         assert_true(any("GenerateProjectFiles.sh" in line for line in checklist_lines), "checklist includes projectfiles command")
+        assert_true(any("# UE Runtime Verification Report" in line for line in report_lines), "report title exists")
+        assert_true(any("## Commands" in line for line in report_lines), "report includes commands section")
+        assert_true(any("## Walkthrough Checks" in line for line in report_lines), "report includes walkthrough section")
+        assert_true(any("Ridge Scout Battle" in line for line in report_lines), "report includes walkthrough step")
+        assert_true(any("GenerateProjectFiles" in line for line in report_lines), "report includes projectfiles result row")
         assert_true(any(item.label == "Build.sh available" and item.ok for item in readiness), "readiness sees Build.sh")
         assert_true(any(item.label == "UnrealEditor detected" and item.ok for item in readiness), "readiness sees editor")
 

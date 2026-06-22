@@ -46,6 +46,18 @@ python3 scripts/ue_build_helper.py --action bootstrap-editor
 python3 scripts/ue_build_helper.py --action checklist
 ```
 
+確認ログの雛形をその場で出したいときは:
+
+```bash
+python3 scripts/ue_build_helper.py --action report-template
+```
+
+ファイルとして残すなら:
+
+```bash
+python3 scripts/ue_build_helper.py --action report-template --output artifacts/ue-runtime-checks/first-pass.md
+```
+
 ## 1. 作る Blueprint アセット
 
 `UGreeislandDebugHudWidget.GetRecommendedBlueprintAssets()` の返り値と同じ内容。

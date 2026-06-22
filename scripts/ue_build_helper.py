@@ -8,6 +8,7 @@ import os
 import subprocess
 import sys
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 
 
@@ -303,6 +304,113 @@ def print_runtime_checklist(tooling: UnrealTooling) -> int:
     return 0
 
 
+def build_report_template_lines(tooling: UnrealTooling) -> list[str]:
+    commands = build_commands(tooling)
+    generated_at = datetime.now().astimezone().isoformat(timespec="seconds")
+    lines = [
+        "# UE Runtime Verification Report",
+        "",
+        f"- GeneratedAt: {generated_at}",
+        f"- RepoRoot: {repo_root()}",
+        f"- Project: {uproject_path()}",
+        f"- EngineRoot: {tooling.engine_root if tooling.engine_root else 'NOT FOUND'}",
+        f"- UnrealEditor: {tooling.editor_binary if tooling.editor_binary else 'NOT FOUND'}",
+        f"- GenerateProjectFiles: {tooling.projectfiles_script if tooling.projectfiles_script else 'NOT FOUND'}",
+        f"- BuildScript: {tooling.build_script if tooling.build_script else 'NOT FOUND'}",
+        f"- UnrealHeaderTool: {tooling.uht_binary if tooling.uht_binary else 'NOT FOUND'}",
+        "",
+        "## Commands",
+        "",
+        f"- Preflight: `python3 scripts/validate_events/ue_editor_preflight_smoke_test.py`",
+        f"- Doctor: `python3 scripts/ue_build_helper.py --action doctor`",
+        f"- Checklist: `python3 scripts/ue_build_helper.py --action checklist`",
+    ]
+
+    for label, command_key in (
+        ("ProjectFiles", "projectfiles"),
+        ("BuildEditor", "build_editor"),
+        ("BuildGame", "build_game"),
+        ("OpenEditor", "open_editor"),
+    ):
+        command = commands[command_key]
+        rendered = " ".join(command) if command else "UNAVAILABLE"
+        lines.append(f"- {label}: `{rendered}`")
+
+    lines.extend(
+        [
+            "",
+            "## Command Results",
+            "",
+            "| Step | Status | Notes |",
+            "| --- | --- | --- |",
+            "| Preflight | TODO | |",
+            "| Doctor | TODO | |",
+            "| GenerateProjectFiles | TODO | |",
+            "| BuildEditor | TODO | |",
+            "| BuildGame | TODO | |",
+            "| OpenEditor | TODO | |",
+            "",
+            "## Editor Checks",
+            "",
+            "| Check | Status | Evidence | Notes |",
+            "| --- | --- | --- | --- |",
+            "| World Settings uses debug GameMode | TODO | | |",
+            "| BootstrapActor placed exactly once | TODO | | |",
+            "| EventActors cover wake_cache / contract_broker / silent_shrine / ridge_scout / proxy_gate | TODO | | |",
+            "| Debug HUD appears on Play | TODO | | |",
+            "| SessionStatusRows updates after bootstrap | TODO | | |",
+            "| CurrentObjectiveAction updates after bootstrap | TODO | | |",
+            "| Card data loads from cards.mvp.json | TODO | | |",
+            "| Event data loads from events.mvp.json | TODO | | |",
+            "",
+            "## Walkthrough Checks",
+            "",
+            "| Step | Status | Evidence | Notes |",
+            "| --- | --- | --- | --- |",
+            "| Wake Cache | TODO | | |",
+            "| Contract Broker | TODO | | |",
+            "| Silent Shrine | TODO | | |",
+            "| Ridge Scout Battle | TODO | | |",
+            "| Proxy Gate | TODO | | |",
+            "| Save Session | TODO | | |",
+            "| Restore Session | TODO | | |",
+            "",
+            "## Evidence Captured",
+            "",
+            "- Editor launch log:",
+            "- UHT / build output:",
+            "- HUD screenshot:",
+            "- Walkthrough completion screenshot or note:",
+            "",
+            "## Open Issues",
+            "",
+            "- ",
+            "",
+            "## Next Actions",
+            "",
+            "- ",
+        ]
+    )
+
+    return lines
+
+
+def print_or_write_report_template(tooling: UnrealTooling, output_path: str | None) -> int:
+    lines = build_report_template_lines(tooling)
+    content = "\n".join(lines) + "\n"
+    if output_path:
+        destination = Path(output_path).expanduser()
+        if not destination.is_absolute():
+            destination = repo_root() / destination
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(content, encoding="utf-8")
+        print(f"Wrote report template: {destination}")
+        return 0
+
+    print(content, end="")
+    return 0
+
+
 def run_named_command(tooling: UnrealTooling, action: str) -> int:
     commands = build_commands(tooling)
     sequence = build_sequence(commands, action)
@@ -323,9 +431,13 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--action",
-        choices=("doctor", "print-plan", "checklist", "projectfiles", "build-editor", "build-game", "open-editor", "bootstrap-editor"),
+        choices=("doctor", "print-plan", "checklist", "report-template", "projectfiles", "build-editor", "build-game", "open-editor", "bootstrap-editor"),
         default="print-plan",
         help="Action to run. Defaults to printing the resolved Unreal commands.",
+    )
+    parser.add_argument(
+        "--output",
+        help="Optional file path for actions that can write artifacts, such as report-template.",
     )
     return parser.parse_args()
 
@@ -338,6 +450,8 @@ def main() -> int:
         return print_doctor(tooling)
     if args.action == "checklist":
         return print_runtime_checklist(tooling)
+    if args.action == "report-template":
+        return print_or_write_report_template(tooling, args.output)
     if args.action == "print-plan":
         return print_plan(tooling)
     if args.action == "projectfiles":

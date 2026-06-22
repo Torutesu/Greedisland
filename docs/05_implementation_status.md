@@ -35,6 +35,7 @@
 - UE起動向けJSONパス解決チェック
 - UE editor preflight smoke test
 - UE build helper command planner
+- UE runtime verification report template helper
 - BootstrapActor と Project Settings の既定値同期チェック
 - HUD向け bootstrap diagnostics 表示補助
 - EventActor 配置漏れ / 重複の bootstrap diagnostics

@@ -18,6 +18,8 @@ UE が見つかっているなら、`python3 scripts/ue_build_helper.py --action
 
 `python3 scripts/ue_build_helper.py --action checklist` で、エディタ起動後に何をどの順で確認するかの実機チェック順も出せる。
 
+`python3 scripts/ue_build_helper.py --action report-template` を使うと、実機確認の結果を書き残す Markdown 雛形をそのまま出せる。`--output artifacts/ue-runtime-checks/first-pass.md` のように渡せばファイル生成もできる。
+
 ## すでに用意されているC++クラス
 
 - `UGreeislandGameSubsystem`
