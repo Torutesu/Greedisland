@@ -42,6 +42,7 @@
 - UE runtime report template now embeds MVP audit snapshot
 - UE verification pack writer
 - UE verification pack README / command script
+- UE verification pack captured preflight / audit outputs
 - BootstrapActor と Project Settings の既定値同期チェック
 - HUD向け bootstrap diagnostics 表示補助
 - EventActor 配置漏れ / 重複の bootstrap diagnostics

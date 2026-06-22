@@ -336,6 +336,28 @@ def build_mvp_audit_snapshot_lines() -> list[str]:
     return lines
 
 
+def capture_command_output(command: list[str]) -> str:
+    completed = subprocess.run(
+        command,
+        cwd=repo_root(),
+        capture_output=True,
+        text=True,
+    )
+    lines = [
+        f"$ {' '.join(command)}",
+        f"exit_code={completed.returncode}",
+        "",
+    ]
+    if completed.stdout:
+        lines.append(completed.stdout.rstrip())
+    if completed.stderr:
+        if completed.stdout:
+            lines.append("")
+        lines.append("[stderr]")
+        lines.append(completed.stderr.rstrip())
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def write_verification_pack(tooling: UnrealTooling, output_dir: str | None) -> int:
     audit_module = load_mvp_audit_module()
     timestamp = datetime.now().astimezone().strftime("%Y%m%d-%H%M%S")
@@ -350,10 +372,20 @@ def write_verification_pack(tooling: UnrealTooling, output_dir: str | None) -> i
     doctor_path = base_dir / "ue-tooling-doctor.txt"
     readme_path = base_dir / "README.md"
     commands_path = base_dir / "run-verification-commands.sh"
+    preflight_path = base_dir / "ue-editor-preflight-output.txt"
+    audit_output_path = base_dir / "mvp-audit-output.md"
 
     report_path.write_text("\n".join(build_report_template_lines(tooling)) + "\n", encoding="utf-8")
     audit_path.write_text(audit_module.render_markdown(audit_module.collect_items()), encoding="utf-8")
     checklist_path.write_text("\n".join(build_runtime_checklist_lines(tooling)) + "\n", encoding="utf-8")
+    preflight_path.write_text(
+        capture_command_output(["python3", "scripts/validate_events/ue_editor_preflight_smoke_test.py"]),
+        encoding="utf-8",
+    )
+    audit_output_path.write_text(
+        capture_command_output(["python3", "scripts/mvp_audit.py", "--format", "markdown"]),
+        encoding="utf-8",
+    )
 
     doctor_lines = []
     commands = build_commands(tooling)
@@ -392,6 +424,8 @@ def write_verification_pack(tooling: UnrealTooling, output_dir: str | None) -> i
         "- `ue-runtime-checklist.txt`: ordered live-verification checklist",
         "- `ue-runtime-verification-report.md`: evidence capture template",
         "- `mvp-completion-audit.md`: requirement-by-requirement completion matrix",
+        "- `ue-editor-preflight-output.txt`: current machine preflight command output",
+        "- `mvp-audit-output.md`: current machine audit command output",
         "- `run-verification-commands.sh`: ready-to-run command reference for this repo",
         "",
         "## Suggested Terminal Sequence",
@@ -424,6 +458,8 @@ def write_verification_pack(tooling: UnrealTooling, output_dir: str | None) -> i
     print(f"- Doctor: {doctor_path}")
     print(f"- README: {readme_path}")
     print(f"- Commands: {commands_path}")
+    print(f"- Preflight Output: {preflight_path}")
+    print(f"- Audit Output: {audit_output_path}")
     return 0
 
 

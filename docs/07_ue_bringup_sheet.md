@@ -73,6 +73,7 @@ python3 scripts/ue_build_helper.py --action write-verification-pack
 ```
 
 生成された pack の `README.md` から見始めると、読む順番と実行順がそのまま分かる。
+`ue-editor-preflight-output.txt` と `mvp-audit-output.md` には、その場で採れた事前証跡も同梱される。
 
 ## 1. 作る Blueprint アセット
 
