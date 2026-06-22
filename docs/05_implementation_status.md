@@ -65,6 +65,7 @@
 - HUD向け focused event 表示 / 近接インタラクト補助
 - HUD向け AI GM request 生成補助
 - HUD向け AI GM validation / fallback response 補助
+- HUD向け直前 AI GM 応答の即時適用アクション
 - 開発者用カード付与コマンド
 - 手札カードの使用不可理由と有効パーティ人数表示
 - ViewportへデバッグHUDを自動表示するAHUD足場

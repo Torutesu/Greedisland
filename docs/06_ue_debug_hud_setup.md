@@ -29,6 +29,7 @@ UE が見つかっているなら、`python3 scripts/ue_build_helper.py --action
   - 近接中の `FocusedEventId` / `FocusedEventDisplayName` と `InteractWithFocusedEvent` を取得可能
   - `BuildAiRequestForActiveEvent` で Claude API 等へ送る前段の入力を取得可能
   - `BuildFallbackAiResponseForActiveEvent` と `ValidateAiResponseForActiveEvent` で固定文面フォールバックと検証結果を取得可能
+  - `ApplyLastAiResponse` で直前の AI GM 応答をそのままセッションへ反映できる
   - `GrantDeveloperCard` で任意カードを開発用に所持/デッキへ注入できる
   - `BootstrapSessionFromActor` と `LastBootstrapDiagnostics` でレベル上の BootstrapActor をHUDから直接確認できる
   - `GetRecommendedHudChecklist` で最小HUDに置くべき表示項目とボタン一覧を取得できる
@@ -339,20 +340,21 @@ UE が見つかっているなら、`python3 scripts/ue_build_helper.py --action
 6. イベント地点へ近づくと `FocusedEventDisplayName` に対象名が出る
 7. `BuildAiRequestForActiveEvent` で `AllowedRewardCardIds`、`AllowedQuestEventIds`、`PlayerChoice` を含むAI GM入力を確認できる
 8. `BuildFallbackAiResponseForActiveEvent` で API 失敗時の固定文面と、許可済みクエスト提案を表示できる
-9. `HandCardViewData` の `UnplayableReasons` から、どの制約で使えないかをそのままUI表示できる
-10. `LastBootstrapDiagnostics.Issues` から、JSONパスや save slot の不足を起動前に表示できる
-11. `LastBootstrapDiagnostics.MissingEventActorIds` を見れば、まだ置いていない `BP_GreeislandEventActor` が分かる
-12. `ExpectedEventPlacements` を一覧表示すれば、JSON定義順のマップ配置チェックリストとして使える
-13. `ExpectedEventRoute` を一覧表示すれば、Depth ごとの導線メモとしてそのまま使える
-14. `EventActorStatusViewData` を一覧表示すれば、配置済みなのに進めないイベントと、進行上は開いているのに置かれていないイベントを切り分けられる
-15. `WalkthroughProgress` を一覧表示すれば、次に触るべきMVP手順を HUD 上で自動表示できる
-16. `RecommendedHudPanels` を見れば、Session Status / Event Reconciliation / Combat Hand などのパネル分けをそのまま決められる
-17. `RecommendedHudActions` を見れば、ボタン名、結びつけるメソッド、置き場所をそのまま決められる
-18. `HudActionStates` を使えば、ボタンの enabled/disabled を Blueprint 側で個別実装せずに済む
-19. `HudActionButtons` を使えば、definition/state の join なしで actions パネルをそのまま描ける
-20. `CurrentObjectiveAction` を最上段に置けば、「いま押すべき一手」を walkthrough と action 状態から自動で出せる
-21. `VerificationChecks` を一覧表示すれば、Pass/Needs Work の bring-up レポートをそのまま出せる
-22. `StateSummary` / `StatusSummary` をそのまま行表示すれば、ListView の行整形ロジックをかなり減らせる
+9. `ApplyLastAiResponse` で直前の AI 応答を適用し、報酬やクエスト解放が進行へ反映される
+10. `HandCardViewData` の `UnplayableReasons` から、どの制約で使えないかをそのままUI表示できる
+11. `LastBootstrapDiagnostics.Issues` から、JSONパスや save slot の不足を起動前に表示できる
+12. `LastBootstrapDiagnostics.MissingEventActorIds` を見れば、まだ置いていない `BP_GreeislandEventActor` が分かる
+13. `ExpectedEventPlacements` を一覧表示すれば、JSON定義順のマップ配置チェックリストとして使える
+14. `ExpectedEventRoute` を一覧表示すれば、Depth ごとの導線メモとしてそのまま使える
+15. `EventActorStatusViewData` を一覧表示すれば、配置済みなのに進めないイベントと、進行上は開いているのに置かれていないイベントを切り分けられる
+16. `WalkthroughProgress` を一覧表示すれば、次に触るべきMVP手順を HUD 上で自動表示できる
+17. `RecommendedHudPanels` を見れば、Session Status / Event Reconciliation / Combat Hand などのパネル分けをそのまま決められる
+18. `RecommendedHudActions` を見れば、ボタン名、結びつけるメソッド、置き場所をそのまま決められる
+19. `HudActionStates` を使えば、ボタンの enabled/disabled を Blueprint 側で個別実装せずに済む
+20. `HudActionButtons` を使えば、definition/state の join なしで actions パネルをそのまま描ける
+21. `CurrentObjectiveAction` を最上段に置けば、「いま押すべき一手」を walkthrough と action 状態から自動で出せる
+22. `VerificationChecks` を一覧表示すれば、Pass/Needs Work の bring-up レポートをそのまま出せる
+23. `StateSummary` / `StatusSummary` をそのまま行表示すれば、ListView の行整形ロジックをかなり減らせる
 23. `PrimaryActionId` / `PrimaryActionNameArgument` をそのまま `ExecuteHudActionById` に流せば、行ボタンの押下処理もかなり減らせる
 24. `RecommendedHudChecklist` をそのまま表示すれば、Blueprint Widget の最小構成チェックリストとして使える
 25. `RecommendedWalkthrough` をそのまま表示すれば、起動後に何をどの順で触るかの確認導線として使える

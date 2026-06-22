@@ -31,6 +31,8 @@ def execute_action(action_id: str, optional_name: str = "", optional_text: str =
         return f"request:{optional_text}"
     if action_id == "build_fallback_ai":
         return f"fallback:{optional_text}"
+    if action_id == "apply_last_ai_response":
+        return f"apply:{optional_text}"
     return "unknown"
 
 
@@ -48,6 +50,7 @@ def main() -> int:
     assert_equal(execute_action("play_combat_card"), "missing", "play card requires card id")
     assert_equal(execute_action("build_ai_request", optional_text="offer trade"), "request:offer trade", "ai request routing")
     assert_equal(execute_action("build_fallback_ai", optional_text="offer trade"), "fallback:offer trade", "fallback ai routing")
+    assert_equal(execute_action("apply_last_ai_response", optional_text="offer trade"), "apply:offer trade", "apply last ai routing")
     assert_equal(execute_action("unknown_action"), "unknown", "unknown action fallback")
 
     print("OK: UE HUD action executor smoke tests passed")

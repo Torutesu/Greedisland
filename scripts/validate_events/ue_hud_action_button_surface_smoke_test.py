@@ -20,6 +20,8 @@ def build_button(action_id: str, enabled: bool) -> dict[str, object]:
         button["default_name_argument"] = "con_four_party_001"
     elif action_id in ("build_ai_request", "build_fallback_ai"):
         button["default_string_argument"] = "inspect rewards"
+    elif action_id == "apply_last_ai_response":
+        button["default_string_argument"] = "inspect rewards"
 
     return button
 
@@ -42,6 +44,9 @@ def main() -> int:
 
     fallback_button = build_button("build_fallback_ai", enabled=True)
     assert_equal(fallback_button["default_string_argument"], "inspect rewards", "fallback default choice")
+
+    apply_button = build_button("apply_last_ai_response", enabled=True)
+    assert_equal(apply_button["default_string_argument"], "inspect rewards", "apply ai default choice")
 
     print("OK: UE HUD action button surface smoke tests passed")
     return 0

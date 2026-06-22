@@ -31,6 +31,8 @@ def build_action_states(
     has_bootstrap_actor: bool,
     has_focused_event: bool,
     event_views: list[EventView],
+    has_last_ai_response: bool = False,
+    last_ai_response_valid: bool = False,
 ) -> dict[str, dict[str, object]]:
     event_by_id = {event.event_id: event for event in event_views}
 
@@ -58,6 +60,9 @@ def build_action_states(
         "grant_developer_card": {"enabled": snapshot.has_initialized_session},
         "build_ai_request": {"enabled": snapshot.has_initialized_session and bool(snapshot.active_event_id)},
         "build_fallback_ai": {"enabled": snapshot.has_initialized_session and bool(snapshot.active_event_id)},
+        "apply_last_ai_response": {
+            "enabled": snapshot.has_initialized_session and has_last_ai_response and last_ai_response_valid
+        },
     }
 
 
@@ -78,6 +83,7 @@ def main() -> int:
     assert_equal(states["restore_session"]["enabled"], False, "restore disabled without save")
     assert_equal(states["save_session"]["enabled"], False, "save disabled before init")
     assert_equal(states["interact_focused_event"]["enabled"], False, "interact disabled without focus")
+    assert_equal(states["apply_last_ai_response"]["enabled"], False, "apply ai disabled without response")
 
     states = build_action_states(
         Snapshot(has_initialized_session=True, active_event_id="event_contract_broker_001"),
@@ -85,6 +91,8 @@ def main() -> int:
         True,
         True,
         base_events,
+        has_last_ai_response=True,
+        last_ai_response_valid=True,
     )
     assert_equal(states["bootstrap_session"]["enabled"], True, "bootstrap enabled with actor")
     assert_equal(states["restore_session"]["enabled"], True, "restore enabled with save")
@@ -93,6 +101,7 @@ def main() -> int:
     assert_equal(states["resolve_active_event"]["enabled"], True, "resolve enabled for non-battle active event")
     assert_equal(states["start_active_combat"]["enabled"], False, "start combat disabled for non-battle active event")
     assert_equal(states["build_ai_request"]["enabled"], True, "AI request enabled with active event")
+    assert_equal(states["apply_last_ai_response"]["enabled"], True, "apply ai enabled with valid response")
 
     states = build_action_states(
         Snapshot(has_initialized_session=True, active_event_id="event_ridge_scout_001"),
@@ -100,10 +109,13 @@ def main() -> int:
         True,
         False,
         base_events,
+        has_last_ai_response=True,
+        last_ai_response_valid=False,
     )
     assert_equal(states["resolve_active_event"]["enabled"], False, "resolve disabled for battle active event")
     assert_equal(states["start_active_combat"]["enabled"], True, "start combat enabled for battle active event")
     assert_equal(states["run_enemy_turn"]["enabled"], False, "enemy turn disabled before combat starts")
+    assert_equal(states["apply_last_ai_response"]["enabled"], False, "apply ai disabled for invalid response")
 
     states = build_action_states(
         Snapshot(has_initialized_session=True, combat_active=True, active_event_id="event_ridge_scout_001"),

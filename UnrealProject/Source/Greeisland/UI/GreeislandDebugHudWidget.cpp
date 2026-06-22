@@ -237,6 +237,7 @@ bool UGreeislandDebugHudWidget::BuildAiRequestForActiveEvent(
 {
     bHasLastBuiltAiRequest = false;
     LastBuiltAiRequest = FAiGmRequest();
+    LastAiPlayerChoice = PlayerChoice;
     OutRequest = FAiGmRequest();
 
     UGreeislandGameSubsystem* Subsystem = GetGreeislandSubsystem();
@@ -262,6 +263,7 @@ bool UGreeislandDebugHudWidget::BuildFallbackAiResponseForActiveEvent(
     bHasLastAiResponse = false;
     LastAiResponse = FAiGmResponse();
     LastAiValidationResult = FAiGmValidationResult();
+    LastAiPlayerChoice = PlayerChoice;
     OutResponse = FAiGmResponse();
 
     UGreeislandGameSubsystem* Subsystem = GetGreeislandSubsystem();
@@ -286,6 +288,7 @@ FAiGmValidationResult UGreeislandDebugHudWidget::ValidateAiResponseForActiveEven
     const FString& PlayerChoice)
 {
     LastAiValidationResult = FAiGmValidationResult();
+    LastAiPlayerChoice = PlayerChoice;
 
     UGreeislandGameSubsystem* Subsystem = GetGreeislandSubsystem();
     if (!Subsystem)
@@ -319,8 +322,35 @@ FSessionActionResult UGreeislandDebugHudWidget::ApplyAiRewardResponse(
     Response.DifficultyHint = TEXT("medium");
     bHasLastAiResponse = true;
     LastAiResponse = Response;
+    LastAiPlayerChoice = PlayerChoice;
     LastAiValidationResult = Subsystem->ValidateAiResponseForActiveEvent(Response, PlayerChoice);
     return HandleActionResult(Subsystem->ApplyAiResponse(Response, PlayerChoice));
+}
+
+FSessionActionResult UGreeislandDebugHudWidget::ApplyLastAiResponse(const FString& PlayerChoice)
+{
+    if (!bHasLastAiResponse)
+    {
+        return HandleActionResult(FailResult(TEXT("No AI response is available to apply.")));
+    }
+
+    UGreeislandGameSubsystem* Subsystem = GetGreeislandSubsystem();
+    if (!Subsystem)
+    {
+        return HandleActionResult(FailResult(TEXT("Game subsystem is unavailable.")));
+    }
+
+    const FString EffectivePlayerChoice = PlayerChoice.IsEmpty() ? LastAiPlayerChoice : PlayerChoice;
+    LastAiPlayerChoice = EffectivePlayerChoice;
+    LastAiValidationResult = Subsystem->ValidateAiResponseForActiveEvent(LastAiResponse, EffectivePlayerChoice);
+    if (!LastAiValidationResult.bIsValid)
+    {
+        return HandleActionResult(FailResult(FString::Printf(
+            TEXT("Last AI response is invalid and cannot be applied: %s"),
+            *FString::Join(LastAiValidationResult.Reasons, TEXT(" | ")))));
+    }
+
+    return HandleActionResult(Subsystem->ApplyAiResponse(LastAiResponse, EffectivePlayerChoice));
 }
 
 FSessionActionResult UGreeislandDebugHudWidget::ExecuteHudActionById(
@@ -437,6 +467,11 @@ FSessionActionResult UGreeislandDebugHudWidget::ExecuteHudActionById(
         OnActionResultUpdated(Result);
         LastActionResult = Result;
         return LastActionResult;
+    }
+
+    if (ActionId == TEXT("apply_last_ai_response"))
+    {
+        return ApplyLastAiResponse(OptionalStringArgument);
     }
 
     return HandleActionResult(FailResult(FString::Printf(
@@ -819,6 +854,16 @@ void UGreeislandDebugHudWidget::BuildRecommendedHudActions()
         TEXT("Button"),
         110,
         false);
+    AddAction(
+        TEXT("apply_last_ai_response"),
+        TEXT("Apply AI"),
+        TEXT("ExecuteHudActionById"),
+        TEXT("ai_debug"),
+        TEXT("直前に生成または入力した AI GM 応答をそのままセッションへ反映する。"),
+        TEXT("LastAiResponse があり、validation が通っているとき"),
+        TEXT("Button"),
+        120,
+        false);
 }
 
 void UGreeislandDebugHudWidget::BuildRecommendedBlueprintAssets()
@@ -1139,6 +1184,12 @@ void UGreeislandDebugHudWidget::BuildHudActionStates()
         {
             State.bEnabled = CurrentSnapshot.bHasInitializedSession && !CurrentSnapshot.ActiveEventId.IsNone();
         }
+        else if (Action.ActionId == TEXT("apply_last_ai_response"))
+        {
+            State.bEnabled = CurrentSnapshot.bHasInitializedSession &&
+                bHasLastAiResponse &&
+                LastAiValidationResult.bIsValid;
+        }
 
         State.AvailabilityLabel = State.bEnabled ? TEXT("Enabled") : TEXT("Disabled");
         State.Detail = BuildHudActionDetail(Action);
@@ -1184,6 +1235,10 @@ void UGreeislandDebugHudWidget::BuildHudActionButtons()
         else if (Action.ActionId == TEXT("build_ai_request") || Action.ActionId == TEXT("build_fallback_ai"))
         {
             Button.DefaultStringArgument = TEXT("inspect rewards");
+        }
+        else if (Action.ActionId == TEXT("apply_last_ai_response"))
+        {
+            Button.DefaultStringArgument = LastAiPlayerChoice.IsEmpty() ? TEXT("inspect rewards") : LastAiPlayerChoice;
         }
 
         HudActionButtons.Add(Button);

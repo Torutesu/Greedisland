@@ -210,6 +210,7 @@ python3 scripts/ue_build_helper.py --action report-template --output artifacts/u
 - `ai_debug` パネル
   - `Build AI Request`
   - `Fallback AI`
+  - `Apply AI`
 
 `HudActionStates` を見て、各ボタンの enabled/disabled を切り替える。
 

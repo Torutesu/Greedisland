@@ -424,6 +424,9 @@ public:
         EAiGmIntent Intent = EAiGmIntent::Reward);
 
     UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
+    FSessionActionResult ApplyLastAiResponse(const FString& PlayerChoice = TEXT(""));
+
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|UI")
     FSessionActionResult ExecuteHudActionById(
         const FString& ActionId,
         FName OptionalNameArgument = NAME_None,
@@ -676,6 +679,9 @@ protected:
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     FAiGmValidationResult LastAiValidationResult;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
+    FString LastAiPlayerChoice;
 
     UPROPERTY(BlueprintReadOnly, Category = "Greeisland|UI")
     FGreeislandBootstrapDiagnostics LastBootstrapDiagnostics;
