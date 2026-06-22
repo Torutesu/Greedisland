@@ -66,6 +66,12 @@ python3 scripts/ue_build_helper.py --action report-template
 python3 scripts/ue_build_helper.py --action report-template --output artifacts/ue-runtime-checks/first-pass.md
 ```
 
+監査、チェック順、doctor、レポートをまとめて吐きたいときは:
+
+```bash
+python3 scripts/ue_build_helper.py --action write-verification-pack
+```
+
 ## 1. 作る Blueprint アセット
 
 `UGreeislandDebugHudWidget.GetRecommendedBlueprintAssets()` の返り値と同じ内容。

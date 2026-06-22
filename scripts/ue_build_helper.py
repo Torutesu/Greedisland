@@ -336,6 +336,48 @@ def build_mvp_audit_snapshot_lines() -> list[str]:
     return lines
 
 
+def write_verification_pack(tooling: UnrealTooling, output_dir: str | None) -> int:
+    audit_module = load_mvp_audit_module()
+    timestamp = datetime.now().astimezone().strftime("%Y%m%d-%H%M%S")
+    base_dir = Path(output_dir).expanduser() if output_dir else repo_root() / "artifacts" / "ue-runtime-checks" / timestamp
+    if not base_dir.is_absolute():
+        base_dir = repo_root() / base_dir
+    base_dir.mkdir(parents=True, exist_ok=True)
+
+    report_path = base_dir / "ue-runtime-verification-report.md"
+    audit_path = base_dir / "mvp-completion-audit.md"
+    checklist_path = base_dir / "ue-runtime-checklist.txt"
+    doctor_path = base_dir / "ue-tooling-doctor.txt"
+
+    report_path.write_text("\n".join(build_report_template_lines(tooling)) + "\n", encoding="utf-8")
+    audit_path.write_text(audit_module.render_markdown(audit_module.collect_items()), encoding="utf-8")
+    checklist_path.write_text("\n".join(build_runtime_checklist_lines(tooling)) + "\n", encoding="utf-8")
+
+    doctor_lines = []
+    commands = build_commands(tooling)
+    doctor_lines.append(f"Repo: {repo_root()}")
+    doctor_lines.append(f"Project: {uproject_path()}")
+    doctor_lines.append(f"Engine root: {tooling.engine_root if tooling.engine_root else 'NOT FOUND'}")
+    doctor_lines.append("")
+    doctor_lines.append("Readiness:")
+    for item in collect_readiness(tooling):
+        status = "OK" if item.ok else "MISSING"
+        doctor_lines.append(f"- [{status}] {item.label}: {item.detail}")
+    doctor_lines.append("")
+    doctor_lines.append("Commands:")
+    for key in ("projectfiles", "build_editor", "build_game", "open_editor"):
+        command = commands[key]
+        doctor_lines.append(f"- {key}: {' '.join(command) if command else 'unavailable'}")
+    doctor_path.write_text("\n".join(doctor_lines) + "\n", encoding="utf-8")
+
+    print(f"Wrote verification pack: {base_dir}")
+    print(f"- Report: {report_path}")
+    print(f"- Audit: {audit_path}")
+    print(f"- Checklist: {checklist_path}")
+    print(f"- Doctor: {doctor_path}")
+    return 0
+
+
 def build_report_template_lines(tooling: UnrealTooling) -> list[str]:
     commands = build_commands(tooling)
     generated_at = datetime.now().astimezone().isoformat(timespec="seconds")
@@ -470,7 +512,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--action",
-        choices=("doctor", "print-plan", "checklist", "report-template", "projectfiles", "build-editor", "build-game", "open-editor", "bootstrap-editor"),
+        choices=("doctor", "print-plan", "checklist", "report-template", "write-verification-pack", "projectfiles", "build-editor", "build-game", "open-editor", "bootstrap-editor"),
         default="print-plan",
         help="Action to run. Defaults to printing the resolved Unreal commands.",
     )
@@ -491,6 +533,8 @@ def main() -> int:
         return print_runtime_checklist(tooling)
     if args.action == "report-template":
         return print_or_write_report_template(tooling, args.output)
+    if args.action == "write-verification-pack":
+        return write_verification_pack(tooling, args.output)
     if args.action == "print-plan":
         return print_plan(tooling)
     if args.action == "projectfiles":

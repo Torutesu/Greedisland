@@ -86,6 +86,14 @@ def main() -> int:
         assert_true(any(item.label == "Build.sh available" and item.ok for item in readiness), "readiness sees Build.sh")
         assert_true(any(item.label == "UnrealEditor detected" and item.ok for item in readiness), "readiness sees editor")
 
+        output_dir = Path(tmpdir) / "pack"
+        result = helper.write_verification_pack(tooling, str(output_dir))
+        assert_equal(result, 0, "verification pack exit code")
+        assert_true((output_dir / "ue-runtime-verification-report.md").exists(), "verification report written")
+        assert_true((output_dir / "mvp-completion-audit.md").exists(), "audit report written")
+        assert_true((output_dir / "ue-runtime-checklist.txt").exists(), "checklist written")
+        assert_true((output_dir / "ue-tooling-doctor.txt").exists(), "doctor written")
+
     print("OK: UE build helper smoke tests passed")
     return 0
 
