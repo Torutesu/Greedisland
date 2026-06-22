@@ -72,6 +72,8 @@ python3 scripts/ue_build_helper.py --action report-template --output artifacts/u
 python3 scripts/ue_build_helper.py --action write-verification-pack
 ```
 
+生成された pack の `README.md` から見始めると、読む順番と実行順がそのまま分かる。
+
 ## 1. 作る Blueprint アセット
 
 `UGreeislandDebugHudWidget.GetRecommendedBlueprintAssets()` の返り値と同じ内容。

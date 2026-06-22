@@ -348,6 +348,8 @@ def write_verification_pack(tooling: UnrealTooling, output_dir: str | None) -> i
     audit_path = base_dir / "mvp-completion-audit.md"
     checklist_path = base_dir / "ue-runtime-checklist.txt"
     doctor_path = base_dir / "ue-tooling-doctor.txt"
+    readme_path = base_dir / "README.md"
+    commands_path = base_dir / "run-verification-commands.sh"
 
     report_path.write_text("\n".join(build_report_template_lines(tooling)) + "\n", encoding="utf-8")
     audit_path.write_text(audit_module.render_markdown(audit_module.collect_items()), encoding="utf-8")
@@ -370,11 +372,58 @@ def write_verification_pack(tooling: UnrealTooling, output_dir: str | None) -> i
         doctor_lines.append(f"- {key}: {' '.join(command) if command else 'unavailable'}")
     doctor_path.write_text("\n".join(doctor_lines) + "\n", encoding="utf-8")
 
+    readme_lines = [
+        "# UE Verification Pack",
+        "",
+        f"- GeneratedAt: {datetime.now().astimezone().isoformat(timespec='seconds')}",
+        f"- RepoRoot: {repo_root()}",
+        f"- Project: {uproject_path()}",
+        "",
+        "## Start Here",
+        "",
+        "1. Open `ue-tooling-doctor.txt` and confirm Unreal tooling paths.",
+        "2. Open `ue-runtime-checklist.txt` and follow the runtime verification order.",
+        "3. Fill in `ue-runtime-verification-report.md` as you verify editor checks and walkthrough steps.",
+        "4. Use `mvp-completion-audit.md` to separate logic-proven items from runtime-only gaps.",
+        "",
+        "## Files",
+        "",
+        "- `ue-tooling-doctor.txt`: detected UE tooling, readiness checks, and resolved commands",
+        "- `ue-runtime-checklist.txt`: ordered live-verification checklist",
+        "- `ue-runtime-verification-report.md`: evidence capture template",
+        "- `mvp-completion-audit.md`: requirement-by-requirement completion matrix",
+        "- `run-verification-commands.sh`: ready-to-run command reference for this repo",
+        "",
+        "## Suggested Terminal Sequence",
+        "",
+        "```bash",
+        "bash run-verification-commands.sh",
+        "```",
+        "",
+        "Then move into Unreal Editor and continue from `ue-runtime-checklist.txt`.",
+    ]
+    readme_path.write_text("\n".join(readme_lines) + "\n", encoding="utf-8")
+
+    commands_lines = [
+        "#!/usr/bin/env bash",
+        "set -euo pipefail",
+        "",
+        f"cd {repo_root()}",
+        "python3 scripts/validate_events/ue_editor_preflight_smoke_test.py",
+        "python3 scripts/ue_build_helper.py --action doctor",
+        "python3 scripts/ue_build_helper.py --action checklist",
+        "python3 scripts/mvp_audit.py --format markdown",
+    ]
+    commands_path.write_text("\n".join(commands_lines) + "\n", encoding="utf-8")
+    commands_path.chmod(0o755)
+
     print(f"Wrote verification pack: {base_dir}")
     print(f"- Report: {report_path}")
     print(f"- Audit: {audit_path}")
     print(f"- Checklist: {checklist_path}")
     print(f"- Doctor: {doctor_path}")
+    print(f"- README: {readme_path}")
+    print(f"- Commands: {commands_path}")
     return 0
 
 

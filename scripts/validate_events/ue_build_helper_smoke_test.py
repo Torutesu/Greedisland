@@ -93,6 +93,8 @@ def main() -> int:
         assert_true((output_dir / "mvp-completion-audit.md").exists(), "audit report written")
         assert_true((output_dir / "ue-runtime-checklist.txt").exists(), "checklist written")
         assert_true((output_dir / "ue-tooling-doctor.txt").exists(), "doctor written")
+        assert_true((output_dir / "README.md").exists(), "readme written")
+        assert_true((output_dir / "run-verification-commands.sh").exists(), "commands script written")
 
     print("OK: UE build helper smoke tests passed")
     return 0
