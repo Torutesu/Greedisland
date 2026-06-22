@@ -388,6 +388,14 @@ FSessionActionResult UGameSessionLibrary::ApplyAiResponseToSession(
             *RewardCardId.ToString()));
     }
 
+    if (!Response.ProposedQuestId.IsNone())
+    {
+        Session.ZoneProgress.AvailableEventIds.AddUnique(Response.ProposedQuestId);
+        Result.LogLines.Add(FString::Printf(
+            TEXT("AI GM proposed quest event %s."),
+            *Response.ProposedQuestId.ToString()));
+    }
+
     Result.bSuccess = true;
     Result.LogLines.Add(FString::Printf(
         TEXT("Applied AI response from %s."),
@@ -452,6 +460,19 @@ bool UGameSessionLibrary::BuildAiRequestForEvent(
     OutRequest.NpcId = Event.NpcId;
     OutRequest.PlayerCollectionTags = BuildCollectionTags(Session.OwnedCardIds, Session.KnownCards);
     OutRequest.AllowedRewardCardIds = Event.AllowedAiRewardCardIds;
+    for (const FName& NextEventId : Event.NextEventIds)
+    {
+        FExplorationEventDefinition NextEvent;
+        if (!UExplorationEventLibrary::FindEventById(Session.ZoneEventSet, NextEventId, NextEvent))
+        {
+            continue;
+        }
+
+        if (NextEvent.Type == EExplorationEventType::Quest)
+        {
+            OutRequest.AllowedQuestEventIds.AddUnique(NextEventId);
+        }
+    }
     OutRequest.PlayerChoice = PlayerChoice;
     return true;
 }

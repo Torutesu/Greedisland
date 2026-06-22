@@ -24,6 +24,9 @@ struct FAiGmRequest
     TArray<FName> AllowedRewardCardIds;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    TArray<FName> AllowedQuestEventIds;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
     FString PlayerChoice;
 };
 
@@ -60,4 +63,3 @@ struct FAiGmResponse
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     FName DifficultyHint = TEXT("medium");
 };
-

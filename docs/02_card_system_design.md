@@ -240,7 +240,7 @@ AI GMはカード効果を直接実行しない。AI GMは以下のような構�
   "speakerName": "門番リオ",
   "dialogue": "通行証がないなら、別の証明を見せてもらおう。",
   "intent": "negotiation",
-  "proposedQuestId": "quest_gate_token",
+  "proposedQuestId": "event_silent_shrine_001",
   "allowedRewardCardIds": ["key_gate_token_001"],
   "difficultyHint": "medium"
 }
@@ -275,4 +275,3 @@ MVP初期の15枚:
 | con_four_party_001 | Constraint | 4人パーティ条件 |
 | con_silent_oath_001 | Constraint | 会話不可、報酬上昇 |
 | key_zone_core_001 | Key | 1ゾーンクリア証 |
-

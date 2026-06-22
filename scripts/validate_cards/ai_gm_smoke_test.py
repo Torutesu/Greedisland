@@ -20,6 +20,7 @@ def load_card_ids(path: Path) -> set[str]:
 def validate_response(
     response: dict[str, Any],
     request_allowed_reward_card_ids: set[str],
+    request_allowed_quest_event_ids: set[str],
     known_card_ids: set[str],
 ) -> list[str]:
     reasons: list[str] = []
@@ -43,6 +44,16 @@ def validate_response(
         rewards = []
     if len(rewards) > 3:
         reasons.append("Too many reward card ids.")
+
+    proposed_quest_id = response.get("proposedQuestId", "")
+    intent = str(response.get("intent", ""))
+    if intent == "quest_offer":
+        if not isinstance(proposed_quest_id, str) or not proposed_quest_id:
+            reasons.append("Quest-offer intent requires a proposed quest event id.")
+        elif proposed_quest_id not in request_allowed_quest_event_ids:
+            reasons.append(f"Proposed quest event {proposed_quest_id} was not allowed by the request.")
+    elif isinstance(proposed_quest_id, str) and proposed_quest_id and proposed_quest_id not in request_allowed_quest_event_ids:
+        reasons.append(f"Proposed quest event {proposed_quest_id} was not allowed by the request.")
 
     seen: set[str] = set()
     for reward_card_id in rewards:
@@ -68,6 +79,7 @@ def assert_equal(actual: Any, expected: Any, label: str) -> None:
 def main() -> int:
     known_card_ids = load_card_ids(Path("data/cards/cards.mvp.json"))
     request_allowed = {"key_zone_core_001", "item_contract_001"}
+    request_allowed_quests = {"event_silent_shrine_001"}
 
     valid = {
         "speakerName": "門番リオ",
@@ -76,23 +88,34 @@ def main() -> int:
         "allowedRewardCardIds": ["key_zone_core_001"],
         "difficultyHint": "medium",
     }
-    assert_equal(validate_response(valid, request_allowed, known_card_ids), [], "valid response")
+    assert_equal(validate_response(valid, request_allowed, request_allowed_quests, known_card_ids), [], "valid response")
 
     unknown_reward = dict(valid)
     unknown_reward["allowedRewardCardIds"] = ["key_missing_999"]
-    reasons = validate_response(unknown_reward, request_allowed, known_card_ids)
+    reasons = validate_response(unknown_reward, request_allowed, request_allowed_quests, known_card_ids)
     assert_equal(any("not allowed" in reason for reason in reasons), True, "unknown reward allowed check")
     assert_equal(any("not defined" in reason for reason in reasons), True, "unknown reward defined check")
 
     blocked = dict(valid)
     blocked["dialogue"] = "グリードアイランドの指定ポケットを思い出せ。"
-    reasons = validate_response(blocked, request_allowed, known_card_ids)
+    reasons = validate_response(blocked, request_allowed, request_allowed_quests, known_card_ids)
     assert_equal(any("blocked IP" in reason for reason in reasons), True, "blocked wording")
 
     duplicate = dict(valid)
     duplicate["allowedRewardCardIds"] = ["item_contract_001", "item_contract_001"]
-    reasons = validate_response(duplicate, request_allowed, known_card_ids)
+    reasons = validate_response(duplicate, request_allowed, request_allowed_quests, known_card_ids)
     assert_equal(any("Duplicate" in reason for reason in reasons), True, "duplicate rewards")
+
+    quest_offer = dict(valid)
+    quest_offer["intent"] = "quest_offer"
+    quest_offer["proposedQuestId"] = "event_silent_shrine_001"
+    quest_offer["allowedRewardCardIds"] = []
+    assert_equal(validate_response(quest_offer, request_allowed, request_allowed_quests, known_card_ids), [], "quest offer response")
+
+    invalid_quest_offer = dict(quest_offer)
+    invalid_quest_offer["proposedQuestId"] = "event_proxy_gate_001"
+    reasons = validate_response(invalid_quest_offer, request_allowed, request_allowed_quests, known_card_ids)
+    assert_equal(any("Proposed quest event" in reason for reason in reasons), True, "quest offer allowlist")
 
     print("OK: AI GM smoke tests passed")
     return 0
@@ -104,4 +127,3 @@ if __name__ == "__main__":
     except AssertionError as exc:
         print(str(exc), file=sys.stderr)
         raise SystemExit(1)
-

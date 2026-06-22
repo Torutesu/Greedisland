@@ -337,8 +337,8 @@ UE が見つかっているなら、`python3 scripts/ue_build_helper.py --action
 4. `OwnedCardViewData` に starter cards が出る
 5. `EventViewData` に次イベントが解放される
 6. イベント地点へ近づくと `FocusedEventDisplayName` に対象名が出る
-7. `BuildAiRequestForActiveEvent` で `AllowedRewardCardIds` や `PlayerChoice` を含むAI GM入力を確認できる
-8. `BuildFallbackAiResponseForActiveEvent` で API 失敗時の固定文面を表示できる
+7. `BuildAiRequestForActiveEvent` で `AllowedRewardCardIds`、`AllowedQuestEventIds`、`PlayerChoice` を含むAI GM入力を確認できる
+8. `BuildFallbackAiResponseForActiveEvent` で API 失敗時の固定文面と、許可済みクエスト提案を表示できる
 9. `HandCardViewData` の `UnplayableReasons` から、どの制約で使えないかをそのままUI表示できる
 10. `LastBootstrapDiagnostics.Issues` から、JSONパスや save slot の不足を起動前に表示できる
 11. `LastBootstrapDiagnostics.MissingEventActorIds` を見れば、まだ置いていない `BP_GreeislandEventActor` が分かる

@@ -22,7 +22,7 @@
     },
     "proposedQuestId": {
       "type": "string",
-      "pattern": "^quest_[a-z0-9_]+$"
+      "pattern": "^event_[a-z0-9_]+_[0-9]{3}$"
     },
     "allowedRewardCardIds": {
       "type": "array",
@@ -39,4 +39,3 @@
     }
   }
 }
-

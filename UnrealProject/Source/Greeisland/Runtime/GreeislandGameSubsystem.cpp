@@ -312,9 +312,20 @@ bool UGreeislandGameSubsystem::BuildFallbackAiResponseForActiveEvent(
     {
         OutResponse.Intent = EAiGmIntent::Reward;
         OutResponse.AllowedRewardCardIds = { Request.AllowedRewardCardIds[0] };
+        FString SuggestedQuestLabel = Event.DisplayName.ToString();
+        if (Request.AllowedQuestEventIds.Num() > 0)
+        {
+            OutResponse.ProposedQuestId = Request.AllowedQuestEventIds[0];
+            FExplorationEventDefinition SuggestedEvent;
+            if (GetEventDefinition(OutResponse.ProposedQuestId, SuggestedEvent))
+            {
+                SuggestedQuestLabel = SuggestedEvent.DisplayName.ToString();
+            }
+        }
         OutResponse.Dialogue = FString::Printf(
-            TEXT("%sを確認した。今回は定型手続きとして報酬を一つだけ渡す。"),
-            PlayerChoice.TrimStartAndEnd().IsEmpty() ? TEXT("申し出") : *PlayerChoice);
+            TEXT("%sを確認した。今回は定型手続きとして報酬を一つだけ渡す。次は%sを調べるといい。"),
+            PlayerChoice.TrimStartAndEnd().IsEmpty() ? TEXT("申し出") : *PlayerChoice,
+            *SuggestedQuestLabel);
         OutResponse.DifficultyHint = TEXT("low");
     }
     else

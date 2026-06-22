@@ -13,13 +13,19 @@ def load_zone(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def build_fallback_response(event: dict[str, Any], player_choice: str) -> dict[str, Any]:
+def build_fallback_response(event: dict[str, Any], event_by_id: dict[str, Any], player_choice: str) -> dict[str, Any]:
     allowed_reward_ids = event.get("allowedAiRewardCardIds", [])
+    quest_next_ids = [
+        next_event_id
+        for next_event_id in event.get("nextEventIds", [])
+        if event_by_id.get(next_event_id, {}).get("type") == "Quest"
+    ]
     if allowed_reward_ids:
         return {
             "speakerName": event.get("npcId", "").replace("npc_", "NPC ") or event["displayName"],
-            "dialogue": f"{player_choice or '申し出'}を確認した。今回は定型手続きとして報酬を一つだけ渡す。",
+            "dialogue": f"{player_choice or '申し出'}を確認した。今回は定型手続きとして報酬を一つだけ渡す。次は沈黙の小祠を調べるといい。",
             "intent": "reward",
+            "proposedQuestId": quest_next_ids[0] if quest_next_ids else "",
             "allowedRewardCardIds": [allowed_reward_ids[0]],
             "difficultyHint": "low",
         }
@@ -42,12 +48,13 @@ def main() -> int:
     zone = load_zone(Path("data/events/events.mvp.json"))
     event_by_id = {event["eventId"]: event for event in zone["events"]}
 
-    npc_response = build_fallback_response(event_by_id["event_contract_broker_001"], "交渉する")
+    npc_response = build_fallback_response(event_by_id["event_contract_broker_001"], event_by_id, "交渉する")
     assert_true(npc_response["intent"] == "reward", "npc fallback intent", npc_response)
     assert_true(npc_response["allowedRewardCardIds"] == ["item_contract_001"], "npc fallback reward", npc_response)
+    assert_true(npc_response["proposedQuestId"] == "event_silent_shrine_001", "npc fallback quest offer", npc_response)
     assert_true("交渉する" in npc_response["dialogue"], "player choice reflected", npc_response["dialogue"])
 
-    treasure_response = build_fallback_response(event_by_id["event_wake_cache_001"], "")
+    treasure_response = build_fallback_response(event_by_id["event_wake_cache_001"], event_by_id, "")
     assert_true(treasure_response["intent"] == "flavor", "treasure fallback intent", treasure_response)
     assert_true(treasure_response["allowedRewardCardIds"] == [], "treasure fallback rewards empty", treasure_response)
 

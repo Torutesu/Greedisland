@@ -20,6 +20,8 @@ class Session:
     zone_id: str
     owned_card_ids: list[str] = field(default_factory=list)
     deck_card_ids: list[str] = field(default_factory=list)
+    available_event_ids: list[str] = field(default_factory=list)
+    active_quest_ids: list[str] = field(default_factory=list)
     active_event_id: str = ""
 
 
@@ -33,7 +35,12 @@ def load_zone(path: Path) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
     return data, {event["eventId"]: event for event in data["events"]}
 
 
-def validate_response(response: dict[str, Any], allowed_reward_ids: set[str], known_card_ids: set[str]) -> list[str]:
+def validate_response(
+    response: dict[str, Any],
+    allowed_reward_ids: set[str],
+    allowed_quest_event_ids: set[str],
+    known_card_ids: set[str],
+) -> list[str]:
     reasons: list[str] = []
     if not str(response.get("speakerName", "")).strip():
         reasons.append("speaker empty")
@@ -44,6 +51,17 @@ def validate_response(response: dict[str, Any], allowed_reward_ids: set[str], kn
     rewards = response.get("allowedRewardCardIds", [])
     if len(rewards) > 3:
         reasons.append("too many rewards")
+
+    proposed_quest_id = response.get("proposedQuestId", "")
+    intent = str(response.get("intent", ""))
+    if intent == "quest_offer":
+        if not isinstance(proposed_quest_id, str) or not proposed_quest_id:
+            reasons.append("quest offer missing proposed quest")
+        elif proposed_quest_id not in allowed_quest_event_ids:
+            reasons.append("quest not allowed")
+    elif isinstance(proposed_quest_id, str) and proposed_quest_id and proposed_quest_id not in allowed_quest_event_ids:
+        reasons.append("quest not allowed")
+
     seen: set[str] = set()
     for reward_id in rewards:
         if reward_id in seen:
@@ -62,6 +80,7 @@ def apply_ai_response(session: Session, response: dict[str, Any], player_choice:
     reasons = validate_response(
         response,
         set(event.get("allowedAiRewardCardIds", [])),
+        {next_event_id for next_event_id in event.get("nextEventIds", []) if session.events[next_event_id]["type"] == "Quest"},
         set(session.known_cards.keys()),
     )
     if reasons:
@@ -71,6 +90,12 @@ def apply_ai_response(session: Session, response: dict[str, Any], player_choice:
             session.owned_card_ids.append(reward_id)
         if reward_id not in session.deck_card_ids:
             session.deck_card_ids.append(reward_id)
+    proposed_quest_id = response.get("proposedQuestId", "")
+    if proposed_quest_id:
+        if proposed_quest_id not in session.available_event_ids:
+            session.available_event_ids.append(proposed_quest_id)
+        if proposed_quest_id not in session.active_quest_ids:
+            session.active_quest_ids.append(proposed_quest_id)
     return True, []
 
 
@@ -88,6 +113,7 @@ def main() -> int:
         zone_id=zone["zoneId"],
         owned_card_ids=["act_strike_001"],
         deck_card_ids=["act_strike_001"],
+        available_event_ids=["event_contract_broker_001"],
         active_event_id="event_contract_broker_001",
     )
 
@@ -113,6 +139,28 @@ def main() -> int:
     ok, reasons = apply_ai_response(session, blocked, "交渉する")
     assert_true(not ok, "blocked wording should fail", reasons)
 
+    quest_offer = {
+        "speakerName": "契約屋リオ",
+        "dialogue": "次は沈黙の小祠を調べろ。契約の続きをそこで聞ける。",
+        "intent": "quest_offer",
+        "proposedQuestId": "event_silent_shrine_001",
+        "allowedRewardCardIds": [],
+        "difficultyHint": "medium",
+    }
+    ok, reasons = apply_ai_response(session, quest_offer, "次へ進む")
+    assert_true(ok, "allowed quest offer should apply", reasons)
+    assert_true(
+        "event_silent_shrine_001" in session.available_event_ids,
+        "quest offer tracked",
+        session.available_event_ids,
+    )
+    assert_true("event_silent_shrine_001" in session.active_quest_ids, "quest activated", session.active_quest_ids)
+
+    invalid_quest_offer = dict(quest_offer)
+    invalid_quest_offer["proposedQuestId"] = "event_proxy_gate_001"
+    ok, reasons = apply_ai_response(session, invalid_quest_offer, "次へ進む")
+    assert_true(not ok, "disallowed quest offer should fail", reasons)
+
     print("OK: AI session apply smoke tests passed")
     return 0
 
@@ -123,4 +171,3 @@ if __name__ == "__main__":
     except AssertionError as exc:
         print(str(exc), file=sys.stderr)
         raise SystemExit(1)
-

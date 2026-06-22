@@ -36,6 +36,11 @@ bool HasSuspiciousIpSimilarity(const FString& Text)
 
     return false;
 }
+
+bool AllowedQuestEventExists(const FAiGmRequest& Request, FName EventId)
+{
+    return !EventId.IsNone() && Request.AllowedQuestEventIds.Contains(EventId);
+}
 }
 
 FAiGmValidationResult UAiGmValidator::ValidateResponse(
@@ -73,6 +78,29 @@ FAiGmValidationResult UAiGmValidator::ValidateResponse(
     if (Response.AllowedRewardCardIds.Num() > 3)
     {
         Result.Reasons.Add(TEXT("Too many reward card ids."));
+    }
+
+    if (Response.Intent == EAiGmIntent::QuestOffer)
+    {
+        if (Response.ProposedQuestId.IsNone())
+        {
+            Result.Reasons.Add(TEXT("Quest-offer intent requires a proposed quest event id."));
+        }
+        else if (!AllowedQuestEventExists(Request, Response.ProposedQuestId))
+        {
+            Result.Reasons.Add(FString::Printf(
+                TEXT("Proposed quest event %s was not allowed by the request."),
+                *Response.ProposedQuestId.ToString()));
+        }
+    }
+    else if (!Response.ProposedQuestId.IsNone())
+    {
+        if (!AllowedQuestEventExists(Request, Response.ProposedQuestId))
+        {
+            Result.Reasons.Add(FString::Printf(
+                TEXT("Proposed quest event %s was not allowed by the request."),
+                *Response.ProposedQuestId.ToString()));
+        }
     }
 
     TSet<FName> SeenRewardIds;
