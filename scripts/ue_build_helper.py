@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import os
 import subprocess
 import sys
@@ -26,6 +27,16 @@ class ReadinessItem:
     label: str
     ok: bool
     detail: str
+
+
+def load_mvp_audit_module():
+    module_path = Path(__file__).resolve().parent / "mvp_audit.py"
+    spec = importlib.util.spec_from_file_location("mvp_audit", module_path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec is not None and spec.loader is not None
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 def repo_root() -> Path:
@@ -304,6 +315,27 @@ def print_runtime_checklist(tooling: UnrealTooling) -> int:
     return 0
 
 
+def build_mvp_audit_snapshot_lines() -> list[str]:
+    audit_module = load_mvp_audit_module()
+    items = audit_module.collect_items()
+    proven = sum(item.status == "proven" for item in items)
+    total = len(items)
+
+    lines = [
+        "## MVP Audit Snapshot",
+        "",
+        f"- Proven requirements: {proven}/{total}",
+        "- Full audit command: `python3 scripts/mvp_audit.py --format markdown`",
+        "",
+        "| Requirement | Status | Note |",
+        "| --- | --- | --- |",
+    ]
+    for item in items:
+        lines.append(f"| {item.requirement} | `{item.status}` | {item.note} |")
+
+    return lines
+
+
 def build_report_template_lines(tooling: UnrealTooling) -> list[str]:
     commands = build_commands(tooling)
     generated_at = datetime.now().astimezone().isoformat(timespec="seconds")
@@ -324,6 +356,7 @@ def build_report_template_lines(tooling: UnrealTooling) -> list[str]:
         f"- Preflight: `python3 scripts/validate_events/ue_editor_preflight_smoke_test.py`",
         f"- Doctor: `python3 scripts/ue_build_helper.py --action doctor`",
         f"- Checklist: `python3 scripts/ue_build_helper.py --action checklist`",
+        f"- MVP Audit: `python3 scripts/mvp_audit.py --format markdown`",
     ]
 
     for label, command_key in (
@@ -336,6 +369,12 @@ def build_report_template_lines(tooling: UnrealTooling) -> list[str]:
         rendered = " ".join(command) if command else "UNAVAILABLE"
         lines.append(f"- {label}: `{rendered}`")
 
+    lines.extend(
+        [
+            "",
+        ]
+    )
+    lines.extend(build_mvp_audit_snapshot_lines())
     lines.extend(
         [
             "",

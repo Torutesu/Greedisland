@@ -58,6 +58,8 @@ python3 scripts/mvp_audit.py --format markdown
 python3 scripts/ue_build_helper.py --action report-template
 ```
 
+この雛形には `MVP Audit Snapshot` も入るので、ロジック証跡と実機未確認項目を同じレポートで追える。
+
 ファイルとして残すなら:
 
 ```bash
