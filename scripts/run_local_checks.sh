@@ -34,6 +34,7 @@ python3 scripts/validate_events/ai_session_apply_smoke_test.py
 python3 scripts/validate_events/developer_grant_smoke_test.py
 python3 scripts/validate_events/quest_clear_smoke_test.py
 python3 scripts/validate_events/save_restore_smoke_test.py
+python3 scripts/validate_events/mvp_audit_smoke_test.py
 python3 -m json.tool data/cards/cards.mvp.json >/dev/null
 python3 -m json.tool data/ai/ai_gm_schema.json >/dev/null
 python3 -m json.tool data/events/events.mvp.json >/dev/null

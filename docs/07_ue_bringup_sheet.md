@@ -46,6 +46,12 @@ python3 scripts/ue_build_helper.py --action bootstrap-editor
 python3 scripts/ue_build_helper.py --action checklist
 ```
 
+MVP完了条件ごとの現状棚卸しを先に見たいときは:
+
+```bash
+python3 scripts/mvp_audit.py --format markdown
+```
+
 確認ログの雛形をその場で出したいときは:
 
 ```bash

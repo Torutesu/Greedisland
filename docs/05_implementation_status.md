@@ -38,6 +38,7 @@
 - UE editor preflight smoke test
 - UE build helper command planner
 - UE runtime verification report template helper
+- MVP completion audit helper
 - BootstrapActor と Project Settings の既定値同期チェック
 - HUD向け bootstrap diagnostics 表示補助
 - EventActor 配置漏れ / 重複の bootstrap diagnostics
@@ -213,6 +214,27 @@ OK: UE path resolution smoke tests passed
 ```
 
 ```bash
+python3 scripts/mvp_audit.py
+```
+
+結果:
+
+```text
+MVP Completion Audit
+...
+```
+
+```bash
+python3 scripts/validate_events/mvp_audit_smoke_test.py
+```
+
+結果:
+
+```text
+OK: MVP audit smoke tests passed
+```
+
+```bash
 python3 scripts/validate_events/ue_bootstrap_defaults_smoke_test.py
 ```
 
@@ -355,6 +377,10 @@ JSON OK
 理由:
 
 このMac上では `/Applications` と `/Users/Shared/Epic Games` にUE5.8またはUnrealEditorが見つからなかったため。
+
+補足:
+
+- `python3 scripts/mvp_audit.py --format markdown` で、MVP完了条件ごとの証拠と runtime gap を一覧化できる。
 
 ## 次の実装順
 
