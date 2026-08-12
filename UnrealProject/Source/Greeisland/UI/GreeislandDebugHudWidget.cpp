@@ -1070,6 +1070,14 @@ void UGreeislandDebugHudWidget::BuildWalkthroughProgress()
     WalkthroughProgress.Reset();
 
     bool bAssignedCurrentFocus = false;
+    const auto IsEventInteractable = [this](FName EventId) -> bool
+    {
+        if (const FGreeislandEventViewData* Event = FindEventViewDataById(EventId))
+        {
+            return Event->bAvailable && !Event->bCompleted;
+        }
+        return false;
+    };
 
     auto AddProgress =
         [this, &bAssignedCurrentFocus](
@@ -1125,7 +1133,7 @@ void UGreeislandDebugHudWidget::BuildWalkthroughProgress()
         TEXT("Wake Cache"),
         TEXT("event_wake_cache_001"),
         bWakeCacheDone,
-        CurrentSnapshot.AvailableEventIds.Contains(TEXT("event_wake_cache_001")),
+        IsEventInteractable(TEXT("event_wake_cache_001")),
         bWakeCacheDone
             ? TEXT("Starter combat cards are in the collection.")
             : TEXT("Resolve the opening treasure event to seed the first hand tools."));
@@ -1138,7 +1146,7 @@ void UGreeislandDebugHudWidget::BuildWalkthroughProgress()
         TEXT("Contract Broker"),
         TEXT("event_contract_broker_001"),
         bContractBrokerDone,
-        CurrentSnapshot.AvailableEventIds.Contains(TEXT("event_contract_broker_001")),
+        IsEventInteractable(TEXT("event_contract_broker_001")),
         bContractBrokerDone
             ? TEXT("Broker rewards are in the collection and the route split should be open.")
             : TEXT("Talk to Rio and confirm contract/proxy rule rewards land correctly."));
@@ -1152,7 +1160,7 @@ void UGreeislandDebugHudWidget::BuildWalkthroughProgress()
         TEXT("Silent Shrine"),
         TEXT("event_silent_shrine_001"),
         bSilentShrineDone,
-        CurrentSnapshot.AvailableEventIds.Contains(TEXT("event_silent_shrine_001")),
+        IsEventInteractable(TEXT("event_silent_shrine_001")),
         bSilentShrineDone
             ? TEXT("Quest reward card set is present and the shrine path is complete.")
             : TEXT("Resolve the quest event and confirm the oath/reward-hack cards appear."));
@@ -1165,7 +1173,7 @@ void UGreeislandDebugHudWidget::BuildWalkthroughProgress()
         TEXT("Ridge Scout Battle"),
         TEXT("event_ridge_scout_001"),
         bRidgeScoutDone,
-        CurrentSnapshot.AvailableEventIds.Contains(TEXT("event_ridge_scout_001")),
+        IsEventInteractable(TEXT("event_ridge_scout_001")),
         bRidgeScoutDone
             ? TEXT("Battle reward landed, so the proxy gate path should be satisfiable.")
             : (CurrentSnapshot.bCombatActive && CurrentSnapshot.ActiveEventId == TEXT("event_ridge_scout_001")
@@ -1181,7 +1189,7 @@ void UGreeislandDebugHudWidget::BuildWalkthroughProgress()
         TEXT("Proxy Gate"),
         TEXT("event_proxy_gate_001"),
         bProxyGateDone,
-        CurrentSnapshot.AvailableEventIds.Contains(TEXT("event_proxy_gate_001")),
+        IsEventInteractable(TEXT("event_proxy_gate_001")),
         bProxyGateDone
             ? TEXT("Final key reward is owned and the zone clear condition is satisfied.")
             : TEXT("Use the contract + proxy + four-party combo to open the final gate."));

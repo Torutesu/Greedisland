@@ -63,6 +63,8 @@ def main() -> int:
     assert_true("WalkthroughProgress" in text, "widget stores walkthrough progress")
     assert_true("BuildWalkthroughProgress" in text, "widget declares walkthrough progress builder")
     assert_true("BuildWalkthroughProgress()" in widget_cpp_text, "widget implements walkthrough progress builder")
+    assert_true("IsEventInteractable" in widget_cpp_text, "walkthrough uses event interaction state")
+    assert_true("FindEventViewDataById(EventId)" in widget_cpp_text, "walkthrough resolves event view data")
     assert_true("BuildRecommendedHudPanels" in text, "widget declares HUD panel builder")
     assert_true("BuildRecommendedHudPanels()" in widget_cpp_text, "widget implements HUD panel builder")
     assert_true("BuildRecommendedHudActions" in text, "widget declares HUD action builder")
