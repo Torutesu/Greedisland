@@ -86,12 +86,12 @@ class GREEISLAND_API URuleResolver : public UBlueprintFunctionLibrary
     GENERATED_BODY()
 
 public:
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Rules")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Rules")
     static void GatherRulePatches(
         const FCardPlayContext& Context,
         TArray<FRulePatch>& OutPatches);
 
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Rules")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Rules")
     static int32 ResolveIntRule(
         ERuleChannel Channel,
         int32 BaseValue,
@@ -103,4 +103,3 @@ public:
         const FCardDefinition& Card,
         const FCardPlayContext& Context);
 };
-

@@ -23,7 +23,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Greeisland|Event")
     FSessionActionResult TriggerEvent();
 
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Event")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Event")
     bool GetBoundEventDefinition(FExplorationEventDefinition& OutEvent) const;
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|Event")

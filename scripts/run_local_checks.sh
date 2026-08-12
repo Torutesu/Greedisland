@@ -17,6 +17,7 @@ python3 scripts/validate_events/ue_hud_action_executor_smoke_test.py
 python3 scripts/validate_events/ue_current_objective_action_smoke_test.py
 python3 scripts/validate_events/ue_runtime_viewdata_surface_smoke_test.py
 python3 scripts/validate_events/ue_native_runtime_surface_smoke_test.py
+python3 scripts/validate_events/ue_uht_surface_smoke_test.py
 python3 scripts/validate_events/ue_row_action_surface_smoke_test.py
 python3 scripts/validate_events/ue_verification_check_smoke_test.py
 python3 scripts/validate_events/ue_session_status_rows_smoke_test.py

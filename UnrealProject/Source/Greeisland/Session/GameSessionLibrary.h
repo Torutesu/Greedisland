@@ -17,7 +17,7 @@ public:
         const FZoneEventSet& ZoneEventSet,
         FGreeislandGameSession& OutSession);
 
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Session")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Session")
     static bool FindKnownCardById(
         const FGreeislandGameSession& Session,
         FName CardId,
@@ -64,7 +64,7 @@ public:
     static FSessionActionResult RefreshQuestAndClearState(
         UPARAM(ref) FGreeislandGameSession& Session);
 
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Session")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Session")
     static bool BuildAiRequestForEvent(
         const FGreeislandGameSession& Session,
         FName EventId,

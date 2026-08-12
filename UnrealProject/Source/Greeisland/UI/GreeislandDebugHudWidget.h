@@ -434,43 +434,43 @@ public:
         bool bOptionalFlag = true);
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const FGreeislandUiSnapshot& GetCurrentSnapshot() const
+    FGreeislandUiSnapshot GetCurrentSnapshot() const
     {
         return CurrentSnapshot;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FName>& GetPlayableCombatCardIds() const
+    TArray<FName> GetPlayableCombatCardIds() const
     {
         return PlayableCombatCardIds;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandCardViewData>& GetOwnedCardViewData() const
+    TArray<FGreeislandCardViewData> GetOwnedCardViewData() const
     {
         return OwnedCardViewData;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandCardViewData>& GetHandCardViewData() const
+    TArray<FGreeislandCardViewData> GetHandCardViewData() const
     {
         return HandCardViewData;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandEventViewData>& GetEventViewData() const
+    TArray<FGreeislandEventViewData> GetEventViewData() const
     {
         return EventViewData;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandEventActorStatusViewData>& GetEventActorStatusViewData() const
+    TArray<FGreeislandEventActorStatusViewData> GetEventActorStatusViewData() const
     {
         return EventActorStatusViewData;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const FSessionActionResult& GetLastActionResult() const
+    FSessionActionResult GetLastActionResult() const
     {
         return LastActionResult;
     }
@@ -494,7 +494,7 @@ public:
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const FAiGmRequest& GetLastBuiltAiRequest() const
+    FAiGmRequest GetLastBuiltAiRequest() const
     {
         return LastBuiltAiRequest;
     }
@@ -506,7 +506,7 @@ public:
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const FAiGmResponse& GetLastAiResponse() const
+    FAiGmResponse GetLastAiResponse() const
     {
         return LastAiResponse;
     }
@@ -518,79 +518,79 @@ public:
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const FAiGmValidationResult& GetLastAiValidationResult() const
+    FAiGmValidationResult GetLastAiValidationResult() const
     {
         return LastAiValidationResult;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const FGreeislandBootstrapDiagnostics& GetLastBootstrapDiagnostics() const
+    FGreeislandBootstrapDiagnostics GetLastBootstrapDiagnostics() const
     {
         return LastBootstrapDiagnostics;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandHudChecklistItem>& GetRecommendedHudChecklist() const
+    TArray<FGreeislandHudChecklistItem> GetRecommendedHudChecklist() const
     {
         return RecommendedHudChecklist;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandHudPanelDefinition>& GetRecommendedHudPanels() const
+    TArray<FGreeislandHudPanelDefinition> GetRecommendedHudPanels() const
     {
         return RecommendedHudPanels;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandHudActionDefinition>& GetRecommendedHudActions() const
+    TArray<FGreeislandHudActionDefinition> GetRecommendedHudActions() const
     {
         return RecommendedHudActions;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandHudActionState>& GetHudActionStates() const
+    TArray<FGreeislandHudActionState> GetHudActionStates() const
     {
         return HudActionStates;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandHudActionButtonViewData>& GetHudActionButtons() const
+    TArray<FGreeislandHudActionButtonViewData> GetHudActionButtons() const
     {
         return HudActionButtons;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const FGreeislandCurrentObjectiveActionViewData& GetCurrentObjectiveAction() const
+    FGreeislandCurrentObjectiveActionViewData GetCurrentObjectiveAction() const
     {
         return CurrentObjectiveAction;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandVerificationCheckItem>& GetVerificationChecks() const
+    TArray<FGreeislandVerificationCheckItem> GetVerificationChecks() const
     {
         return VerificationChecks;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandSessionStatusRow>& GetSessionStatusRows() const
+    TArray<FGreeislandSessionStatusRow> GetSessionStatusRows() const
     {
         return SessionStatusRows;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandWalkthroughStep>& GetRecommendedWalkthrough() const
+    TArray<FGreeislandWalkthroughStep> GetRecommendedWalkthrough() const
     {
         return RecommendedWalkthrough;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandWalkthroughStepState>& GetWalkthroughProgress() const
+    TArray<FGreeislandWalkthroughStepState> GetWalkthroughProgress() const
     {
         return WalkthroughProgress;
     }
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|UI")
-    const TArray<FGreeislandBlueprintAssetChecklistItem>& GetRecommendedBlueprintAssets() const
+    TArray<FGreeislandBlueprintAssetChecklistItem> GetRecommendedBlueprintAssets() const
     {
         return RecommendedBlueprintAssets;
     }

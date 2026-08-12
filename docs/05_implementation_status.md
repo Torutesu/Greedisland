@@ -47,6 +47,7 @@
 - Native HUD fallback renders session state, event list, owned cards, objective, and AI GM response without a Widget Blueprint
 - Native HUD keyboard route for session, exploration, combat cards, enemy turn, save/restore, and AI GM
 - Native GameMode route for automatic EventActor contact triggering
+- Blueprint/UHT surface smoke test for 116 UFUNCTION declarations
 - BootstrapActor と Project Settings の既定値同期チェック
 - HUD向け bootstrap diagnostics 表示補助
 - EventActor 配置漏れ / 重複の bootstrap diagnostics

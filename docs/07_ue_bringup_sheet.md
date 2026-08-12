@@ -23,6 +23,12 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 python3 scripts/validate_events/ue_editor_preflight_smoke_test.py
 ```
 
+UEに入る前の宣言形チェックも実行する:
+
+```bash
+python3 scripts/validate_events/ue_uht_surface_smoke_test.py
+```
+
 UE が入っているマシンでは、次のコマンドで `projectfiles / build-editor / build-game / open-editor` の実行コマンドを確認できる:
 
 ```bash

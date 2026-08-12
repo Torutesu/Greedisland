@@ -17,10 +17,9 @@ public:
         TArray<FCardDefinition>& OutCards,
         TArray<FString>& OutErrors);
 
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Cards")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Cards")
     static bool FindCardById(
         const TArray<FCardDefinition>& Cards,
         FName CardId,
         FCardDefinition& OutCard);
 };
-

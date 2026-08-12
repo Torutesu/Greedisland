@@ -222,12 +222,12 @@ public:
         const FAiGmResponse& Response,
         const FString& PlayerChoice) const;
 
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Runtime")
     bool BuildFallbackAiResponseForActiveEvent(
         const FString& PlayerChoice,
         FAiGmResponse& OutResponse) const;
 
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Runtime")
     bool BuildAiRequest(
         FName EventId,
         const FString& PlayerChoice,
@@ -236,26 +236,26 @@ public:
     UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
     FGreeislandUiSnapshot BuildUiSnapshot(int32 MaxLogLines = 12) const;
 
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Runtime")
     void GetPlayableCombatCardIds(TArray<FName>& OutCardIds) const;
 
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Runtime")
     void BuildOwnedCardViewData(TArray<FGreeislandCardViewData>& OutCards) const;
 
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Runtime")
     void BuildHandCardViewData(TArray<FGreeislandCardViewData>& OutCards) const;
 
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Runtime")
     bool GetCombatCardPlayResult(FName CardId, FCardPlayResult& OutResult) const;
 
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Runtime")
     void BuildEventViewData(TArray<FGreeislandEventViewData>& OutEvents) const;
 
-    UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Runtime")
     bool GetEventDefinition(FName EventId, FExplorationEventDefinition& OutEvent) const;
 
     UFUNCTION(BlueprintPure, Category = "Greeisland|Runtime")
-    const FGreeislandGameSession& GetSession() const
+    FGreeislandGameSession GetSession() const
     {
         return Session;
     }
