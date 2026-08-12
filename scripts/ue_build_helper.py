@@ -299,10 +299,10 @@ def build_runtime_checklist_lines(tooling: UnrealTooling) -> list[str]:
     lines.extend(
         [
             "4. In Unreal Editor, confirm World Settings -> GameMode Override uses BP_GreeislandDebugGameMode or the C++ debug game mode.",
-            "5. Confirm BP_GreeislandBootstrapActor is placed exactly once and EventActors cover wake_cache / contract_broker / silent_shrine / ridge_scout / proxy_gate.",
-            "6. Press Play and confirm the debug HUD appears.",
-            "7. Verify SessionStatusRows and CurrentObjectiveAction update after bootstrap.",
-            "8. Walk the Bring-up Sheet flow: Wake Cache -> Contract Broker -> Silent Shrine -> Ridge Scout Battle -> Proxy Gate -> Save/Restore.",
+            "5. Press Play; C++ automatically supplies the MVP zone, BootstrapActor, missing EventActors, collision floor, and Native HUD when Blueprint assets are absent.",
+            "6. Verify SessionStatusRows and CurrentObjectiveAction update after bootstrap.",
+            "7. Walk the Bring-up Sheet flow: E contact / N new -> Wake Cache -> Contract Broker -> Silent Shrine -> Ridge Scout Battle -> Proxy Gate -> K save / O restore.",
+            "8. During combat use 1-5 for hand cards and Space for enemy turn; use F/T to generate/apply fallback AI.",
             "9. Capture evidence for missing items: editor launch, UHT/build output, HUD rendering, card load, walkthrough completion.",
         ]
     )
@@ -443,6 +443,7 @@ def write_verification_pack(tooling: UnrealTooling, output_dir: str | None) -> i
         "set -euo pipefail",
         "",
         f"cd {repo_root()}",
+        "./scripts/run_local_checks.sh",
         "python3 scripts/validate_events/ue_editor_preflight_smoke_test.py",
         "python3 scripts/ue_build_helper.py --action doctor",
         "python3 scripts/ue_build_helper.py --action checklist",

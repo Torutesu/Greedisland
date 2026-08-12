@@ -95,6 +95,8 @@ def main() -> int:
         assert_true((output_dir / "ue-tooling-doctor.txt").exists(), "doctor written")
         assert_true((output_dir / "README.md").exists(), "readme written")
         assert_true((output_dir / "run-verification-commands.sh").exists(), "commands script written")
+        commands_text = (output_dir / "run-verification-commands.sh").read_text(encoding="utf-8")
+        assert_true("./scripts/run_local_checks.sh" in commands_text, "commands script runs local checks")
         assert_true((output_dir / "ue-editor-preflight-output.txt").exists(), "preflight output written")
         assert_true((output_dir / "mvp-audit-output.md").exists(), "audit output written")
 

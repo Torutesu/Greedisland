@@ -1,6 +1,6 @@
 # UE5.8 Bring-up Sheet
 
-最終更新: 2026-06-21
+最終更新: 2026-08-12
 
 ## 目的
 
@@ -77,6 +77,8 @@ python3 scripts/ue_build_helper.py --action write-verification-pack
 
 ## 1. 作る Blueprint アセット
 
+これは見た目を作り込む場合の任意手順。最短のMVP確認では、C++のDebugGameModeがBootstrapActor、5地点、床、Native HUDを自動生成するため、Blueprintアセットを作らずに進められる。
+
 `UGreeislandDebugHudWidget.GetRecommendedBlueprintAssets()` の返り値と同じ内容。
 
 1. `BP_GreeislandDebugHudWidget`
@@ -105,6 +107,8 @@ python3 scripts/ue_build_helper.py --action write-verification-pack
    - 必要なら見た目メッシュを設定する
 
 ## 2. レベルに置くもの
+
+Native fallbackを使う場合は、このセクションの手置きも不要。手作業で配置した場合は、C++の自動生成は不足分だけを補完する。
 
 1. `BP_GreeislandBootstrapActor`
    - 1 個だけ

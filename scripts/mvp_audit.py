@@ -27,6 +27,8 @@ def collect_items() -> list[AuditItem]:
             evidence=(
                 "scripts/ue_build_helper.py",
                 "scripts/validate_events/ue_editor_preflight_smoke_test.py",
+                "UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugGameMode.cpp",
+                "UnrealProject/Source/Greeisland/UI/GreeislandDebugHud.cpp",
                 "docs/07_ue_bringup_sheet.md",
             ),
             note="起動補助と事前チェックはあるが、この環境では UE5.8 実機起動証跡がまだない。",
@@ -36,6 +38,7 @@ def collect_items() -> list[AuditItem]:
             status="code_ready_needs_runtime",
             evidence=(
                 "UnrealProject/Source/Greeisland/Actors/GreeislandEventActor.cpp",
+                "UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugGameMode.cpp",
                 "docs/06_ue_debug_hud_setup.md",
                 "scripts/validate_events/session_flow_smoke_test.py",
             ),
@@ -47,6 +50,7 @@ def collect_items() -> list[AuditItem]:
             evidence=(
                 "UnrealProject/Source/Greeisland/Runtime/GreeislandGameSubsystem.cpp",
                 "UnrealProject/Source/Greeisland/UI/GreeislandDebugHudWidget.cpp",
+                "scripts/validate_events/ue_native_runtime_surface_smoke_test.py",
                 "scripts/validate_events/ue_runtime_viewdata_surface_smoke_test.py",
             ),
             note="取得と UI 向け viewdata は実装済み。UMG 表示の実機証跡がまだない。",
@@ -56,6 +60,7 @@ def collect_items() -> list[AuditItem]:
             status="proven_in_logic_needs_runtime",
             evidence=(
                 "UnrealProject/Source/Greeisland/Combat/CombatEngine.cpp",
+                "UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugPlayerController.cpp",
                 "scripts/validate_cards/combat_smoke_test.py",
                 "scripts/validate_events/combat_resolution_smoke_test.py",
             ),
@@ -86,6 +91,7 @@ def collect_items() -> list[AuditItem]:
             status="code_ready_needs_runtime",
             evidence=(
                 "UnrealProject/Source/Greeisland/UI/GreeislandDebugHudWidget.cpp",
+                "UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugPlayerController.cpp",
                 "scripts/validate_events/ai_fallback_smoke_test.py",
                 "docs/06_ue_debug_hud_setup.md",
             ),
@@ -106,6 +112,7 @@ def collect_items() -> list[AuditItem]:
             status="proven_in_logic_needs_runtime",
             evidence=(
                 "UnrealProject/Source/Greeisland/Save/SaveGameMapper.cpp",
+                "UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugPlayerController.cpp",
                 "scripts/validate_events/save_restore_smoke_test.py",
                 "scripts/validate_events/mvp_full_run_smoke_test.py",
             ),
