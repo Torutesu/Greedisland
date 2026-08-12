@@ -3,6 +3,7 @@
 #include "Actors/GreeislandBootstrapActor.h"
 #include "Actors/GreeislandEventActor.h"
 #include "Characters/GreeislandDebugCharacter.h"
+#include "Engine/StaticMesh.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/GreeislandDebugPlayerController.h"
 #include "Kismet/GameplayStatics.h"

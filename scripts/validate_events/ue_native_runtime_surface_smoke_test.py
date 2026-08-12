@@ -36,6 +36,7 @@ def main() -> int:
     assert_true("BuildMvpZoneIfNeeded" in game_mode, "game mode builds MVP zone")
     assert_true("SpawnActor<AGreeislandBootstrapActor>" in game_mode, "game mode spawns bootstrap actor")
     assert_true("SpawnActor<AGreeislandEventActor>" in game_mode, "game mode spawns event actors")
+    assert_true('#include "Engine/StaticMesh.h"' in game_mode, "game mode explicitly includes the static mesh type")
     assert_true("/Engine/BasicShapes/Cube.Cube" in game_mode, "game mode creates a collision floor")
     assert_true("EditorStartupMap=/Engine/Maps/Entry" in engine_config, "project has an editor startup map")
     assert_true("GameDefaultMap=/Engine/Maps/Entry" in engine_config, "project has a game default map")
