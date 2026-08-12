@@ -33,6 +33,8 @@ def main() -> int:
         assert_true(event_id in game_mode, f"native zone includes {event_id}")
 
     assert_true("BeginPlay() override" in game_mode_header, "game mode owns runtime bootstrap")
+    assert_true("ChoosePlayerStart_Implementation" in game_mode_header, "game mode owns fallback player start selection")
+    assert_true("EnsureMvpPlayerStart" in game_mode, "game mode shares player start fallback helper")
     assert_true("RunNativeMvpSmokeTestIfRequested" in game_mode_header, "game mode exposes native MVP smoke entrypoint")
     assert_true("BuildMvpZoneIfNeeded" in game_mode, "game mode builds MVP zone")
     assert_true("GreeislandMvpSmoke" in game_mode, "game mode recognizes MVP smoke command line")

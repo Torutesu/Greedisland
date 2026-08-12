@@ -34,6 +34,31 @@ const TArray<FVector> MvpEventLocations =
     FVector(1050.0f, -260.0f, 100.0f),
     FVector(1600.0f, 0.0f, 100.0f)
 };
+
+APlayerStart* EnsureMvpPlayerStart(UWorld* World)
+{
+    if (!World)
+    {
+        return nullptr;
+    }
+
+    TArray<AActor*> ExistingPlayerStarts;
+    UGameplayStatics::GetAllActorsOfClass(World, APlayerStart::StaticClass(), ExistingPlayerStarts);
+    if (ExistingPlayerStarts.Num() > 0)
+    {
+        return Cast<APlayerStart>(ExistingPlayerStarts[0]);
+    }
+
+    APlayerStart* PlayerStart = World->SpawnActor<APlayerStart>(
+        FVector(0.0f, -220.0f, 120.0f), FRotator::ZeroRotator);
+#if WITH_EDITOR
+    if (PlayerStart)
+    {
+        PlayerStart->SetActorLabel(TEXT("MVP Player Start"));
+    }
+#endif
+    return PlayerStart;
+}
 }
 
 AGreeislandDebugGameMode::AGreeislandDebugGameMode()
@@ -55,6 +80,12 @@ void AGreeislandDebugGameMode::BeginPlay()
     RunNativeMvpSmokeTestIfRequested();
 }
 
+AActor* AGreeislandDebugGameMode::ChoosePlayerStart_Implementation(AController* Player)
+{
+    EnsureMvpPlayerStart(GetWorld());
+    return Super::ChoosePlayerStart_Implementation(Player);
+}
+
 void AGreeislandDebugGameMode::BuildMvpZoneIfNeeded()
 {
     UWorld* World = GetWorld();
@@ -70,19 +101,7 @@ void AGreeislandDebugGameMode::BuildMvpZoneIfNeeded()
         World->SpawnActor<AGreeislandBootstrapActor>(FVector::ZeroVector, FRotator::ZeroRotator);
     }
 
-    TArray<AActor*> ExistingPlayerStarts;
-    UGameplayStatics::GetAllActorsOfClass(World, APlayerStart::StaticClass(), ExistingPlayerStarts);
-    if (ExistingPlayerStarts.Num() == 0)
-    {
-        APlayerStart* PlayerStart = World->SpawnActor<APlayerStart>(
-            FVector(0.0f, -220.0f, 120.0f), FRotator::ZeroRotator);
-#if WITH_EDITOR
-        if (PlayerStart)
-        {
-            PlayerStart->SetActorLabel(TEXT("MVP Player Start"));
-        }
-#endif
-    }
+    EnsureMvpPlayerStart(World);
 
     TArray<AActor*> ExistingEventActors;
     UGameplayStatics::GetAllActorsOfClass(World, AGreeislandEventActor::StaticClass(), ExistingEventActors);
