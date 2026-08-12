@@ -27,6 +27,7 @@ Runtime entrypoint:
 - [AGreeislandDebugHud](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/UI/GreeislandDebugHud.h)
   `DebugHudWidgetClass` を指定すると BeginPlay でWidgetをViewportへ載せるHUDクラス
 - `DebugHudWidgetClass` が未設定でも、C++ Native HUDへフォールバックしてセッション状態・イベント一覧・カード一覧・AI GM応答を表示する
+- Native HUD利用時も `N/O/K/R/C/1-5/Space/F/T` のキーボード操作で、セッション・探索・戦闘・保存・AI GMのMVP導線を進められる
 - [AGreeislandDebugGameMode](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugGameMode.h)
   `PlayerController` と `HUD` に加えて、`DefaultPawnClass` をデバッグ用キャラクターへ接続し、未配置のMVP Bootstrap/EventActor/地面をBeginPlayで補完するGameMode足場
 - [AGreeislandDebugCharacter](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Characters/GreeislandDebugCharacter.h)
@@ -44,7 +45,7 @@ Project config:
   C++の `AGreeislandDebugGameMode` をデフォルトGameModeに設定
   `CardJsonPath` / `EventJsonPath` の既定値は `ProjectDir` 基準で `../data/...` に調整済み
 - [DefaultInput.ini](/Users/torutano/Documents/Greeisland/UnrealProject/Config/DefaultInput.ini)
-  `WASD` / マウス / `E` の最小入力マッピング
+  `WASD` / マウス / `E` に加えて、Native HUD用のセッション・戦闘・保存・AI GMショートカットを設定
 - [UGreeislandProjectSettings](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Runtime/GreeislandProjectSettings.h)
   `Project Settings > Game > Greeisland` から JSON パスや保存スロットなどを調整できる
 

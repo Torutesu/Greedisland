@@ -19,6 +19,8 @@ def main() -> int:
     hud = (ROOT / "UnrealProject/Source/Greeisland/UI/GreeislandDebugHud.cpp").read_text(encoding="utf-8")
     widget_header = (ROOT / "UnrealProject/Source/Greeisland/UI/GreeislandDebugHudWidget.h").read_text(encoding="utf-8")
     widget = (ROOT / "UnrealProject/Source/Greeisland/UI/GreeislandDebugHudWidget.cpp").read_text(encoding="utf-8")
+    controller = (ROOT / "UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugPlayerController.cpp").read_text(encoding="utf-8")
+    input_config = (ROOT / "UnrealProject/Config/DefaultInput.ini").read_text(encoding="utf-8")
 
     for event_id in (
         "event_wake_cache_001",
@@ -35,12 +37,17 @@ def main() -> int:
     assert_true("SpawnActor<AGreeislandEventActor>" in game_mode, "game mode spawns event actors")
     assert_true("/Engine/BasicShapes/Cube.Cube" in game_mode, "game mode creates a collision floor")
     assert_true("SetEventId" in event_actor, "event actor supports runtime id binding")
+    assert_true("GetOverlappingActors" in event_actor, "runtime event actor can trigger on contact")
 
     assert_true("WidgetClass = UGreeislandDebugHudWidget::StaticClass()" in hud, "HUD has native widget fallback")
     assert_true("UCLASS(Blueprintable)" in widget_header and "UCLASS(Abstract" not in widget_header, "native widget can instantiate")
     for symbol in ("BuildNativeLayout", "NativeStatusText", "NativeCardsText", "NativeEventsText", "NativeAiText"):
         assert_true(symbol in widget_header or symbol in widget, f"native HUD exposes {symbol}")
     assert_true("BuildFallbackAiResponseForActiveEvent" in widget, "native HUD surfaces deterministic AI response")
+    for symbol in ("PlayHandCardAtSlot", "RunEnemyTurnHotkey", "BuildFallbackAiHotkey", "SaveSessionHotkey"):
+        assert_true(symbol in controller, f"native controller exposes {symbol}")
+    for action_name in ("PlayHandCard1", "PlayHandCard5", "RunEnemyTurn", "BuildFallbackAi", "ApplyAi"):
+        assert_true(f'ActionName=\"{action_name}\"' in input_config, f"input maps {action_name}")
 
     print("OK: UE native runtime surface smoke tests passed")
     return 0

@@ -27,6 +27,23 @@ void AGreeislandEventActor::SetEventId(FName NewEventId)
 {
     EventId = NewEventId;
     SetActorLabel(EventId.IsNone() ? TEXT("Greeisland Event") : EventId.ToString());
+
+    if (!bAutoTriggerOnOverlap || !InteractionSphere || !IsEventAvailable())
+    {
+        return;
+    }
+
+    TArray<AActor*> OverlappingActors;
+    InteractionSphere->GetOverlappingActors(OverlappingActors, APawn::StaticClass());
+    if (OverlappingActors.Num() > 0)
+    {
+        TriggerEvent();
+    }
+}
+
+void AGreeislandEventActor::SetAutoTriggerOnOverlap(bool bNewAutoTriggerOnOverlap)
+{
+    bAutoTriggerOnOverlap = bNewAutoTriggerOnOverlap;
 }
 
 FSessionActionResult AGreeislandEventActor::TriggerEvent()

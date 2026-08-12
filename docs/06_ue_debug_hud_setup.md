@@ -94,7 +94,14 @@ UE が見つかっているなら、`python3 scripts/ue_build_helper.py --action
 補足:
 
 - `UnrealProject/Config/DefaultGame.ini` では C++ の `AGreeislandDebugGameMode` が `GlobalDefaultGameMode` に設定済み
-- `UnrealProject/Config/DefaultInput.ini` では `WASD`、マウス視点、`E` インタラクトが設定済み
+- `UnrealProject/Config/DefaultInput.ini` では `WASD`、マウス視点、`E` インタラクトに加え、Native HUD用の操作キーが設定済み
+
+Native HUDだけで確認する場合の主なキー:
+
+- `N` 新規セッション、`O` 復元、`K` 保存
+- `E` 近接イベントを起動、`R` アクティブイベントを解決、`C` 戦闘開始
+- `1`〜`5` 手札スロットを使用、`Space` 敵ターン
+- `F` AI GMフォールバック生成、`T` 直前のAI応答を反映
 - `CardJsonPath` / `EventJsonPath` の既定値は `ProjectDir` から見て `../data/cards/cards.mvp.json` と `../data/events/events.mvp.json`
 - Blueprint版を使う場合は `Project Settings` または `World Settings` で `BP_GreeislandDebugGameMode` へ差し替える
 - `Project Settings > Game > Greeisland` では `CardJsonPath`、`EventJsonPath`、`SaveSlotName`、`DefaultOpeningDrawCount` などを変更できる

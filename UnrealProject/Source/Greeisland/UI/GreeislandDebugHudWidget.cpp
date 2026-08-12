@@ -161,6 +161,11 @@ void UGreeislandDebugHudWidget::BuildNativeLayout()
         Layout,
         TEXT("WASD move   E interact   Use HUD Blueprint actions for combat/save/AI"),
         12.0f);
+    AddNativeText(
+        WidgetTree,
+        Layout,
+        TEXT("Keys: N new  O restore  K save  R resolve  C combat  1-5 play hand  Space enemy  F/T AI"),
+        12.0f);
 }
 
 void UGreeislandDebugHudWidget::UpdateNativeLayout()

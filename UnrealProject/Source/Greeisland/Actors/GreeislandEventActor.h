@@ -42,6 +42,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Greeisland|Event")
     void SetEventId(FName NewEventId);
 
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Event")
+    void SetAutoTriggerOnOverlap(bool bNewAutoTriggerOnOverlap);
+
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Greeisland|Event")
     TObjectPtr<USceneComponent> SceneRoot;

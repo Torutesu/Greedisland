@@ -85,6 +85,7 @@ void AGreeislandDebugGameMode::BuildMvpZoneIfNeeded()
         if (EventActor)
         {
             EventActor->SetEventId(MvpEventIds[Index]);
+            EventActor->SetAutoTriggerOnOverlap(true);
             ExistingEventIds.Add(MvpEventIds[Index]);
         }
     }

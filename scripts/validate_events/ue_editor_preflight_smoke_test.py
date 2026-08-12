@@ -137,6 +137,9 @@ def main() -> int:
         'AxisName="Turn",Scale=1.000000,Key=MouseX',
         'AxisName="LookUp",Scale=-1.000000,Key=MouseY',
         'ActionName="Interact",Key=E',
+        'ActionName="PlayHandCard1",Key=One',
+        'ActionName="PlayHandCard5",Key=Five',
+        'ActionName="RunEnemyTurn",Key=SpaceBar',
     ]:
         assert_true(required_mapping in default_input_text, "input mapping configured", required_mapping)
 
