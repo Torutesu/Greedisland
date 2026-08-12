@@ -43,6 +43,8 @@ def main() -> int:
     assert_true("TriggerEvent()" in game_mode, "native MVP smoke exercises EventActor trigger path")
     assert_true("IsEventAvailable()" in game_mode, "native MVP smoke checks EventActor availability")
     assert_true("[Greeisland][EVENT_CONTACT]" in (ROOT / "UnrealProject/Source/Greeisland/Actors/GreeislandEventActor.cpp").read_text(encoding="utf-8"), "event actor logs live contact evidence")
+    event_actor_cpp = (ROOT / "UnrealProject/Source/Greeisland/Actors/GreeislandEventActor.cpp").read_text(encoding="utf-8")
+    assert_true("SetAutoTriggerOnOverlap" in event_actor_cpp and "GetOverlappingActors" in event_actor_cpp, "event actor checks existing overlap when auto-trigger is enabled")
     assert_true("[Greeisland][MVP_SMOKE] PASS" in game_mode, "game mode emits MVP smoke pass evidence")
     assert_true("starter strike reward is playable" in game_mode, "native MVP smoke uses exploration card reward")
     assert_true("GrantDeveloperCard(TEXT(\"act_strike_001\"))" not in game_mode, "native MVP smoke does not inject its battle card")

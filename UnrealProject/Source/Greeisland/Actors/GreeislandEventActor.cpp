@@ -74,6 +74,23 @@ void AGreeislandEventActor::SetEventId(FName NewEventId)
 void AGreeislandEventActor::SetAutoTriggerOnOverlap(bool bNewAutoTriggerOnOverlap)
 {
     bAutoTriggerOnOverlap = bNewAutoTriggerOnOverlap;
+
+    if (!bAutoTriggerOnOverlap || !InteractionSphere || !IsEventAvailable())
+    {
+        return;
+    }
+
+    TArray<AActor*> OverlappingActors;
+    InteractionSphere->GetOverlappingActors(OverlappingActors, APawn::StaticClass());
+    if (OverlappingActors.Num() > 0)
+    {
+        UE_LOG(
+            LogTemp,
+            Display,
+            TEXT("[Greeisland][EVENT_CONTACT] EventActor %s enabled auto-trigger while overlapping"),
+            *EventId.ToString());
+        TriggerEvent();
+    }
 }
 
 FSessionActionResult AGreeislandEventActor::TriggerEvent()
