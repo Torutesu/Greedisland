@@ -6,7 +6,7 @@
 
 UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 1 ゾーン MVP を確認するための実作業シート。
 
-このシートは [UE5.8 デバッグHUD接続手順](/Users/torutano/Documents/Greeisland/docs/06_ue_debug_hud_setup.md) の要点だけを、実施順で並べ直したもの。
+このシートは [UE5.8 デバッグHUD接続手順](/Users/torutano/Documents/Greeisland/docs/06_ue_debug_hud_setup.md) の要点だけを、実施順で並べ直したもの。レベルにBootstrapActor、EventActor、Widget Blueprintを手置きしていない場合でも、C++のDebugGameModeが1ゾーンとNative HUDを補完する。
 
 ## 0. 事前条件
 

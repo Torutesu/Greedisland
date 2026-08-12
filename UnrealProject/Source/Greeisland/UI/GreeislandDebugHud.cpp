@@ -21,12 +21,18 @@ UGreeislandDebugHudWidget* AGreeislandDebugHud::EnsureDebugHudWidget()
     }
 
     APlayerController* PlayerController = GetOwningPlayerController();
-    if (!PlayerController || !DebugHudWidgetClass)
+    if (!PlayerController)
     {
         return nullptr;
     }
 
-    DebugHudWidget = CreateWidget<UGreeislandDebugHudWidget>(PlayerController, DebugHudWidgetClass);
+    TSubclassOf<UGreeislandDebugHudWidget> WidgetClass = DebugHudWidgetClass;
+    if (!WidgetClass)
+    {
+        WidgetClass = UGreeislandDebugHudWidget::StaticClass();
+    }
+
+    DebugHudWidget = CreateWidget<UGreeislandDebugHudWidget>(PlayerController, WidgetClass);
     if (!DebugHudWidget)
     {
         return nullptr;
@@ -46,4 +52,3 @@ void AGreeislandDebugHud::RemoveDebugHudWidget()
     DebugHudWidget->RemoveFromParent();
     DebugHudWidget = nullptr;
 }
-

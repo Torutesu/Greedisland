@@ -62,12 +62,12 @@ UE が見つかっているなら、`python3 scripts/ue_build_helper.py --action
 
 ## UE側で作るもの
 
-1. `BP_GreeislandDebugHudWidget`
+1. `BP_GreeislandDebugHudWidget`（任意。未作成でもC++ Native HUDが表示される）
    - Parent Class: `UGreeislandDebugHudWidget`
 
 2. `BP_GreeislandDebugHud`
    - Parent Class: `AGreeislandDebugHud`
-   - `DebugHudWidgetClass` に `BP_GreeislandDebugHudWidget` を設定
+   - Blueprintの見た目を使う場合だけ `DebugHudWidgetClass` に `BP_GreeislandDebugHudWidget` を設定
 
 3. `BP_GreeislandDebugGameMode`
    - Parent Class: `AGreeislandDebugGameMode`

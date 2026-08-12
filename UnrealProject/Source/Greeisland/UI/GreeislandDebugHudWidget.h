@@ -356,7 +356,7 @@ struct FGreeislandSessionStatusRow
     bool bHealthy = false;
 };
 
-UCLASS(Abstract, Blueprintable)
+UCLASS(Blueprintable)
 class GREEISLAND_API UGreeislandDebugHudWidget : public UUserWidget
 {
     GENERATED_BODY()
@@ -720,6 +720,8 @@ protected:
     TArray<FGreeislandBlueprintAssetChecklistItem> RecommendedBlueprintAssets;
 
 private:
+    void BuildNativeLayout();
+    void UpdateNativeLayout();
     void ApplyProjectSettingsDefaults();
     void BuildRecommendedHudChecklist();
     void BuildRecommendedHudPanels();
@@ -748,6 +750,21 @@ private:
     const FGreeislandHudActionButtonViewData* FindHudActionButtonById(const FString& ActionId) const;
     FSessionActionResult FailResult(const FString& Message);
     FSessionActionResult HandleActionResult(const FSessionActionResult& ActionResult);
+
+    UPROPERTY(Transient)
+    TObjectPtr<class UTextBlock> NativeStatusText;
+
+    UPROPERTY(Transient)
+    TObjectPtr<class UTextBlock> NativeObjectiveText;
+
+    UPROPERTY(Transient)
+    TObjectPtr<class UTextBlock> NativeCardsText;
+
+    UPROPERTY(Transient)
+    TObjectPtr<class UTextBlock> NativeEventsText;
+
+    UPROPERTY(Transient)
+    TObjectPtr<class UTextBlock> NativeAiText;
 
     double LastPresentationRefreshTimeSeconds = -1.0;
 };

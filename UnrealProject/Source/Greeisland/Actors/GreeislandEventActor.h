@@ -39,6 +39,9 @@ public:
         return EventId;
     }
 
+    UFUNCTION(BlueprintCallable, Category = "Greeisland|Event")
+    void SetEventId(FName NewEventId);
+
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Greeisland|Event")
     TObjectPtr<USceneComponent> SceneRoot;

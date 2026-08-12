@@ -26,8 +26,9 @@ Runtime entrypoint:
   Blueprintで見た目を被せるだけで、初期化、イベント解決、戦闘進行、保存復元、近接イベント表示、AI GMリクエスト生成、検証、固定文面フォールバック、開発用カード付与、手札の使用不可理由表示、bootstrap 診断表示、EventActor 配置と進行状態の照合、推奨 HUD パネル定義とレイアウトチェックリスト取得、MVP 一周の walkthrough と進捗取得、verification check 一覧、推奨 Blueprint アセット一覧取得を呼べるデバッグHUDのC++足場
 - [AGreeislandDebugHud](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/UI/GreeislandDebugHud.h)
   `DebugHudWidgetClass` を指定すると BeginPlay でWidgetをViewportへ載せるHUDクラス
+- `DebugHudWidgetClass` が未設定でも、C++ Native HUDへフォールバックしてセッション状態・イベント一覧・カード一覧・AI GM応答を表示する
 - [AGreeislandDebugGameMode](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugGameMode.h)
-  `PlayerController` と `HUD` に加えて、`DefaultPawnClass` をデバッグ用キャラクターへ接続したGameMode足場
+  `PlayerController` と `HUD` に加えて、`DefaultPawnClass` をデバッグ用キャラクターへ接続し、未配置のMVP Bootstrap/EventActor/地面をBeginPlayで補完するGameMode足場
 - [AGreeislandDebugCharacter](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Characters/GreeislandDebugCharacter.h)
   `WASD` 移動、マウス視点、`E` インタラクトで探索イベントを踏める最小プレイアブルキャラクター
 - [AGreeislandBootstrapActor](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Actors/GreeislandBootstrapActor.h)

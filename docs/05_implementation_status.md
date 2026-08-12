@@ -43,6 +43,8 @@
 - UE verification pack writer
 - UE verification pack README / command script
 - UE verification pack captured preflight / audit outputs
+- C++ runtime fallback builds the MVP zone, BootstrapActor, five EventActors, and a collision floor
+- Native HUD fallback renders session state, event list, owned cards, objective, and AI GM response without a Widget Blueprint
 - BootstrapActor と Project Settings の既定値同期チェック
 - HUD向け bootstrap diagnostics 表示補助
 - EventActor 配置漏れ / 重複の bootstrap diagnostics
@@ -374,7 +376,7 @@ JSON OK
 - UE5.8エディタでのプロジェクト起動
 - UnrealHeaderTool実行
 - C++コンパイル
-- UMG表示
+- UMG表示（Native HUD のコード経路は実装済みだが、実機の画面キャプチャは未取得）
 - 実機でのカードロード
 - 実機での Bring-up Sheet なぞり確認
 

@@ -8,10 +8,40 @@
 #include "Engine/GameInstance.h"
 #include "GameFramework/Pawn.h"
 #include "Runtime/GreeislandProjectSettings.h"
+#include "Blueprint/WidgetTree.h"
+#include "Components/Border.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/ScrollBox.h"
+#include "Components/SizeBox.h"
+#include "Components/TextBlock.h"
+#include "Components/VerticalBox.h"
+#include "Components/VerticalBoxSlot.h"
+
+namespace
+{
+UTextBlock* AddNativeText(UWidgetTree* WidgetTree, UVerticalBox* Box, const FString& InitialText, float FontSize)
+{
+    if (!WidgetTree || !Box)
+    {
+        return nullptr;
+    }
+
+    UTextBlock* Text = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
+    Text->SetText(FText::FromString(InitialText));
+    FSlateFontInfo Font = Text->GetFont();
+    Font.Size = FontSize;
+    Text->SetFont(Font);
+    Text->SetColorAndOpacity(FSlateColor(FLinearColor(0.93f, 0.96f, 1.0f, 1.0f)));
+    Box->AddChildToVerticalBox(Text);
+    return Text;
+}
+}
 
 void UGreeislandDebugHudWidget::NativeConstruct()
 {
     Super::NativeConstruct();
+    BuildNativeLayout();
     ApplyProjectSettingsDefaults();
     BuildRecommendedHudChecklist();
     BuildRecommendedHudPanels();
@@ -82,6 +112,7 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
         BuildVerificationChecks();
         BuildSessionStatusRows();
         OnPresentationUpdated();
+        UpdateNativeLayout();
         return;
     }
 
@@ -100,6 +131,112 @@ void UGreeislandDebugHudWidget::RefreshPresentation()
     BuildVerificationChecks();
     BuildSessionStatusRows();
     OnPresentationUpdated();
+    UpdateNativeLayout();
+}
+
+void UGreeislandDebugHudWidget::BuildNativeLayout()
+{
+    if (!WidgetTree || WidgetTree->RootWidget)
+    {
+        return;
+    }
+
+    UBorder* Panel = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass());
+    Panel->SetBrushColor(FLinearColor(0.025f, 0.04f, 0.07f, 0.9f));
+    Panel->SetPadding(FMargin(18.0f));
+    SetDesiredSizeInViewport(FVector2D(780.0f, 920.0f));
+
+    UVerticalBox* Layout = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
+    Panel->SetContent(Layout);
+    WidgetTree->RootWidget = Panel;
+
+    AddNativeText(WidgetTree, Layout, TEXT("GREEISLAND // MVP ZONE"), 22.0f);
+    NativeStatusText = AddNativeText(WidgetTree, Layout, TEXT("Loading session..."), 16.0f);
+    NativeObjectiveText = AddNativeText(WidgetTree, Layout, TEXT("Objective: --"), 16.0f);
+    NativeEventsText = AddNativeText(WidgetTree, Layout, TEXT("Events: --"), 14.0f);
+    NativeCardsText = AddNativeText(WidgetTree, Layout, TEXT("Cards: --"), 14.0f);
+    NativeAiText = AddNativeText(WidgetTree, Layout, TEXT("AI GM: --"), 14.0f);
+    AddNativeText(
+        WidgetTree,
+        Layout,
+        TEXT("WASD move   E interact   Use HUD Blueprint actions for combat/save/AI"),
+        12.0f);
+}
+
+void UGreeislandDebugHudWidget::UpdateNativeLayout()
+{
+    if (!NativeStatusText)
+    {
+        return;
+    }
+
+    NativeStatusText->SetText(FText::FromString(FString::Printf(
+        TEXT("Session: %s   Zone: %s   Active: %s   HP %d   Enemy %d   Energy %d"),
+        CurrentSnapshot.bHasInitializedSession ? TEXT("READY") : TEXT("NOT READY"),
+        CurrentSnapshot.ZoneId.IsNone() ? TEXT("--") : *CurrentSnapshot.ZoneId.ToString(),
+        CurrentSnapshot.ActiveEventId.IsNone() ? TEXT("--") : *CurrentSnapshot.ActiveEventId.ToString(),
+        CurrentSnapshot.PlayerHp,
+        CurrentSnapshot.EnemyHp,
+        CurrentSnapshot.Energy)));
+
+    const FString Objective = CurrentObjectiveAction.bHasAction
+        ? FString::Printf(
+            TEXT("Objective %d: %s | %s | %s"),
+            CurrentObjectiveAction.StepOrder,
+            *CurrentObjectiveAction.StepLabel,
+            *CurrentObjectiveAction.ActionLabel,
+            *CurrentObjectiveAction.AvailabilityLabel)
+        : (CurrentSnapshot.bZoneCleared ? TEXT("Objective: ZONE CLEARED") : TEXT("Objective: Explore the first cache"));
+    NativeObjectiveText->SetText(FText::FromString(Objective));
+
+    FString EventLines;
+    for (const FGreeislandEventViewData& Event : EventViewData)
+    {
+        EventLines += FString::Printf(
+            TEXT("%s  [%s]  %s%s\n"),
+            *Event.DisplayName.ToString(),
+            *Event.TypeLabel,
+            *Event.StatusSummary,
+            Event.bIsActive ? TEXT("  < ACTIVE >") : TEXT(""));
+    }
+    if (EventLines.IsEmpty())
+    {
+        EventLines = TEXT("No event data loaded.");
+    }
+    NativeEventsText->SetText(FText::FromString(FString::Printf(TEXT("EVENTS\n%s"), *EventLines)));
+
+    FString CardLines;
+    for (const FGreeislandCardViewData& Card : OwnedCardViewData)
+    {
+        CardLines += FString::Printf(
+            TEXT("%s  [%s]  %s%s\n"),
+            *Card.DisplayName.ToString(),
+            *Card.KindLabel,
+            *Card.StateSummary,
+            Card.bPlayableNow ? TEXT("  < PLAYABLE >") : TEXT(""));
+    }
+    if (CardLines.IsEmpty())
+    {
+        CardLines = TEXT("No cards acquired yet.");
+    }
+    NativeCardsText->SetText(FText::FromString(FString::Printf(TEXT("CARDS\n%s"), *CardLines)));
+
+    if (!bHasLastAiResponse && CurrentSnapshot.ActiveEventId == TEXT("event_contract_broker_001"))
+    {
+        FAiGmResponse FallbackResponse;
+        BuildFallbackAiResponseForActiveEvent(TEXT("交渉する"), FallbackResponse);
+    }
+
+    const FString AiText = bHasLastAiResponse
+        ? FString::Printf(
+            TEXT("AI GM // %s\n%s\nIntent: %d  Rewards: %d  Validation: %s"),
+            *LastAiResponse.SpeakerName,
+            *LastAiResponse.Dialogue,
+            static_cast<int32>(LastAiResponse.Intent),
+            LastAiResponse.AllowedRewardCardIds.Num(),
+            LastAiValidationResult.bAccepted ? TEXT("ACCEPTED") : TEXT("REJECTED"))
+        : TEXT("AI GM // no response yet");
+    NativeAiText->SetText(FText::FromString(AiText));
 }
 
 FSessionActionResult UGreeislandDebugHudWidget::InitializeNewSession()

@@ -11,5 +11,13 @@ class GREEISLAND_API AGreeislandDebugGameMode : public AGameModeBase
 
 public:
     AGreeislandDebugGameMode();
-};
 
+    virtual void BeginPlay() override;
+
+protected:
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Greeisland|Bootstrap")
+    bool bAutoBuildMvpZone = true;
+
+private:
+    void BuildMvpZoneIfNeeded();
+};

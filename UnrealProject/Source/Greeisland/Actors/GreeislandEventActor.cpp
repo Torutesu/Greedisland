@@ -23,6 +23,12 @@ AGreeislandEventActor::AGreeislandEventActor()
     InteractionSphere->OnComponentBeginOverlap.AddDynamic(this, &AGreeislandEventActor::HandleInteractionSphereBeginOverlap);
 }
 
+void AGreeislandEventActor::SetEventId(FName NewEventId)
+{
+    EventId = NewEventId;
+    SetActorLabel(EventId.IsNone() ? TEXT("Greeisland Event") : EventId.ToString());
+}
+
 FSessionActionResult AGreeislandEventActor::TriggerEvent()
 {
     UGreeislandGameSubsystem* Subsystem = GetGreeislandSubsystem();
