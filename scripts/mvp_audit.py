@@ -27,6 +27,21 @@ def latest_mvp_smoke_log_containing(marker: str) -> Path | None:
     return None
 
 
+def latest_mvp_smoke_log_containing_all(markers: tuple[str, ...]) -> Path | None:
+    if not RUNTIME_LOG_DIR.exists():
+        return None
+
+    candidates = sorted(RUNTIME_LOG_DIR.glob("mvp-smoke-*.log"), reverse=True)
+    for candidate in candidates:
+        try:
+            text = candidate.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        if all(marker in text for marker in markers):
+            return candidate
+    return None
+
+
 def latest_successful_mvp_smoke_log() -> Path | None:
     return latest_mvp_smoke_log_containing(
         "[Greeisland][MVP_SMOKE] PASS: one-zone MVP completed and restored."
@@ -45,7 +60,12 @@ def collect_items() -> list[AuditItem]:
     runtime_log = latest_successful_mvp_smoke_log()
     runtime_log_path = str(runtime_log.relative_to(REPO_ROOT)) if runtime_log else None
     runtime_log_evidence = (runtime_log_path,) if runtime_log_path else ()
-    contact_log = latest_mvp_smoke_log_containing("[Greeisland][EVENT_CONTACT]")
+    contact_log = latest_mvp_smoke_log_containing_all(
+        (
+            "[Greeisland][EVENT_CONTACT]",
+            "[Greeisland][MVP_SMOKE] PASS: one-zone MVP completed and restored.",
+        )
+    )
     contact_log_path = str(contact_log.relative_to(REPO_ROOT)) if contact_log else None
     contact_log_evidence = (contact_log_path,) if contact_log_path else ()
 
