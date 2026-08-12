@@ -35,6 +35,7 @@ def main() -> int:
     assert_true("BeginPlay() override" in game_mode_header, "game mode owns runtime bootstrap")
     assert_true("BuildMvpZoneIfNeeded" in game_mode, "game mode builds MVP zone")
     assert_true("SpawnActor<AGreeislandBootstrapActor>" in game_mode, "game mode spawns bootstrap actor")
+    assert_true("SpawnActor<APlayerStart>" in game_mode, "game mode provides a fallback player start")
     assert_true("SpawnActor<AGreeislandEventActor>" in game_mode, "game mode spawns event actors")
     assert_true('#include "Engine/StaticMesh.h"' in game_mode, "game mode explicitly includes the static mesh type")
     assert_true("/Engine/BasicShapes/Cube.Cube" in game_mode, "game mode creates a collision floor")

@@ -32,6 +32,7 @@ Runtime entrypoint:
 - Native HUDには直近操作の成否・理由・ログ行も表示し、保存/復元やカード使用の確認結果をその場で読める
 - [AGreeislandDebugGameMode](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugGameMode.h)
   `PlayerController` と `HUD` に加えて、`DefaultPawnClass` をデバッグ用キャラクターへ接続し、未配置のMVP Bootstrap/EventActor/地面をBeginPlayで補完するGameMode足場
+  レベルに `PlayerStart` が無い場合も、MVP用の開始地点をBeginPlayで補完する
 - [AGreeislandDebugCharacter](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Characters/GreeislandDebugCharacter.h)
   `WASD` 移動、マウス視点、`E` インタラクトで探索イベントを踏める最小プレイアブルキャラクター
 - [AGreeislandBootstrapActor](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Actors/GreeislandBootstrapActor.h)

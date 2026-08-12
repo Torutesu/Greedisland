@@ -6,6 +6,7 @@
 #include "Engine/StaticMesh.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/GreeislandDebugPlayerController.h"
+#include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/GreeislandDebugHud.h"
 
@@ -60,6 +61,20 @@ void AGreeislandDebugGameMode::BuildMvpZoneIfNeeded()
     if (ExistingBootstrapActors.Num() == 0)
     {
         World->SpawnActor<AGreeislandBootstrapActor>(FVector::ZeroVector, FRotator::ZeroRotator);
+    }
+
+    TArray<AActor*> ExistingPlayerStarts;
+    UGameplayStatics::GetAllActorsOfClass(World, APlayerStart::StaticClass(), ExistingPlayerStarts);
+    if (ExistingPlayerStarts.Num() == 0)
+    {
+        APlayerStart* PlayerStart = World->SpawnActor<APlayerStart>(
+            FVector(0.0f, -220.0f, 120.0f), FRotator::ZeroRotator);
+#if WITH_EDITOR
+        if (PlayerStart)
+        {
+            PlayerStart->SetActorLabel(TEXT("MVP Player Start"));
+        }
+#endif
     }
 
     TArray<AActor*> ExistingEventActors;
