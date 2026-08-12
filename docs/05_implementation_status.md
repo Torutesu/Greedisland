@@ -44,6 +44,8 @@
 - UE verification pack README / command script
 - UE verification pack captured preflight / audit outputs
 - C++ runtime fallback builds the MVP zone, BootstrapActor, five EventActors, and a collision floor
+- Native `-GreeislandMvpSmoke` runtime path exercises the one-zone loop, AI fallback, combat, gate, save, and restore in a real UE session
+- Starter combat cards support configured `deckCopies`, giving the first battle a deterministic playable two-strike deck
 - Native HUD fallback renders session state, event list, owned cards, objective, and AI GM response without a Widget Blueprint
 - Native HUD keyboard route for session, exploration, combat cards, enemy turn, save/restore, and AI GM
 - Native GameMode route for automatic EventActor contact triggering

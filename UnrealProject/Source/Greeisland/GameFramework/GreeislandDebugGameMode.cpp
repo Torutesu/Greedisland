@@ -5,9 +5,14 @@
 #include "Characters/GreeislandDebugCharacter.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/StaticMeshActor.h"
+#include "Engine/GameInstance.h"
 #include "GameFramework/GreeislandDebugPlayerController.h"
 #include "GameFramework/PlayerStart.h"
+#include "HAL/PlatformMisc.h"
 #include "Kismet/GameplayStatics.h"
+#include "Misc/Parse.h"
+#include "Runtime/GreeislandGameSubsystem.h"
+#include "Runtime/GreeislandProjectSettings.h"
 #include "UI/GreeislandDebugHud.h"
 
 namespace
@@ -46,6 +51,8 @@ void AGreeislandDebugGameMode::BeginPlay()
     {
         BuildMvpZoneIfNeeded();
     }
+
+    RunNativeMvpSmokeTestIfRequested();
 }
 
 void AGreeislandDebugGameMode::BuildMvpZoneIfNeeded()
@@ -122,4 +129,144 @@ void AGreeislandDebugGameMode::BuildMvpZoneIfNeeded()
         Ground->SetActorLabel(TEXT("MVP Zone Ground"));
 #endif
     }
+}
+
+void AGreeislandDebugGameMode::RunNativeMvpSmokeTestIfRequested()
+{
+    if (!FParse::Param(FCommandLine::Get(), TEXT("GreeislandMvpSmoke")))
+    {
+        return;
+    }
+
+    auto Fail = [](const FString& Message)
+    {
+        UE_LOG(LogTemp, Error, TEXT("[Greeisland][MVP_SMOKE] FAIL: %s"), *Message);
+        FPlatformMisc::RequestExit(false);
+    };
+
+    auto Require = [&Fail](const FSessionActionResult& Result, const FString& Step) -> bool
+    {
+        if (Result.bSuccess)
+        {
+            UE_LOG(LogTemp, Display, TEXT("[Greeisland][MVP_SMOKE] PASS STEP: %s"), *Step);
+            return true;
+        }
+
+        Fail(FString::Printf(
+            TEXT("%s: %s"),
+            *Step,
+            Result.Reasons.Num() > 0 ? *FString::Join(Result.Reasons, TEXT(" | ")) : TEXT("no reason")));
+        return false;
+    };
+
+    UWorld* World = GetWorld();
+    const UGameInstance* GameInstance = World ? World->GetGameInstance() : nullptr;
+    UGreeislandGameSubsystem* Subsystem = GameInstance
+        ? GameInstance->GetSubsystem<UGreeislandGameSubsystem>()
+        : nullptr;
+    const UGreeislandProjectSettings* Settings = GetDefault<UGreeislandProjectSettings>();
+    if (!Subsystem || !Settings)
+    {
+        Fail(TEXT("Game subsystem or project settings are unavailable."));
+        return;
+    }
+
+    if (!Require(
+        Subsystem->InitializeNewSessionFromFiles(Settings->CardJsonPath, Settings->EventJsonPath),
+        TEXT("initialize session")))
+    {
+        return;
+    }
+    if (!Require(Subsystem->ResolveEvent(TEXT("event_wake_cache_001")), TEXT("resolve wake cache")))
+    {
+        return;
+    }
+    if (!Require(Subsystem->ResolveEvent(TEXT("event_contract_broker_001")), TEXT("resolve contract broker")))
+    {
+        return;
+    }
+
+    FAiGmResponse AiResponse;
+    if (!Subsystem->BuildFallbackAiResponseForActiveEvent(TEXT("交渉する"), AiResponse))
+    {
+        Fail(TEXT("build fallback AI response"));
+        return;
+    }
+    if (!Require(Subsystem->ApplyAiResponse(AiResponse, TEXT("交渉する")), TEXT("apply fallback AI response")))
+    {
+        return;
+    }
+    if (!Require(Subsystem->ResolveEvent(TEXT("event_silent_shrine_001")), TEXT("resolve silent shrine")))
+    {
+        return;
+    }
+    if (!Require(Subsystem->GrantDeveloperCard(TEXT("act_strike_001")), TEXT("grant second strike for combat")))
+    {
+        return;
+    }
+    if (!Require(Subsystem->StartCombat(TEXT("event_ridge_scout_001"), 5), TEXT("start ridge scout combat")))
+    {
+        return;
+    }
+
+    for (int32 Turn = 0; Turn < 12 && Subsystem->GetSession().bCombatActive; ++Turn)
+    {
+        const FGreeislandGameSession Session = Subsystem->GetSession();
+        FName StrikeCardId = NAME_None;
+        for (const FName& CardId : Session.CombatState.Hand)
+        {
+            if (CardId == TEXT("act_strike_001"))
+            {
+                StrikeCardId = CardId;
+                break;
+            }
+        }
+
+        if (!StrikeCardId.IsNone())
+        {
+            if (!Require(Subsystem->PlayCombatCard(StrikeCardId), TEXT("play combat card")))
+            {
+                return;
+            }
+        }
+        else if (!Require(Subsystem->RunEnemyTurn(1), TEXT("run enemy turn")))
+        {
+            return;
+        }
+    }
+
+    if (Subsystem->GetSession().bCombatActive)
+    {
+        Fail(TEXT("combat did not finish within the smoke-test turn limit"));
+        return;
+    }
+    if (!Require(Subsystem->ResolveEvent(TEXT("event_proxy_gate_001")), TEXT("resolve proxy gate")))
+    {
+        return;
+    }
+    if (!Require(
+        Subsystem->SaveSessionToSlot(TEXT("greeisland-mvp-smoke"), 0, TEXT("mvp-smoke")),
+        TEXT("save completed session")))
+    {
+        return;
+    }
+    if (!Require(
+        Subsystem->RestoreSessionFromSaveSlot(
+            TEXT("greeisland-mvp-smoke"),
+            0,
+            Settings->CardJsonPath,
+            Settings->EventJsonPath),
+        TEXT("restore completed session")))
+    {
+        return;
+    }
+
+    if (!Subsystem->GetSession().bZoneCleared)
+    {
+        Fail(TEXT("restored session is not marked as zone cleared"));
+        return;
+    }
+
+    UE_LOG(LogTemp, Display, TEXT("[Greeisland][MVP_SMOKE] PASS: one-zone MVP completed and restored."));
+    FPlatformMisc::RequestExit(false);
 }

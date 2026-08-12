@@ -62,6 +62,8 @@ Project config:
 
 UE5.8が入った環境では、`python3 scripts/ue_build_helper.py --action run-game` でEditorのStandalone相当起動も行える。
 
+実機セッション内でMVP一周を自動検証する場合は、`python3 scripts/ue_build_helper.py --action run-mvp-smoke` を使う。新規セッション、探索、AI GM、戦闘、ゲート、保存・復元を実行し、`[Greeisland][MVP_SMOKE] PASS` を出して終了する。
+
 Individual checks:
 
 ```bash

@@ -33,7 +33,12 @@ def main() -> int:
         assert_true(event_id in game_mode, f"native zone includes {event_id}")
 
     assert_true("BeginPlay() override" in game_mode_header, "game mode owns runtime bootstrap")
+    assert_true("RunNativeMvpSmokeTestIfRequested" in game_mode_header, "game mode exposes native MVP smoke entrypoint")
     assert_true("BuildMvpZoneIfNeeded" in game_mode, "game mode builds MVP zone")
+    assert_true("GreeislandMvpSmoke" in game_mode, "game mode recognizes MVP smoke command line")
+    assert_true("[Greeisland][MVP_SMOKE] PASS" in game_mode, "game mode emits MVP smoke pass evidence")
+    assert_true("SaveSessionToSlot" in game_mode and "RestoreSessionFromSaveSlot" in game_mode, "native MVP smoke covers save restore")
+    assert_true("DeckCopies" in game_mode or "DeckCopies" in (ROOT / "UnrealProject/Source/Greeisland/Session/GameSessionLibrary.cpp").read_text(encoding="utf-8"), "native MVP uses configured deck copies")
     assert_true("SpawnActor<AGreeislandBootstrapActor>" in game_mode, "game mode spawns bootstrap actor")
     assert_true("SpawnActor<APlayerStart>" in game_mode, "game mode provides a fallback player start")
     assert_true("SpawnActor<AGreeislandEventActor>" in game_mode, "game mode spawns event actors")

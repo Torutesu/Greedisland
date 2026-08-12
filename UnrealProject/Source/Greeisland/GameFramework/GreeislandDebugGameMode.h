@@ -20,4 +20,5 @@ protected:
 
 private:
     void BuildMvpZoneIfNeeded();
+    void RunNativeMvpSmokeTestIfRequested();
 };

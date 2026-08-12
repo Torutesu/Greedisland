@@ -327,6 +327,13 @@ bool UCardDefinitionLibrary::LoadCardsFromJsonFile(
             }
         }
 
+        ReadOptionalInt(CardObject, TEXT("deckCopies"), Card.DeckCopies);
+        if (Card.DeckCopies < 1)
+        {
+            OutErrors.Add(FString::Printf(TEXT("%s.deckCopies: must be >= 1"), *CardPath));
+            Card.DeckCopies = 1;
+        }
+
         ReadNameArray(CardObject, TEXT("tags"), Card.Tags);
         ReadEnumArray(CardObject, TEXT("playablePhases"), Card.PlayablePhases, OutErrors, CardPath);
 
@@ -407,4 +414,3 @@ bool UCardDefinitionLibrary::FindCardById(
 
     return false;
 }
-

@@ -39,6 +39,30 @@ TArray<FName> BuildCollectionTags(
     return Tags;
 }
 
+void AddCardCopiesToDeck(
+    FGreeislandGameSession& Session,
+    FName CardId)
+{
+    FCardDefinition Card;
+    const int32 Copies = UGameSessionLibrary::FindKnownCardById(Session, CardId, Card)
+        ? FMath::Max(1, Card.DeckCopies)
+        : 1;
+
+    int32 ExistingCopies = 0;
+    for (const FName& DeckCardId : Session.DeckCardIds)
+    {
+        if (DeckCardId == CardId)
+        {
+            ++ExistingCopies;
+        }
+    }
+
+    for (int32 CopyIndex = ExistingCopies; CopyIndex < Copies; ++CopyIndex)
+    {
+        Session.DeckCardIds.Add(CardId);
+    }
+}
+
 FSessionActionResult CompleteBattleEvent(
     FGreeislandGameSession& Session,
     const FExplorationEventDefinition& Event)
@@ -57,7 +81,7 @@ FSessionActionResult CompleteBattleEvent(
 
     for (const FName& GrantedCardId : ResolveResult.GrantedCardIds)
     {
-        Session.DeckCardIds.AddUnique(GrantedCardId);
+        AddCardCopiesToDeck(Session, GrantedCardId);
     }
 
     for (const FName& NextEventId : Event.NextEventIds)
@@ -166,7 +190,7 @@ FSessionActionResult UGameSessionLibrary::ResolveEventInSession(
 
     for (const FName& GrantedCardId : ResolveResult.GrantedCardIds)
     {
-        Session.DeckCardIds.AddUnique(GrantedCardId);
+        AddCardCopiesToDeck(Session, GrantedCardId);
     }
 
     for (const FName& NextEventId : Event.NextEventIds)
@@ -382,7 +406,7 @@ FSessionActionResult UGameSessionLibrary::ApplyAiResponseToSession(
     for (const FName& RewardCardId : Response.AllowedRewardCardIds)
     {
         Session.OwnedCardIds.AddUnique(RewardCardId);
-        Session.DeckCardIds.AddUnique(RewardCardId);
+        AddCardCopiesToDeck(Session, RewardCardId);
         Result.LogLines.Add(FString::Printf(
             TEXT("AI GM granted reward card %s."),
             *RewardCardId.ToString()));
@@ -428,7 +452,7 @@ FSessionActionResult UGameSessionLibrary::GrantCardToSession(
     Session.OwnedCardIds.AddUnique(CardId);
     if (bAddToDeck)
     {
-        Session.DeckCardIds.AddUnique(CardId);
+        AddCardCopiesToDeck(Session, CardId);
     }
 
     Result.bSuccess = true;

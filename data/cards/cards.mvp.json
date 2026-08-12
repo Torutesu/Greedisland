@@ -7,6 +7,7 @@
       "displayName": "裂き打ち",
       "kind": "Action",
       "rarity": "Common",
+      "deckCopies": 2,
       "tags": ["attack", "battle_only"],
       "playablePhases": ["Combat"],
       "cost": {"energy": 1},
@@ -323,4 +324,3 @@
     }
   ]
 }
-

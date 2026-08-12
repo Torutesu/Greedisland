@@ -190,6 +190,9 @@ struct FCardDefinition
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     ECardRarity Rarity = ECardRarity::Common;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ClampMin="1"))
+    int32 DeckCopies = 1;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TArray<FName> Tags;
 
@@ -208,4 +211,3 @@ struct FCardDefinition
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     FText FlavorText;
 };
-

@@ -118,6 +118,7 @@ def build_commands(tooling: UnrealTooling) -> dict[str, list[str] | None]:
         "build_game": None,
         "open_editor": None,
         "run_game": None,
+        "run_mvp_smoke": None,
     }
 
     if tooling.projectfiles_script:
@@ -149,6 +150,14 @@ def build_commands(tooling: UnrealTooling) -> dict[str, list[str] | None]:
     if tooling.editor_binary:
         commands["open_editor"] = [str(tooling.editor_binary), project]
         commands["run_game"] = [str(tooling.editor_binary), project, "-game", "-log"]
+        commands["run_mvp_smoke"] = [
+            str(tooling.editor_binary),
+            project,
+            "-game",
+            "-nullrhi",
+            "-log",
+            "-GreeislandMvpSmoke",
+        ]
 
     return commands
 
@@ -239,7 +248,7 @@ def print_plan(tooling: UnrealTooling) -> int:
     print(f"UnrealHeaderTool: {tooling.uht_binary if tooling.uht_binary else 'NOT FOUND'}")
     print("")
     print("Available commands:")
-    for key in ("projectfiles", "build_editor", "build_game", "open_editor", "run_game"):
+    for key in ("projectfiles", "build_editor", "build_game", "open_editor", "run_game", "run_mvp_smoke"):
         command = commands[key]
         if command:
             print(f"- {key}: {' '.join(command)}")
@@ -276,6 +285,8 @@ def print_doctor(tooling: UnrealTooling) -> int:
             print(f"- Open editor: {' '.join(commands['open_editor'])}")
         if commands["run_game"]:
             print(f"- Run standalone session: {' '.join(commands['run_game'])}")
+        if commands["run_mvp_smoke"]:
+            print(f"- Run MVP smoke session: {' '.join(commands['run_mvp_smoke'])}")
 
     return 0
 
@@ -308,7 +319,8 @@ def build_runtime_checklist_lines(tooling: UnrealTooling) -> list[str]:
             "7. Walk the Bring-up Sheet flow: E contact / N new -> Wake Cache -> Contract Broker -> Silent Shrine -> Ridge Scout Battle -> Proxy Gate -> K save / O restore.",
             "8. During combat use 1-5 for hand cards and Space for enemy turn; use F/T to generate/apply fallback AI.",
             "9. For a standalone-style launch, run the resolved `run_game` command from `print-plan`.",
-            "10. Capture evidence for missing items: editor launch, UHT/build output, HUD rendering, card load, walkthrough completion.",
+            "10. For an automated one-zone runtime proof, run the resolved `run_mvp_smoke` command and retain the [Greeisland][MVP_SMOKE] PASS log.",
+            "11. Capture evidence for missing items: editor launch, UHT/build output, HUD rendering, card load, walkthrough completion.",
         ]
     )
     return lines
@@ -605,7 +617,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--action",
-        choices=("doctor", "print-plan", "checklist", "report-template", "write-verification-pack", "projectfiles", "build-editor", "build-game", "open-editor", "run-game", "bootstrap-editor"),
+        choices=("doctor", "print-plan", "checklist", "report-template", "write-verification-pack", "projectfiles", "build-editor", "build-game", "open-editor", "run-game", "run-mvp-smoke", "bootstrap-editor"),
         default="print-plan",
         help="Action to run. Defaults to printing the resolved Unreal commands.",
     )
@@ -640,6 +652,8 @@ def main() -> int:
         return run_named_command(tooling, "open_editor")
     if args.action == "run-game":
         return run_named_command(tooling, "run_game")
+    if args.action == "run-mvp-smoke":
+        return run_named_command(tooling, "run_mvp_smoke")
     if args.action == "bootstrap-editor":
         return run_named_command(tooling, "bootstrap_editor")
 

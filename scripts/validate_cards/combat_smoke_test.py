@@ -140,6 +140,7 @@ def assert_equal(actual: Any, expected: Any, label: str) -> None:
 
 def main() -> int:
     cards = load_cards(Path("data/cards/cards.mvp.json"))
+    assert_equal(cards["act_strike_001"].get("deckCopies"), 2, "starter strike deck copies")
 
     state = create_combat(
         ["act_strike_001", "act_guard_001", "act_patch_heal_001"],
@@ -183,4 +184,3 @@ if __name__ == "__main__":
     except AssertionError as exc:
         print(str(exc), file=sys.stderr)
         raise SystemExit(1)
-

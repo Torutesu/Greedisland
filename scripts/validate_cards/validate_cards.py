@@ -154,6 +154,9 @@ def validate_card(card: dict[str, Any], path: str, card_ids: set[str]) -> None:
     card_id = require_string(card, "cardId", path)
     require(CARD_ID_RE.match(card_id) is not None, f"{path}.cardId", "must match card id format")
 
+    if "deckCopies" in card:
+        require_int(card, "deckCopies", path, minimum=1)
+
     require_string(card, "displayName", path)
 
     kind = require_string(card, "kind", path)
@@ -258,4 +261,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
