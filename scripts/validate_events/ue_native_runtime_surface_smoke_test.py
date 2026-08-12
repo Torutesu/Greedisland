@@ -43,6 +43,8 @@ def main() -> int:
     assert_true("TriggerEvent()" in game_mode, "native MVP smoke exercises EventActor trigger path")
     assert_true("IsEventAvailable()" in game_mode, "native MVP smoke checks EventActor availability")
     assert_true("[Greeisland][MVP_SMOKE] PASS" in game_mode, "game mode emits MVP smoke pass evidence")
+    assert_true("starter strike reward is playable" in game_mode, "native MVP smoke uses exploration card reward")
+    assert_true("GrantDeveloperCard(TEXT(\"act_strike_001\"))" not in game_mode, "native MVP smoke does not inject its battle card")
     assert_true("SaveSessionToSlot" in game_mode and "RestoreSessionFromSaveSlot" in game_mode, "native MVP smoke covers save restore")
     assert_true("DeckCopies" in game_mode or "DeckCopies" in (ROOT / "UnrealProject/Source/Greeisland/Session/GameSessionLibrary.cpp").read_text(encoding="utf-8"), "native MVP uses configured deck copies")
     assert_true("AvailableEventIds.Contains(EventId)" in session_library, "session API enforces event availability")

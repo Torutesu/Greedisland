@@ -246,10 +246,22 @@ void AGreeislandDebugGameMode::RunNativeMvpSmokeTestIfRequested()
     {
         return;
     }
-    if (!Require(Subsystem->GrantDeveloperCard(TEXT("act_strike_001")), TEXT("grant second strike for combat")))
+
+    const FGreeislandGameSession PreparedSession = Subsystem->GetSession();
+    int32 StrikeCopies = 0;
+    for (const FName& CardId : PreparedSession.DeckCardIds)
     {
+        if (CardId == TEXT("act_strike_001"))
+        {
+            ++StrikeCopies;
+        }
+    }
+    if (!PreparedSession.OwnedCardIds.Contains(TEXT("act_strike_001")) || StrikeCopies < 2)
+    {
+        Fail(TEXT("starter strike reward was not added to the playable deck"));
         return;
     }
+    UE_LOG(LogTemp, Display, TEXT("[Greeisland][MVP_SMOKE] PASS STEP: starter strike reward is playable"));
     if (!TriggerEventActor(TEXT("event_ridge_scout_001"), TEXT("trigger ridge scout EventActor")))
     {
         return;
