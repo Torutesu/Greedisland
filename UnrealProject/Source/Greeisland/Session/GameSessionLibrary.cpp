@@ -279,6 +279,18 @@ FSessionActionResult UGameSessionLibrary::PlayCardInSessionCombat(
         return Result;
     }
 
+    if (Card.Kind == ECardKind::Rule || Card.Kind == ECardKind::Constraint)
+    {
+        Result.Reasons.Add(TEXT("Rule and Constraint cards are active while owned and cannot be played directly."));
+        return Result;
+    }
+
+    if (Card.Kind == ECardKind::Key)
+    {
+        Result.Reasons.Add(TEXT("Key cards are progression state and cannot be played directly."));
+        return Result;
+    }
+
     FCardPlayContext Context;
     Context.BasePartySize = MvpBasePartySize;
     Context.CollectionTags = BuildCollectionTags(Session.OwnedCardIds, Session.KnownCards);
