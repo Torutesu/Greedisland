@@ -47,7 +47,7 @@ struct FCardPlayContext
     int32 EnergyAvailable = 0;
 
     UPROPERTY(BlueprintReadWrite)
-    int32 BasePartySize = 1;
+    int32 BasePartySize = 3;
 
     UPROPERTY(BlueprintReadWrite)
     int32 HandCount = 0;
@@ -77,7 +77,7 @@ struct FCardPlayResult
     TArray<FRulePatch> AppliedPatches;
 
     UPROPERTY(BlueprintReadOnly)
-    int32 EffectivePartySize = 1;
+    int32 EffectivePartySize = 3;
 };
 
 UCLASS()

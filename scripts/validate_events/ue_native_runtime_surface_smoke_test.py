@@ -54,6 +54,8 @@ def main() -> int:
     assert_true("Rule and Constraint cards are active while owned" in combat_library, "combat rejects direct passive rule play")
     assert_true("MvpBasePartySize = 3" in session_library, "session combat uses the MVP party baseline")
     assert_true("MvpBasePartySize = 3" in (ROOT / "UnrealProject/Source/Greeisland/Runtime/GreeislandGameSubsystem.cpp").read_text(encoding="utf-8"), "runtime view uses the MVP party baseline")
+    rule_header = (ROOT / "UnrealProject/Source/Greeisland/Rules/RuleResolver.h").read_text(encoding="utf-8")
+    assert_true("BasePartySize = 3" in rule_header, "public rule context defaults to the MVP party baseline")
     assert_true("SpawnActor<AGreeislandBootstrapActor>" in game_mode, "game mode spawns bootstrap actor")
     assert_true("SpawnActor<APlayerStart>" in game_mode, "game mode provides a fallback player start")
     assert_true("SpawnActor<AGreeislandEventActor>" in game_mode, "game mode spawns event actors")
