@@ -102,6 +102,8 @@ void AGreeislandDebugGameMode::BuildMvpZoneIfNeeded()
     {
         Ground->GetStaticMeshComponent()->SetStaticMesh(CubeMesh);
         Ground->GetStaticMeshComponent()->SetWorldScale3D(FVector(24.0f, 8.0f, 0.5f));
+#if WITH_EDITOR
         Ground->SetActorLabel(TEXT("MVP Zone Ground"));
+#endif
     }
 }

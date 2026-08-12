@@ -50,7 +50,9 @@ AGreeislandEventActor::AGreeislandEventActor()
 void AGreeislandEventActor::SetEventId(FName NewEventId)
 {
     EventId = NewEventId;
+#if WITH_EDITOR
     SetActorLabel(EventId.IsNone() ? TEXT("Greeisland Event") : EventId.ToString());
+#endif
     if (MarkerLabel)
     {
         MarkerLabel->SetText(FText::FromName(EventId));
