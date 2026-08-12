@@ -617,8 +617,19 @@ void UGreeislandGameSubsystem::BuildEventViewData(TArray<FGreeislandEventViewDat
         ViewData.DisplayName = Event.DisplayName;
         ViewData.Type = Event.Type;
         ViewData.bCompleted = Session.ZoneProgress.CompletedEventIds.Contains(Event.EventId);
+        bool bRequirementsMet = true;
+        for (const FName& RequiredCardId : Event.RequiredCardIds)
+        {
+            if (!Session.OwnedCardIds.Contains(RequiredCardId))
+            {
+                bRequirementsMet = false;
+                break;
+            }
+        }
         ViewData.bAvailable =
-            Session.ZoneProgress.AvailableEventIds.Contains(Event.EventId) && !ViewData.bCompleted;
+            Session.ZoneProgress.AvailableEventIds.Contains(Event.EventId) &&
+            !ViewData.bCompleted &&
+            bRequirementsMet;
         ViewData.bIsActive = Session.ActiveEventId == Event.EventId && !ViewData.bCompleted;
         ViewData.TypeLabel = EventTypeToLabel(Event.Type);
         ViewData.StatusSummary = ViewData.bCompleted
@@ -633,6 +644,10 @@ void UGreeislandGameSubsystem::BuildEventViewData(TArray<FGreeislandEventViewDat
         if (Event.RewardCardIds.Num() > 0)
         {
             DetailParts.Add(FString::Printf(TEXT("rewards %d"), Event.RewardCardIds.Num()));
+        }
+        if (!bRequirementsMet)
+        {
+            DetailParts.Add(TEXT("required cards missing"));
         }
         ViewData.DetailSummary = FString::Join(DetailParts, TEXT(" | "));
 

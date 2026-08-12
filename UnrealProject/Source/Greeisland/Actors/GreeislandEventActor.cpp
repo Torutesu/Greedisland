@@ -139,8 +139,17 @@ bool AGreeislandEventActor::IsEventAvailable() const
         return false;
     }
 
-    const FGreeislandUiSnapshot Snapshot = Subsystem->BuildUiSnapshot();
-    return Snapshot.AvailableEventIds.Contains(EventId);
+    TArray<FGreeislandEventViewData> Events;
+    Subsystem->BuildEventViewData(Events);
+    for (const FGreeislandEventViewData& Event : Events)
+    {
+        if (Event.EventId == EventId)
+        {
+            return Event.bAvailable && !Event.bCompleted;
+        }
+    }
+
+    return false;
 }
 
 float AGreeislandEventActor::GetInteractionRadius() const

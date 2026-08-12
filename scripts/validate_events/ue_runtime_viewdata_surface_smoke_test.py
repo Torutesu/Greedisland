@@ -36,6 +36,8 @@ def main() -> int:
     assert_true("EventTypeToLabel" in cpp_text, "runtime implements event type label helper")
     assert_true("ViewData.StateSummary" in cpp_text, "runtime populates card state summary")
     assert_true("Session.ActiveEventId == Event.EventId && !ViewData.bCompleted" in cpp_text, "completed events are not shown as active")
+    assert_true("required cards missing" in cpp_text, "event view explains missing card requirements")
+    assert_true("bRequirementsMet" in cpp_text, "event view checks required cards before interaction")
     assert_true("ViewData.DetailSummary" in cpp_text, "runtime populates card detail summary")
     assert_true("ViewData.PrimaryActionId" in cpp_text, "runtime populates primary action ids")
     assert_true("ViewData.PrimaryActionLabel" in cpp_text, "runtime populates primary action labels")
