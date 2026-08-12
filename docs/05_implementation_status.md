@@ -80,6 +80,10 @@
 - HUD向け直前 AI GM 応答の即時適用アクション
 - 開発者用カード付与コマンド
 - 手札カードの使用不可理由と有効パーティ人数表示
+- Rule/Constraint/Keyカードの直接使用拒否をSession/Combat/UIで統一
+- MVPスモークで開発者カード注入を使わず、探索報酬から戦闘カードを獲得
+- Native HUDの長いイベント・カード・AIログ表示をスクロール対応
+- 公開ルールコンテキストの基礎パーティ人数をMVPの3人へ統一
 - ViewportへデバッグHUDを自動表示するAHUD足場
 - Debug PlayerController / Debug GameMode とUE接続手順
 - Debug Character と最小入力マッピング
@@ -393,11 +397,11 @@ JSON OK
 
 - `python3 scripts/mvp_audit.py --format markdown` で、MVP完了条件ごとの証拠と runtime gap を一覧化できる。
 
-## 次の実装順
+## 次の検証順
 
 1. UE5.8をインストールした環境で `UnrealProject/Greeisland.uproject` を開く。
-2. UnrealHeaderTool / C++ビルドのエラーを修正する。
-3. `data/cards/cards.mvp.json` をUEプロジェクトからロードできる配置にコピーまたは参照する。
-4. `URuleResolver::CanPlayCard` を開発用Widgetまたは自動テストから呼び出す。
-5. パーティ人数ハック、フェーズ境界ハック、報酬倍率ハックの3ケースをテストする。
-6. 戦闘ループの最小実装に進む。
+2. `python3 scripts/ue_build_helper.py --action doctor` でツールチェーンを確認する。
+3. UnrealHeaderTool / C++ビルドを実行し、コンパイルエラーを修正する。
+4. `python3 scripts/ue_build_helper.py --action run-mvp-smoke` を実行し、EventActor経由の一周ログを保存する。
+5. Play画面で接触発火、カード一覧、カード使用、AI GM表示、Save/Restoreを確認する。
+6. `python3 scripts/mvp_audit.py --format markdown` のruntime gapを実機ログで埋める。
