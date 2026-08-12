@@ -12,7 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 RUNTIME_LOG_DIR = REPO_ROOT / "artifacts" / "ue-runtime-checks"
 
 
-def latest_successful_mvp_smoke_log() -> Path | None:
+def latest_mvp_smoke_log_containing(marker: str) -> Path | None:
     if not RUNTIME_LOG_DIR.exists():
         return None
 
@@ -22,9 +22,15 @@ def latest_successful_mvp_smoke_log() -> Path | None:
             text = candidate.read_text(encoding="utf-8")
         except OSError:
             continue
-        if "[Greeisland][MVP_SMOKE] PASS: one-zone MVP completed and restored." in text:
+        if marker in text:
             return candidate
     return None
+
+
+def latest_successful_mvp_smoke_log() -> Path | None:
+    return latest_mvp_smoke_log_containing(
+        "[Greeisland][MVP_SMOKE] PASS: one-zone MVP completed and restored."
+    )
 
 
 @dataclass(frozen=True)
@@ -39,6 +45,9 @@ def collect_items() -> list[AuditItem]:
     runtime_log = latest_successful_mvp_smoke_log()
     runtime_log_path = str(runtime_log.relative_to(REPO_ROOT)) if runtime_log else None
     runtime_log_evidence = (runtime_log_path,) if runtime_log_path else ()
+    contact_log = latest_mvp_smoke_log_containing("[Greeisland][EVENT_CONTACT]")
+    contact_log_path = str(contact_log.relative_to(REPO_ROOT)) if contact_log else None
+    contact_log_evidence = (contact_log_path,) if contact_log_path else ()
 
     return [
         AuditItem(
@@ -59,14 +68,18 @@ def collect_items() -> list[AuditItem]:
         ),
         AuditItem(
             requirement="探索地点に接触するとイベントが発火する",
-            status="code_ready_needs_runtime",
-            evidence=(
+            status="proven" if contact_log else "code_ready_needs_runtime",
+            evidence=contact_log_evidence + (
                 "UnrealProject/Source/Greeisland/Actors/GreeislandEventActor.cpp",
                 "UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugGameMode.cpp",
                 "docs/06_ue_debug_hud_setup.md",
                 "scripts/validate_events/session_flow_smoke_test.py",
             ),
-            note="EventActor とセッション進行は実装済み。接触発火の最終証跡は UE 実機確認待ち。",
+            note=(
+                "UEログのEVENT_CONTACTとイベント発火を確認済み。"
+                if contact_log
+                else "EventActor とセッション進行は実装済み。接触発火の最終証跡は UE 実機確認待ち。"
+            ),
         ),
         AuditItem(
             requirement="カードを獲得し、カード一覧UIで確認できる",
