@@ -37,6 +37,7 @@ def main() -> int:
     assert_true("| Requirement | Status | Evidence | Note |" in markdown_output, "markdown table header")
     assert_true("`proven`" in markdown_output, "markdown includes proven status")
     assert_true("## Remaining Runtime Evidence" in markdown_output, "markdown remaining evidence section")
+    assert_true("mvp-smoke-" not in markdown_output or "MVP smoke" in markdown_output, "runtime log output remains readable")
 
     print("OK: MVP audit smoke tests passed")
     return 0

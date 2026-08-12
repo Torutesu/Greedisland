@@ -9,6 +9,22 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+RUNTIME_LOG_DIR = REPO_ROOT / "artifacts" / "ue-runtime-checks"
+
+
+def latest_successful_mvp_smoke_log() -> Path | None:
+    if not RUNTIME_LOG_DIR.exists():
+        return None
+
+    candidates = sorted(RUNTIME_LOG_DIR.glob("mvp-smoke-*.log"), reverse=True)
+    for candidate in candidates:
+        try:
+            text = candidate.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        if "[Greeisland][MVP_SMOKE] PASS: one-zone MVP completed and restored." in text:
+            return candidate
+    return None
 
 
 @dataclass(frozen=True)
@@ -20,18 +36,26 @@ class AuditItem:
 
 
 def collect_items() -> list[AuditItem]:
+    runtime_log = latest_successful_mvp_smoke_log()
+    runtime_log_path = str(runtime_log.relative_to(REPO_ROOT)) if runtime_log else None
+    runtime_log_evidence = (runtime_log_path,) if runtime_log_path else ()
+
     return [
         AuditItem(
             requirement="エディタまたはローカルビルドで1ゾーンを起動できる",
-            status="needs_runtime_evidence",
-            evidence=(
+            status="proven" if runtime_log else "needs_runtime_evidence",
+            evidence=runtime_log_evidence + (
                 "scripts/ue_build_helper.py",
                 "scripts/validate_events/ue_editor_preflight_smoke_test.py",
                 "UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugGameMode.cpp",
                 "UnrealProject/Source/Greeisland/UI/GreeislandDebugHud.cpp",
                 "docs/07_ue_bringup_sheet.md",
             ),
-            note="起動補助と事前チェックはあるが、この環境では UE5.8 実機起動証跡がまだない。",
+            note=(
+                "成功したUE Native MVP smokeログで起動から一周まで確認済み。"
+                if runtime_log
+                else "起動補助と事前チェックはあるが、この環境では UE5.8 実機起動証跡がまだない。"
+            ),
         ),
         AuditItem(
             requirement="探索地点に接触するとイベントが発火する",
@@ -109,14 +133,18 @@ def collect_items() -> list[AuditItem]:
         ),
         AuditItem(
             requirement="ゲーム終了後に所持カードと進行状態を復元できる",
-            status="proven_in_logic_needs_runtime",
-            evidence=(
+            status="proven" if runtime_log else "proven_in_logic_needs_runtime",
+            evidence=runtime_log_evidence + (
                 "UnrealProject/Source/Greeisland/Save/SaveGameMapper.cpp",
                 "UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugPlayerController.cpp",
                 "scripts/validate_events/save_restore_smoke_test.py",
                 "scripts/validate_events/mvp_full_run_smoke_test.py",
             ),
-            note="保存復元ロジックは検証済み。UE 実機での save slot 実証は未取得。",
+            note=(
+                "成功したUE Native MVP smokeログでSave/Restoreまで確認済み。"
+                if runtime_log
+                else "保存復元ロジックは検証済み。UE 実機での save slot 実証は未取得。"
+            ),
         ),
     ]
 
