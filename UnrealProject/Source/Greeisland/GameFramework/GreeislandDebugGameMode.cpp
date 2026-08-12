@@ -179,6 +179,33 @@ void AGreeislandDebugGameMode::RunNativeMvpSmokeTestIfRequested()
     };
 
     UWorld* World = GetWorld();
+
+    auto TriggerEventActor =
+        [&Fail, &Require, World](FName EventId, const FString& Step) -> bool
+    {
+        TArray<AActor*> EventActors;
+        UGameplayStatics::GetAllActorsOfClass(World, AGreeislandEventActor::StaticClass(), EventActors);
+        for (AActor* Actor : EventActors)
+        {
+            AGreeislandEventActor* EventActor = Cast<AGreeislandEventActor>(Actor);
+            if (!EventActor || EventActor->GetEventId() != EventId)
+            {
+                continue;
+            }
+
+            if (!EventActor->IsEventAvailable())
+            {
+                Fail(FString::Printf(TEXT("%s: event actor %s is not available"), *Step, *EventId.ToString()));
+                return false;
+            }
+
+            return Require(EventActor->TriggerEvent(), Step);
+        }
+
+        Fail(FString::Printf(TEXT("%s: event actor %s was not found"), *Step, *EventId.ToString()));
+        return false;
+    };
+
     const UGameInstance* GameInstance = World ? World->GetGameInstance() : nullptr;
     UGreeislandGameSubsystem* Subsystem = GameInstance
         ? GameInstance->GetSubsystem<UGreeislandGameSubsystem>()
@@ -196,11 +223,11 @@ void AGreeislandDebugGameMode::RunNativeMvpSmokeTestIfRequested()
     {
         return;
     }
-    if (!Require(Subsystem->ResolveEvent(TEXT("event_wake_cache_001")), TEXT("resolve wake cache")))
+    if (!TriggerEventActor(TEXT("event_wake_cache_001"), TEXT("trigger wake cache EventActor")))
     {
         return;
     }
-    if (!Require(Subsystem->ResolveEvent(TEXT("event_contract_broker_001")), TEXT("resolve contract broker")))
+    if (!TriggerEventActor(TEXT("event_contract_broker_001"), TEXT("trigger contract broker EventActor")))
     {
         return;
     }
@@ -215,7 +242,7 @@ void AGreeislandDebugGameMode::RunNativeMvpSmokeTestIfRequested()
     {
         return;
     }
-    if (!Require(Subsystem->ResolveEvent(TEXT("event_silent_shrine_001")), TEXT("resolve silent shrine")))
+    if (!TriggerEventActor(TEXT("event_silent_shrine_001"), TEXT("trigger silent shrine EventActor")))
     {
         return;
     }
@@ -223,7 +250,7 @@ void AGreeislandDebugGameMode::RunNativeMvpSmokeTestIfRequested()
     {
         return;
     }
-    if (!Require(Subsystem->StartCombat(TEXT("event_ridge_scout_001"), 5), TEXT("start ridge scout combat")))
+    if (!TriggerEventActor(TEXT("event_ridge_scout_001"), TEXT("trigger ridge scout EventActor")))
     {
         return;
     }
@@ -259,7 +286,7 @@ void AGreeislandDebugGameMode::RunNativeMvpSmokeTestIfRequested()
         Fail(TEXT("combat did not finish within the smoke-test turn limit"));
         return;
     }
-    if (!Require(Subsystem->ResolveEvent(TEXT("event_proxy_gate_001")), TEXT("resolve proxy gate")))
+    if (!TriggerEventActor(TEXT("event_proxy_gate_001"), TEXT("trigger proxy gate EventActor")))
     {
         return;
     }

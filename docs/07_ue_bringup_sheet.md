@@ -63,7 +63,7 @@ python3 scripts/ue_build_helper.py --action run-game
 python3 scripts/ue_build_helper.py --action run-mvp-smoke
 ```
 
-`[Greeisland][MVP_SMOKE] PASS: one-zone MVP completed and restored.` が出れば、起動したUEセッションで新規セッション、探索報酬、AI GMフォールバック、戦闘、最終ゲート、保存・復元までが完了している。
+`[Greeisland][MVP_SMOKE] PASS: one-zone MVP completed and restored.` が出れば、起動したUEセッションで新規セッション、EventActor経由の探索報酬、AI GMフォールバック、戦闘、最終ゲート、保存・復元までが完了している。
 
 実機確認のチェック順までまとめて見たいときは:
 
