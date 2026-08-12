@@ -51,6 +51,8 @@ def main() -> int:
     assert_true("SaveSessionToSlot" in game_mode and "RestoreSessionFromSaveSlot" in game_mode, "native MVP smoke covers save restore")
     assert_true("DeckCopies" in game_mode or "DeckCopies" in (ROOT / "UnrealProject/Source/Greeisland/Session/GameSessionLibrary.cpp").read_text(encoding="utf-8"), "native MVP uses configured deck copies")
     assert_true("AvailableEventIds.Contains(EventId)" in session_library, "session API enforces event availability")
+    assert_true("Cannot resolve an exploration event while combat is active" in session_library, "session blocks exploration re-entry during combat")
+    assert_true("Combat is already active; finish it before starting another battle" in session_library, "session blocks combat re-entry")
     assert_true("Context.ActiveRuleCards.Add(OwnedCard)" in session_library, "combat execution receives active rule cards")
     assert_true("Rule and Constraint cards are active while owned" in session_library, "session rejects direct passive rule play")
     assert_true("Key cards are progression state and cannot be played directly" in session_library, "session rejects direct key play")

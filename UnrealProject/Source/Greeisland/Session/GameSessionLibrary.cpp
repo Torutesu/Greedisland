@@ -164,6 +164,12 @@ FSessionActionResult UGameSessionLibrary::ResolveEventInSession(
 {
     FSessionActionResult Result;
 
+    if (Session.bCombatActive)
+    {
+        Result.Reasons.Add(TEXT("Cannot resolve an exploration event while combat is active."));
+        return Result;
+    }
+
     FExplorationEventDefinition Event;
     if (!UExplorationEventLibrary::FindEventById(Session.ZoneEventSet, EventId, Event))
     {
@@ -223,6 +229,12 @@ FSessionActionResult UGameSessionLibrary::StartCombatForEvent(
     int32 OpeningDrawCount)
 {
     FSessionActionResult Result;
+
+    if (Session.bCombatActive)
+    {
+        Result.Reasons.Add(TEXT("Combat is already active; finish it before starting another battle."));
+        return Result;
+    }
 
     FExplorationEventDefinition Event;
     if (!UExplorationEventLibrary::FindEventById(Session.ZoneEventSet, EventId, Event))
