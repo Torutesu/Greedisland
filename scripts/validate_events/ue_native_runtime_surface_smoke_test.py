@@ -48,8 +48,9 @@ def main() -> int:
 
     assert_true("WidgetClass = UGreeislandDebugHudWidget::StaticClass()" in hud, "HUD has native widget fallback")
     assert_true("UCLASS(Blueprintable)" in widget_header and "UCLASS(Abstract" not in widget_header, "native widget can instantiate")
-    for symbol in ("BuildNativeLayout", "NativeStatusText", "NativeCardsText", "NativeEventsText", "NativeAiText"):
+    for symbol in ("BuildNativeLayout", "NativeStatusText", "NativeCardsText", "NativeEventsText", "NativeAiText", "NativeActionText"):
         assert_true(symbol in widget_header or symbol in widget, f"native HUD exposes {symbol}")
+    assert_true("LAST ACTION" in widget, "native HUD exposes latest action result")
     assert_true("BuildFallbackAiResponseForActiveEvent" in widget, "native HUD surfaces deterministic AI response")
     for symbol in ("PlayHandCardAtSlot", "RunEnemyTurnHotkey", "BuildFallbackAiHotkey", "SaveSessionHotkey"):
         assert_true(symbol in controller, f"native controller exposes {symbol}")

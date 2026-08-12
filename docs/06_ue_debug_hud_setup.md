@@ -28,7 +28,8 @@ UE が見つかっているなら、`python3 scripts/ue_build_helper.py --action
   - Blueprintで見た目を被せる前提の `UUserWidget`
   - 近接中の `FocusedEventId` / `FocusedEventDisplayName` と `InteractWithFocusedEvent` を取得可能
   - `BuildAiRequestForActiveEvent` で Claude API 等へ送る前段の入力を取得可能
-  - `BuildFallbackAiResponseForActiveEvent` と `ValidateAiResponseForActiveEvent` で固定文面フォールバックと検証結果を取得可能
+- `BuildFallbackAiResponseForActiveEvent` と `ValidateAiResponseForActiveEvent` で固定文面フォールバックと検証結果を取得可能
+- Native HUDの `LAST ACTION` 行で、直近の保存/復元/カード使用/AI適用の成否、理由、ログを確認可能
   - `ApplyLastAiResponse` で直前の AI GM 応答をそのままセッションへ反映できる
   - `GrantDeveloperCard` で任意カードを開発用に所持/デッキへ注入できる
   - `BootstrapSessionFromActor` と `LastBootstrapDiagnostics` でレベル上の BootstrapActor をHUDから直接確認できる

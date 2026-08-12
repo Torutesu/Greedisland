@@ -766,5 +766,8 @@ private:
     UPROPERTY(Transient)
     TObjectPtr<class UTextBlock> NativeAiText;
 
+    UPROPERTY(Transient)
+    TObjectPtr<class UTextBlock> NativeActionText;
+
     double LastPresentationRefreshTimeSeconds = -1.0;
 };

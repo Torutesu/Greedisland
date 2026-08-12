@@ -156,6 +156,7 @@ void UGreeislandDebugHudWidget::BuildNativeLayout()
     NativeEventsText = AddNativeText(WidgetTree, Layout, TEXT("Events: --"), 14.0f);
     NativeCardsText = AddNativeText(WidgetTree, Layout, TEXT("Cards: --"), 14.0f);
     NativeAiText = AddNativeText(WidgetTree, Layout, TEXT("AI GM: --"), 14.0f);
+    NativeActionText = AddNativeText(WidgetTree, Layout, TEXT("Last action: --"), 13.0f);
     AddNativeText(
         WidgetTree,
         Layout,
@@ -242,6 +243,17 @@ void UGreeislandDebugHudWidget::UpdateNativeLayout()
             LastAiValidationResult.bAccepted ? TEXT("ACCEPTED") : TEXT("REJECTED"))
         : TEXT("AI GM // no response yet");
     NativeAiText->SetText(FText::FromString(AiText));
+
+    FString ActionDetail = LastActionResult.bSuccess ? TEXT("OK") : TEXT("Not run");
+    if (LastActionResult.Reasons.Num() > 0)
+    {
+        ActionDetail += TEXT(" | ") + FString::Join(LastActionResult.Reasons, TEXT(" | "));
+    }
+    if (LastActionResult.LogLines.Num() > 0)
+    {
+        ActionDetail += TEXT(" | ") + LastActionResult.LogLines.Last();
+    }
+    NativeActionText->SetText(FText::FromString(FString::Printf(TEXT("LAST ACTION // %s"), *ActionDetail)));
 }
 
 FSessionActionResult UGreeislandDebugHudWidget::InitializeNewSession()
