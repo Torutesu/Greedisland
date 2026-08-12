@@ -28,6 +28,7 @@ Runtime entrypoint:
   `DebugHudWidgetClass` を指定すると BeginPlay でWidgetをViewportへ載せるHUDクラス
 - `DebugHudWidgetClass` が未設定でも、C++ Native HUDへフォールバックしてセッション状態・イベント一覧・カード一覧・AI GM応答を表示する
 - Native HUD利用時も `N/O/K/R/C/1-5/Space/F/T` のキーボード操作で、セッション・探索・戦闘・保存・AI GMのMVP導線を進められる
+- 自動生成される探索地点にはエンジン標準メッシュとEventIdラベルが付き、レベル用アセットなしでも位置を視認できる
 - [AGreeislandDebugGameMode](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugGameMode.h)
   `PlayerController` と `HUD` に加えて、`DefaultPawnClass` をデバッグ用キャラクターへ接続し、未配置のMVP Bootstrap/EventActor/地面をBeginPlayで補完するGameMode足場
 - [AGreeislandDebugCharacter](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Characters/GreeislandDebugCharacter.h)

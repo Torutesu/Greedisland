@@ -9,6 +9,8 @@ class UGreeislandGameSubsystem;
 class UPrimitiveComponent;
 class USceneComponent;
 class USphereComponent;
+class UStaticMeshComponent;
+class UTextRenderComponent;
 
 UCLASS(Blueprintable)
 class GREEISLAND_API AGreeislandEventActor : public AActor
@@ -51,6 +53,12 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Greeisland|Event")
     TObjectPtr<USphereComponent> InteractionSphere;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Greeisland|Event")
+    TObjectPtr<UStaticMeshComponent> MarkerMesh;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Greeisland|Event")
+    TObjectPtr<UTextRenderComponent> MarkerLabel;
 
     UFUNCTION(BlueprintImplementableEvent, Category = "Greeisland|Event")
     void OnEventTriggered(const FSessionActionResult& ActionResult);

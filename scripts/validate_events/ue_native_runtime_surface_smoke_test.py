@@ -38,6 +38,8 @@ def main() -> int:
     assert_true("/Engine/BasicShapes/Cube.Cube" in game_mode, "game mode creates a collision floor")
     assert_true("SetEventId" in event_actor, "event actor supports runtime id binding")
     assert_true("GetOverlappingActors" in event_actor, "runtime event actor can trigger on contact")
+    assert_true("MarkerMesh" in event_actor and "Cylinder.Cylinder" in event_actor, "runtime event actor has a visible marker")
+    assert_true("MarkerLabel" in event_actor and "SetText(FText::FromName(EventId))" in event_actor, "runtime event actor labels its marker")
 
     assert_true("WidgetClass = UGreeislandDebugHudWidget::StaticClass()" in hud, "HUD has native widget fallback")
     assert_true("UCLASS(Blueprintable)" in widget_header and "UCLASS(Abstract" not in widget_header, "native widget can instantiate")

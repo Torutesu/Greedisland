@@ -2,6 +2,9 @@
 
 #include "Components/SceneComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/TextRenderComponent.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Engine/GameInstance.h"
 #include "GameFramework/Pawn.h"
 #include "Runtime/GreeislandGameSubsystem.h"
@@ -21,12 +24,37 @@ AGreeislandEventActor::AGreeislandEventActor()
     InteractionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
     InteractionSphere->SetGenerateOverlapEvents(true);
     InteractionSphere->OnComponentBeginOverlap.AddDynamic(this, &AGreeislandEventActor::HandleInteractionSphereBeginOverlap);
+
+    MarkerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MarkerMesh"));
+    MarkerMesh->SetupAttachment(SceneRoot);
+    MarkerMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    MarkerMesh->SetRelativeScale3D(FVector(0.65f, 0.65f, 1.1f));
+
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> MarkerMeshAsset(
+        TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
+    if (MarkerMeshAsset.Succeeded())
+    {
+        MarkerMesh->SetStaticMesh(MarkerMeshAsset.Object);
+    }
+
+    MarkerLabel = CreateDefaultSubobject<UTextRenderComponent>(TEXT("MarkerLabel"));
+    MarkerLabel->SetupAttachment(SceneRoot);
+    MarkerLabel->SetRelativeLocation(FVector(0.0f, 0.0f, 190.0f));
+    MarkerLabel->SetHorizontalAlignment(EHTA_Center);
+    MarkerLabel->SetVerticalAlignment(EVRTA_TextCenter);
+    MarkerLabel->SetWorldSize(32.0f);
+    MarkerLabel->SetText(FText::FromString(TEXT("Event")));
+    MarkerLabel->SetTextRenderColor(FColor(230, 245, 255, 255));
 }
 
 void AGreeislandEventActor::SetEventId(FName NewEventId)
 {
     EventId = NewEventId;
     SetActorLabel(EventId.IsNone() ? TEXT("Greeisland Event") : EventId.ToString());
+    if (MarkerLabel)
+    {
+        MarkerLabel->SetText(FText::FromName(EventId));
+    }
 
     if (!bAutoTriggerOnOverlap || !InteractionSphere || !IsEventAvailable())
     {
