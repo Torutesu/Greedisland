@@ -280,6 +280,19 @@ FSessionActionResult UGameSessionLibrary::PlayCardInSessionCombat(
     FCardPlayContext Context;
     Context.BasePartySize = 1;
     Context.CollectionTags = BuildCollectionTags(Session.OwnedCardIds, Session.KnownCards);
+    for (const FName& OwnedCardId : Session.OwnedCardIds)
+    {
+        FCardDefinition OwnedCard;
+        if (!FindKnownCardById(Session, OwnedCardId, OwnedCard))
+        {
+            continue;
+        }
+
+        if (OwnedCard.Kind == ECardKind::Rule || OwnedCard.Kind == ECardKind::Constraint)
+        {
+            Context.ActiveRuleCards.Add(OwnedCard);
+        }
+    }
 
     FCombatActionResult CombatResult =
         UCombatEngine::PlayCard(Session.CombatState, Card, Context);

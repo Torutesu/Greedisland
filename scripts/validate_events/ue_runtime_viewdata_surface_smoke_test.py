@@ -16,8 +16,10 @@ def main() -> int:
     repo_root = Path(__file__).resolve().parents[2]
     runtime_header = repo_root / "UnrealProject" / "Source" / "Greeisland" / "Runtime" / "GreeislandGameSubsystem.h"
     runtime_cpp = repo_root / "UnrealProject" / "Source" / "Greeisland" / "Runtime" / "GreeislandGameSubsystem.cpp"
+    session_cpp = repo_root / "UnrealProject" / "Source" / "Greeisland" / "Session" / "GameSessionLibrary.cpp"
     header_text = runtime_header.read_text(encoding="utf-8")
     cpp_text = runtime_cpp.read_text(encoding="utf-8")
+    session_text = session_cpp.read_text(encoding="utf-8")
 
     assert_true("KindLabel" in header_text, "card view exposes kind label")
     assert_true("StateSummary" in header_text, "card view exposes state summary")
@@ -39,6 +41,7 @@ def main() -> int:
     assert_true("ViewData.bPrimaryActionEnabled" in cpp_text, "runtime populates primary action enabled state")
     assert_true("ViewData.TypeLabel" in cpp_text, "runtime populates event type label")
     assert_true("ViewData.StatusSummary" in cpp_text, "runtime populates event status summary")
+    assert_true("Context.ActiveRuleCards.Add(OwnedCard)" in session_text, "combat execution receives active rule cards")
 
     print("OK: UE runtime viewdata surface smoke tests passed")
     return 0
