@@ -616,8 +616,9 @@ void UGreeislandGameSubsystem::BuildEventViewData(TArray<FGreeislandEventViewDat
         ViewData.EventId = Event.EventId;
         ViewData.DisplayName = Event.DisplayName;
         ViewData.Type = Event.Type;
-        ViewData.bAvailable = Session.ZoneProgress.AvailableEventIds.Contains(Event.EventId);
         ViewData.bCompleted = Session.ZoneProgress.CompletedEventIds.Contains(Event.EventId);
+        ViewData.bAvailable =
+            Session.ZoneProgress.AvailableEventIds.Contains(Event.EventId) && !ViewData.bCompleted;
         ViewData.bIsActive = Session.ActiveEventId == Event.EventId;
         ViewData.TypeLabel = EventTypeToLabel(Event.Type);
         ViewData.StatusSummary = ViewData.bCompleted

@@ -255,6 +255,12 @@ FSessionActionResult UGameSessionLibrary::StartCombatForEvent(
         return Result;
     }
 
+    if (Session.ZoneProgress.CompletedEventIds.Contains(EventId))
+    {
+        Result.Reasons.Add(FString::Printf(TEXT("Event %s has already been completed."), *EventId.ToString()));
+        return Result;
+    }
+
     Session.CombatState = UCombatEngine::CreateCombatState(
         Session.DeckCardIds,
         Event.EnemyId,
