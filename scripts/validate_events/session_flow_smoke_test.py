@@ -44,6 +44,8 @@ def initialize_session(zone: dict[str, Any], events: dict[str, dict[str, Any]], 
 
 
 def resolve_event(session: Session, event_id: str) -> tuple[bool, list[str]]:
+    if session.combat_active:
+        return False, ["cannot resolve an exploration event while combat is active"]
     if event_id not in session.events:
         return False, [f"unknown event {event_id}"]
     if event_id not in session.available_event_ids:
@@ -76,6 +78,8 @@ def resolve_event(session: Session, event_id: str) -> tuple[bool, list[str]]:
 
 
 def start_combat(session: Session, event_id: str, opening_draw_count: int) -> tuple[bool, list[str]]:
+    if session.combat_active:
+        return False, ["combat is already active"]
     if event_id not in session.available_event_ids:
         return False, [f"event {event_id} not available"]
     event = session.events[event_id]
@@ -134,6 +138,11 @@ def main() -> int:
     assert_true(session.combat_active, "combat active flag", session.combat_active)
     assert_true(len(session.combat_hand) == 3, "opening hand size", session.combat_hand)
 
+    ok, reasons = resolve_event(session, "event_silent_shrine_001")
+    assert_true(not ok, "exploration event blocked during combat", reasons)
+    ok, reasons = start_combat(session, "event_ridge_scout_001", opening_draw_count=3)
+    assert_true(not ok, "second battle blocked during combat", reasons)
+
     print("OK: session flow smoke tests passed")
     return 0
 
@@ -144,4 +153,3 @@ if __name__ == "__main__":
     except AssertionError as exc:
         print(str(exc), file=sys.stderr)
         raise SystemExit(1)
-
