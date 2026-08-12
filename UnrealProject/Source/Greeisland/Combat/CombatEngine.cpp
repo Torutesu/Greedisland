@@ -120,6 +120,18 @@ FCombatActionResult UCombatEngine::PlayCard(
         return Result;
     }
 
+    if (Card.Kind == ECardKind::Rule || Card.Kind == ECardKind::Constraint)
+    {
+        Result.Reasons.Add(TEXT("Rule and Constraint cards are active while owned and cannot be played directly."));
+        return Result;
+    }
+
+    if (Card.Kind == ECardKind::Key)
+    {
+        Result.Reasons.Add(TEXT("Key cards are progression state and cannot be played directly."));
+        return Result;
+    }
+
     FCardPlayContext Context = BaseContext;
     Context.CurrentPhase = EGamePhase::Combat;
     Context.EnergyAvailable = State.Energy;
@@ -229,4 +241,3 @@ FCombatActionResult UCombatEngine::RunEnemyTurn(
     Result.Outcome = State.Outcome;
     return Result;
 }
-
