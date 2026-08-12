@@ -58,6 +58,8 @@ Project config:
 ./scripts/run_local_checks.sh
 ```
 
+UE5.8が入った環境では、`python3 scripts/ue_build_helper.py --action run-game` でEditorのStandalone相当起動も行える。
+
 Individual checks:
 
 ```bash

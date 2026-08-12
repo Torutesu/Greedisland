@@ -41,6 +41,14 @@ UE が見つかっていて、そのまま projectfiles -> build-editor -> open-
 python3 scripts/ue_build_helper.py --action bootstrap-editor
 ```
 
+Editorを介したStandalone相当の起動だけを行う場合は:
+
+```bash
+python3 scripts/ue_build_helper.py --action run-game
+```
+
+これは `UnrealEditor <uproject> -game -log` を実行し、既定のEntryマップとC++ GameModeをそのまま起動する。
+
 実機確認のチェック順までまとめて見たいときは:
 
 ```bash
