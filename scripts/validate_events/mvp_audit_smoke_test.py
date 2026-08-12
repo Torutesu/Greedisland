@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
+import importlib.util
 
 
 def assert_true(value: bool, label: str, detail: object = None) -> None:
@@ -16,6 +18,27 @@ def assert_true(value: bool, label: str, detail: object = None) -> None:
 def main() -> int:
     repo_root = Path(__file__).resolve().parents[2]
     audit_script = repo_root / "scripts" / "mvp_audit.py"
+
+    spec = importlib.util.spec_from_file_location("mvp_audit_under_test", audit_script)
+    assert spec is not None and spec.loader is not None
+    audit_module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = audit_module
+    spec.loader.exec_module(audit_module)
+    with tempfile.TemporaryDirectory() as temporary_directory:
+        audit_module.RUNTIME_LOG_DIR = Path(temporary_directory)
+        contact_marker = "[Greeisland][EVENT_CONTACT]"
+        pass_marker = "[Greeisland][MVP_SMOKE] PASS: one-zone MVP completed and restored."
+        failed_log = audit_module.RUNTIME_LOG_DIR / "mvp-smoke-20260812-120000.log"
+        failed_log.write_text(contact_marker, encoding="utf-8")
+        assert_true(
+            audit_module.latest_mvp_smoke_log_containing_all((contact_marker, pass_marker)) is None,
+            "failed contact-only log is not sufficient",
+        )
+        failed_log.write_text(f"{contact_marker}\n{pass_marker}\n", encoding="utf-8")
+        assert_true(
+            audit_module.latest_mvp_smoke_log_containing_all((contact_marker, pass_marker)) == failed_log,
+            "complete contact log is accepted",
+        )
 
     text_output = subprocess.check_output(
         ["python3", str(audit_script)],
