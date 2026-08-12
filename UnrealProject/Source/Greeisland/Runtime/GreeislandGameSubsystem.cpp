@@ -9,6 +9,8 @@
 
 namespace
 {
+constexpr int32 MvpBasePartySize = 3;
+
 FString CardKindToLabel(ECardKind Kind)
 {
     switch (Kind)
@@ -652,7 +654,7 @@ bool UGreeislandGameSubsystem::BuildCombatPlayContext(FCardPlayContext& OutConte
 
     OutContext.CurrentPhase = EGamePhase::Combat;
     OutContext.EnergyAvailable = Session.CombatState.Energy;
-    OutContext.BasePartySize = 1;
+    OutContext.BasePartySize = MvpBasePartySize;
     OutContext.HandCount = Session.CombatState.Hand.Num();
 
     for (const FName& OwnedCardId : Session.OwnedCardIds)

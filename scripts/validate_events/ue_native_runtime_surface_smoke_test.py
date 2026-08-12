@@ -46,6 +46,8 @@ def main() -> int:
     assert_true("DeckCopies" in game_mode or "DeckCopies" in (ROOT / "UnrealProject/Source/Greeisland/Session/GameSessionLibrary.cpp").read_text(encoding="utf-8"), "native MVP uses configured deck copies")
     assert_true("AvailableEventIds.Contains(EventId)" in session_library, "session API enforces event availability")
     assert_true("Context.ActiveRuleCards.Add(OwnedCard)" in session_library, "combat execution receives active rule cards")
+    assert_true("MvpBasePartySize = 3" in session_library, "session combat uses the MVP party baseline")
+    assert_true("MvpBasePartySize = 3" in (ROOT / "UnrealProject/Source/Greeisland/Runtime/GreeislandGameSubsystem.cpp").read_text(encoding="utf-8"), "runtime view uses the MVP party baseline")
     assert_true("SpawnActor<AGreeislandBootstrapActor>" in game_mode, "game mode spawns bootstrap actor")
     assert_true("SpawnActor<APlayerStart>" in game_mode, "game mode provides a fallback player start")
     assert_true("SpawnActor<AGreeislandEventActor>" in game_mode, "game mode spawns event actors")

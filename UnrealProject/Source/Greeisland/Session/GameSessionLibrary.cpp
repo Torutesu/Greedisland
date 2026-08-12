@@ -6,6 +6,8 @@
 
 namespace
 {
+constexpr int32 MvpBasePartySize = 3;
+
 void AddUniqueName(TArray<FName>& Names, FName Value)
 {
     if (!Value.IsNone())
@@ -278,7 +280,7 @@ FSessionActionResult UGameSessionLibrary::PlayCardInSessionCombat(
     }
 
     FCardPlayContext Context;
-    Context.BasePartySize = 1;
+    Context.BasePartySize = MvpBasePartySize;
     Context.CollectionTags = BuildCollectionTags(Session.OwnedCardIds, Session.KnownCards);
     for (const FName& OwnedCardId : Session.OwnedCardIds)
     {
