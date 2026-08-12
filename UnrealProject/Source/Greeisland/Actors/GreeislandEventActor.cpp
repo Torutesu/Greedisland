@@ -152,6 +152,12 @@ void AGreeislandEventActor::HandleInteractionSphereBeginOverlap(
 
     if (OtherActor && OtherActor->IsA<APawn>() && IsEventAvailable())
     {
+        UE_LOG(
+            LogTemp,
+            Display,
+            TEXT("[Greeisland][EVENT_CONTACT] EventActor %s overlapped by %s"),
+            *EventId.ToString(),
+            *OtherActor->GetName());
         TriggerEvent();
     }
 }
