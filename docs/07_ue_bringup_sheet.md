@@ -15,6 +15,7 @@ UE5.8 側で `UnrealProject/Greeisland.uproject` を開いたあと、最短で 
 - `DefaultGame.ini` の既定値では `ProjectDir` 基準で以下を読む
   - `../data/cards/cards.mvp.json`
   - `../data/events/events.mvp.json`
+- `DefaultEngine.ini` の既定マップは `/Engine/Maps/Entry`。新規レベルを作らなくても、C++ GameModeがPlay開始時にMVPゾーンを生成する。
 
 エディタ起動前に、ターミナル側ではこれを 1 回通しておくと速い:
 

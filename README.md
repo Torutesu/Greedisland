@@ -45,6 +45,8 @@ Project config:
 - [DefaultGame.ini](/Users/torutano/Documents/Greeisland/UnrealProject/Config/DefaultGame.ini)
   C++の `AGreeislandDebugGameMode` をデフォルトGameModeに設定
   `CardJsonPath` / `EventJsonPath` の既定値は `ProjectDir` 基準で `../data/...` に調整済み
+- [DefaultEngine.ini](/Users/torutano/Documents/Greeisland/UnrealProject/Config/DefaultEngine.ini)
+  UE標準の `/Engine/Maps/Entry` をEditor/ゲームの既定マップに設定し、起動時にC++のMVPゾーン生成へ接続
 - [DefaultInput.ini](/Users/torutano/Documents/Greeisland/UnrealProject/Config/DefaultInput.ini)
   `WASD` / マウス / `E` に加えて、Native HUD用のセッション・戦闘・保存・AI GMショートカットを設定
 - [UGreeislandProjectSettings](/Users/torutano/Documents/Greeisland/UnrealProject/Source/Greeisland/Runtime/GreeislandProjectSettings.h)

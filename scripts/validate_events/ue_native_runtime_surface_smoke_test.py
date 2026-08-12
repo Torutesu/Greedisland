@@ -21,6 +21,7 @@ def main() -> int:
     widget = (ROOT / "UnrealProject/Source/Greeisland/UI/GreeislandDebugHudWidget.cpp").read_text(encoding="utf-8")
     controller = (ROOT / "UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugPlayerController.cpp").read_text(encoding="utf-8")
     input_config = (ROOT / "UnrealProject/Config/DefaultInput.ini").read_text(encoding="utf-8")
+    engine_config = (ROOT / "UnrealProject/Config/DefaultEngine.ini").read_text(encoding="utf-8")
 
     for event_id in (
         "event_wake_cache_001",
@@ -36,6 +37,8 @@ def main() -> int:
     assert_true("SpawnActor<AGreeislandBootstrapActor>" in game_mode, "game mode spawns bootstrap actor")
     assert_true("SpawnActor<AGreeislandEventActor>" in game_mode, "game mode spawns event actors")
     assert_true("/Engine/BasicShapes/Cube.Cube" in game_mode, "game mode creates a collision floor")
+    assert_true("EditorStartupMap=/Engine/Maps/Entry" in engine_config, "project has an editor startup map")
+    assert_true("GameDefaultMap=/Engine/Maps/Entry" in engine_config, "project has a game default map")
     assert_true("SetEventId" in event_actor, "event actor supports runtime id binding")
     assert_true("GetOverlappingActors" in event_actor, "runtime event actor can trigger on contact")
     assert_true("MarkerMesh" in event_actor and "Cylinder.Cylinder" in event_actor, "runtime event actor has a visible marker")

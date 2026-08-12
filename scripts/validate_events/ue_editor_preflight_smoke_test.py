@@ -67,6 +67,7 @@ def main() -> int:
     game_target_path = unreal_root / "Source" / "Greeisland.Target.cs"
     editor_target_path = unreal_root / "Source" / "GreeislandEditor.Target.cs"
     default_game_path = unreal_root / "Config" / "DefaultGame.ini"
+    default_engine_path = unreal_root / "Config" / "DefaultEngine.ini"
     default_input_path = unreal_root / "Config" / "DefaultInput.ini"
     card_json_path = repo_root / "data" / "cards" / "cards.mvp.json"
     event_json_path = repo_root / "data" / "events" / "events.mvp.json"
@@ -77,6 +78,7 @@ def main() -> int:
         game_target_path,
         editor_target_path,
         default_game_path,
+        default_engine_path,
         default_input_path,
         card_json_path,
         event_json_path,
@@ -124,6 +126,9 @@ def main() -> int:
         "GlobalDefaultGameMode=/Script/Greeisland.GreeislandDebugGameMode" in default_game_text,
         "default game mode points at debug game mode",
     )
+    default_engine_text = read_text(default_engine_path)
+    assert_true("EditorStartupMap=/Engine/Maps/Entry" in default_engine_text, "editor startup map configured")
+    assert_true("GameDefaultMap=/Engine/Maps/Entry" in default_engine_text, "game default map configured")
     assert_true("CardJsonPath=../data/cards/cards.mvp.json" in default_game_text, "card json path configured")
     assert_true("EventJsonPath=../data/events/events.mvp.json" in default_game_text, "event json path configured")
     assert_true("SaveSlotName=greeisland-dev-slot" in default_game_text, "save slot configured")
