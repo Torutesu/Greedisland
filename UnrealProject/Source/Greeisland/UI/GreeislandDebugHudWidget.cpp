@@ -147,7 +147,11 @@ void UGreeislandDebugHudWidget::BuildNativeLayout()
     SetDesiredSizeInViewport(FVector2D(780.0f, 920.0f));
 
     UVerticalBox* Layout = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass());
-    Panel->SetContent(Layout);
+    UScrollBox* ContentScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass());
+    ContentScroll->SetAlwaysShowScrollbar(true);
+    ContentScroll->SetScrollBarVisibility(ESlateVisibility::Visible);
+    ContentScroll->AddChild(Layout);
+    Panel->SetContent(ContentScroll);
     WidgetTree->RootWidget = Panel;
 
     AddNativeText(WidgetTree, Layout, TEXT("GREEISLAND // MVP ZONE"), 22.0f);

@@ -85,6 +85,8 @@ def main() -> int:
     assert_true("BuildSessionStatusRows()" in widget_cpp_text, "widget implements session status row builder")
     assert_true("NativeTick" in text, "widget declares native tick")
     assert_true("NativeTick(" in widget_cpp_text, "widget implements native tick")
+    assert_true("UScrollBox" in widget_cpp_text, "native HUD wraps long MVP content in a scroll box")
+    assert_true("SetAlwaysShowScrollbar" in widget_cpp_text, "native HUD keeps the content scrollbar visible")
     assert_true("BuildEventActorStatusSummary" in text, "widget declares event actor status summary builder")
     assert_true("BuildEventActorStatusSummary" in widget_cpp_text, "widget implements event actor status summary builder")
     assert_true("StatusLabel" in widget_cpp_text, "walkthrough progress sets status labels")
