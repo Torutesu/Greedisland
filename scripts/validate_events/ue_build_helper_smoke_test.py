@@ -91,6 +91,8 @@ def main() -> int:
         assert_true(any("Ridge Scout Battle" in line for line in report_lines), "report includes walkthrough step")
         assert_true(any("MVP Audit" in line for line in report_lines), "report includes audit command")
         assert_true(any("GenerateProjectFiles" in line for line in report_lines), "report includes projectfiles result row")
+        assert_true(any("RunMvpSmoke" in line for line in report_lines), "report includes MVP smoke result row")
+        assert_true(any("MVP smoke log" in line for line in report_lines), "report includes MVP smoke evidence slot")
         assert_true(any(item.label == "Build.sh available" and item.ok for item in readiness), "readiness sees Build.sh")
         assert_true(any(item.label == "UnrealEditor detected" and item.ok for item in readiness), "readiness sees editor")
 

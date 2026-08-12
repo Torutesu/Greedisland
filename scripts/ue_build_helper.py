@@ -510,6 +510,7 @@ def build_report_template_lines(tooling: UnrealTooling) -> list[str]:
         ("BuildGame", "build_game"),
         ("OpenEditor", "open_editor"),
         ("RunGame", "run_game"),
+        ("RunMvpSmoke", "run_mvp_smoke"),
     ):
         command = commands[command_key]
         rendered = " ".join(command) if command else "UNAVAILABLE"
@@ -535,6 +536,7 @@ def build_report_template_lines(tooling: UnrealTooling) -> list[str]:
             "| BuildGame | TODO | |",
             "| OpenEditor | TODO | |",
             "| RunGame | TODO | |",
+            "| RunMvpSmoke | TODO | |",
             "",
             "## Editor Checks",
             "",
@@ -565,6 +567,7 @@ def build_report_template_lines(tooling: UnrealTooling) -> list[str]:
             "",
             "- Editor launch log:",
             "- UHT / build output:",
+            "- MVP smoke log:",
             "- HUD screenshot:",
             "- Walkthrough completion screenshot or note:",
             "",
@@ -606,7 +609,22 @@ def run_named_command(tooling: UnrealTooling, action: str) -> int:
 
     for command in sequence:
         print(f"Running: {' '.join(command)}")
-        completed = subprocess.run(command, cwd=repo_root())
+        if action == "run_mvp_smoke":
+            log_dir = repo_root() / "artifacts" / "ue-runtime-checks"
+            log_dir.mkdir(parents=True, exist_ok=True)
+            log_path = log_dir / f"mvp-smoke-{datetime.now().astimezone().strftime('%Y%m%d-%H%M%S')}.log"
+            completed = subprocess.run(
+                command,
+                cwd=repo_root(),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+            log_path.write_text(completed.stdout or "", encoding="utf-8")
+            print(completed.stdout or "", end="")
+            print(f"MVP smoke log: {log_path}")
+        else:
+            completed = subprocess.run(command, cwd=repo_root())
         if completed.returncode != 0:
             return completed.returncode
 
