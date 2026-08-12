@@ -15,6 +15,7 @@ def assert_true(condition: bool, message: str) -> None:
 def main() -> int:
     game_mode = (ROOT / "UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugGameMode.cpp").read_text(encoding="utf-8")
     game_mode_header = (ROOT / "UnrealProject/Source/Greeisland/GameFramework/GreeislandDebugGameMode.h").read_text(encoding="utf-8")
+    session_library = (ROOT / "UnrealProject/Source/Greeisland/Session/GameSessionLibrary.cpp").read_text(encoding="utf-8")
     event_actor = (ROOT / "UnrealProject/Source/Greeisland/Actors/GreeislandEventActor.cpp").read_text(encoding="utf-8")
     hud = (ROOT / "UnrealProject/Source/Greeisland/UI/GreeislandDebugHud.cpp").read_text(encoding="utf-8")
     widget_header = (ROOT / "UnrealProject/Source/Greeisland/UI/GreeislandDebugHudWidget.h").read_text(encoding="utf-8")
@@ -41,6 +42,7 @@ def main() -> int:
     assert_true("[Greeisland][MVP_SMOKE] PASS" in game_mode, "game mode emits MVP smoke pass evidence")
     assert_true("SaveSessionToSlot" in game_mode and "RestoreSessionFromSaveSlot" in game_mode, "native MVP smoke covers save restore")
     assert_true("DeckCopies" in game_mode or "DeckCopies" in (ROOT / "UnrealProject/Source/Greeisland/Session/GameSessionLibrary.cpp").read_text(encoding="utf-8"), "native MVP uses configured deck copies")
+    assert_true("AvailableEventIds.Contains(EventId)" in session_library, "session API enforces event availability")
     assert_true("SpawnActor<AGreeislandBootstrapActor>" in game_mode, "game mode spawns bootstrap actor")
     assert_true("SpawnActor<APlayerStart>" in game_mode, "game mode provides a fallback player start")
     assert_true("SpawnActor<AGreeislandEventActor>" in game_mode, "game mode spawns event actors")

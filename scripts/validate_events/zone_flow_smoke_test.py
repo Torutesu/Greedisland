@@ -15,6 +15,7 @@ class ZoneState:
     owned_card_ids: list[str] = field(default_factory=list)
     completed_event_ids: list[str] = field(default_factory=list)
     acquired_key_card_ids: list[str] = field(default_factory=list)
+    available_event_ids: list[str] = field(default_factory=list)
 
 
 def load_events(path: Path) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
@@ -24,6 +25,8 @@ def load_events(path: Path) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
 
 def resolve_event(event: dict[str, Any], state: ZoneState) -> tuple[bool, list[str]]:
     reasons: list[str] = []
+    if event["eventId"] not in state.available_event_ids:
+        reasons.append(f"{event['eventId']} not available")
     if event["eventId"] in state.completed_event_ids:
         reasons.append(f"{event['eventId']} already completed")
     for required_card_id in event["requiredCardIds"]:
@@ -38,6 +41,9 @@ def resolve_event(event: dict[str, Any], state: ZoneState) -> tuple[bool, list[s
         if reward_card_id.startswith("key_") and reward_card_id not in state.acquired_key_card_ids:
             state.acquired_key_card_ids.append(reward_card_id)
     state.completed_event_ids.append(event["eventId"])
+    for next_event_id in event["nextEventIds"]:
+        if next_event_id not in state.available_event_ids:
+            state.available_event_ids.append(next_event_id)
     return True, []
 
 
@@ -48,7 +54,7 @@ def assert_true(value: bool, label: str, detail: Any = None) -> None:
 
 def main() -> int:
     zone, events = load_events(Path("data/events/events.mvp.json"))
-    state = ZoneState()
+    state = ZoneState(available_event_ids=[zone["events"][0]["eventId"]])
 
     gate_ok, gate_reasons = resolve_event(events["event_proxy_gate_001"], state)
     assert_true(not gate_ok, "final gate should be locked before setup", gate_reasons)
@@ -83,4 +89,3 @@ if __name__ == "__main__":
     except AssertionError as exc:
         print(str(exc), file=sys.stderr)
         raise SystemExit(1)
-

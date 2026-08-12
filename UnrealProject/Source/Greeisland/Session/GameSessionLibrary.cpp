@@ -177,6 +177,14 @@ FSessionActionResult UGameSessionLibrary::ResolveEventInSession(
         return Result;
     }
 
+    if (!Session.ZoneProgress.AvailableEventIds.Contains(EventId))
+    {
+        Result.Reasons.Add(FString::Printf(
+            TEXT("Event %s is not available yet."),
+            *EventId.ToString()));
+        return Result;
+    }
+
     FExplorationResolveResult ResolveResult =
         UExplorationEngine::ResolveEvent(Event, Session.OwnedCardIds, Session.ZoneProgress);
     Result.bSuccess = ResolveResult.bSuccess;
