@@ -30,6 +30,11 @@ FString CardKindToLabel(ECardKind Kind)
     return TEXT("Unknown");
 }
 
+bool IsPassiveRuleCard(const FCardDefinition& Card)
+{
+    return Card.Kind == ECardKind::Rule || Card.Kind == ECardKind::Constraint;
+}
+
 FString EventTypeToLabel(EExplorationEventType Type)
 {
     switch (Type)
@@ -406,6 +411,11 @@ void UGreeislandGameSubsystem::GetPlayableCombatCardIds(TArray<FName>& OutCardId
             continue;
         }
 
+        if (IsPassiveRuleCard(Card))
+        {
+            continue;
+        }
+
         const FCardPlayResult Result = URuleResolver::CanPlayCard(Card, Context);
         if (Result.bCanPlay)
         {
@@ -456,7 +466,11 @@ void UGreeislandGameSubsystem::BuildOwnedCardViewData(TArray<FGreeislandCardView
 
         TArray<FString> StateParts;
         StateParts.Add(ViewData.KindLabel);
-        if (ViewData.bInHand)
+        if (IsPassiveRuleCard(Card))
+        {
+            StateParts.Add(TEXT("Active Rule Layer"));
+        }
+        else if (ViewData.bInHand)
         {
             StateParts.Add(ViewData.bPlayableNow ? TEXT("Playable") : TEXT("Blocked"));
         }
@@ -471,7 +485,11 @@ void UGreeislandGameSubsystem::BuildOwnedCardViewData(TArray<FGreeislandCardView
         ViewData.StateSummary = FString::Join(StateParts, TEXT(" | "));
 
         TArray<FString> DetailParts;
-        if (ViewData.bInHand)
+        if (IsPassiveRuleCard(Card))
+        {
+            DetailParts.Add(TEXT("active while owned"));
+        }
+        else if (ViewData.bInHand)
         {
             DetailParts.Add(FString::Printf(TEXT("party %d"), ViewData.EffectivePartySize));
         }
@@ -481,7 +499,7 @@ void UGreeislandGameSubsystem::BuildOwnedCardViewData(TArray<FGreeislandCardView
         }
         ViewData.DetailSummary = FString::Join(DetailParts, TEXT(" | "));
 
-        if (ViewData.bInHand)
+        if (ViewData.bInHand && !IsPassiveRuleCard(Card))
         {
             ViewData.PrimaryActionId = TEXT("play_combat_card");
             ViewData.PrimaryActionLabel = TEXT("Play Card");
@@ -523,28 +541,43 @@ void UGreeislandGameSubsystem::BuildHandCardViewData(TArray<FGreeislandCardViewD
         ViewData.bInHand = true;
         ViewData.bPlayableNow = PlayableCardIds.Contains(CardId);
         ViewData.KindLabel = CardKindToLabel(Card.Kind);
-        FCardPlayResult PlayResult;
-        if (GetCombatCardPlayResult(CardId, PlayResult))
+        if (!IsPassiveRuleCard(Card))
         {
-            ViewData.EffectivePartySize = PlayResult.EffectivePartySize;
-            ViewData.UnplayableReasons = PlayResult.Reasons;
+            FCardPlayResult PlayResult;
+            if (GetCombatCardPlayResult(CardId, PlayResult))
+            {
+                ViewData.EffectivePartySize = PlayResult.EffectivePartySize;
+                ViewData.UnplayableReasons = PlayResult.Reasons;
+            }
         }
-        ViewData.StateSummary = FString::Printf(
-            TEXT("%s | %s"),
-            *ViewData.KindLabel,
-            ViewData.bPlayableNow ? TEXT("Playable") : TEXT("Blocked"));
+        ViewData.StateSummary = IsPassiveRuleCard(Card)
+            ? FString::Printf(TEXT("%s | Active Rule Layer"), *ViewData.KindLabel)
+            : FString::Printf(
+                TEXT("%s | %s"),
+                *ViewData.KindLabel,
+                ViewData.bPlayableNow ? TEXT("Playable") : TEXT("Blocked"));
         TArray<FString> DetailParts;
-        DetailParts.Add(FString::Printf(TEXT("party %d"), ViewData.EffectivePartySize));
+        if (IsPassiveRuleCard(Card))
+        {
+            DetailParts.Add(TEXT("active while owned"));
+        }
+        else
+        {
+            DetailParts.Add(FString::Printf(TEXT("party %d"), ViewData.EffectivePartySize));
+        }
         if (ViewData.UnplayableReasons.Num() > 0)
         {
             DetailParts.Add(ViewData.UnplayableReasons[0]);
         }
         ViewData.DetailSummary = FString::Join(DetailParts, TEXT(" | "));
-        ViewData.PrimaryActionId = TEXT("play_combat_card");
-        ViewData.PrimaryActionLabel = TEXT("Play Card");
-        ViewData.PrimaryActionNameArgument = ViewData.CardId;
-        ViewData.bHasPrimaryAction = true;
-        ViewData.bPrimaryActionEnabled = ViewData.bPlayableNow;
+        if (!IsPassiveRuleCard(Card))
+        {
+            ViewData.PrimaryActionId = TEXT("play_combat_card");
+            ViewData.PrimaryActionLabel = TEXT("Play Card");
+            ViewData.PrimaryActionNameArgument = ViewData.CardId;
+            ViewData.bHasPrimaryAction = true;
+            ViewData.bPrimaryActionEnabled = ViewData.bPlayableNow;
+        }
         OutCards.Add(ViewData);
     }
 }

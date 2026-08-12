@@ -42,6 +42,9 @@ def main() -> int:
     assert_true("ViewData.TypeLabel" in cpp_text, "runtime populates event type label")
     assert_true("ViewData.StatusSummary" in cpp_text, "runtime populates event status summary")
     assert_true("Context.ActiveRuleCards.Add(OwnedCard)" in session_text, "combat execution receives active rule cards")
+    assert_true("IsPassiveRuleCard" in cpp_text, "runtime distinguishes passive rule cards")
+    assert_true("Active Rule Layer" in cpp_text, "runtime exposes passive rule state")
+    assert_true("active while owned" in cpp_text, "runtime explains passive rule activation")
 
     print("OK: UE runtime viewdata surface smoke tests passed")
     return 0
